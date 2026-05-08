@@ -1,13 +1,333 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
-@import 'tailwindcss';
+:root {
+    --jusai-navy: #0b1f3a;
+    --jusai-gold: #c9a227;
+    --jusai-graphite: #1f2937;
+    --jusai-offwhite: #f8f7f2;
+    --jusai-action: #2563eb;
+    --jusai-border: #d7dce5;
+    --jusai-muted: #6b7280;
+    --jusai-success: #0f766e;
+    --jusai-warning: #b45309;
+    --jusai-danger: #b91c1c;
+    --jusai-sidebar-width: 288px;
+    --bs-body-font-family: 'Segoe UI', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    --bs-body-bg: var(--jusai-offwhite);
+    --bs-body-color: var(--jusai-graphite);
+    --bs-border-color: var(--jusai-border);
+    --bs-primary: var(--jusai-action);
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-secondary-color: var(--jusai-muted);
+    --bs-link-color: var(--jusai-action);
+    --bs-link-hover-color: #1d4ed8;
+    --bs-border-radius: 1rem;
+    --bs-border-radius-lg: 1.25rem;
+    --bs-box-shadow-sm: 0 12px 32px rgba(11, 31, 58, 0.08);
+    --bs-box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+body {
+    background:
+        radial-gradient(circle at top right, rgba(201, 162, 39, 0.1), transparent 22%),
+        linear-gradient(180deg, #fdfcf8 0%, #f6f5ef 100%);
+    color: var(--jusai-graphite);
+}
 
-@theme {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+a {
+    text-decoration: none;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.sidebar-desktop {
+    width: var(--jusai-sidebar-width);
+    min-height: 100vh;
+    background: linear-gradient(180deg, #08172d 0%, #10294c 100%);
+    color: rgba(248, 247, 242, 0.86);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand {
+    color: #fff;
+}
+
+.sidebar-brand-mark {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.95), rgba(232, 196, 77, 0.8));
+    color: var(--jusai-navy);
+    box-shadow: 0 12px 28px rgba(201, 162, 39, 0.28);
+}
+
+.sidebar-section-label {
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.sidebar-link {
+    color: rgba(248, 247, 242, 0.82);
+    border: 1px solid transparent;
+    border-radius: 1rem;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateX(2px);
+}
+
+.sidebar-link-icon {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8f7f2;
+}
+
+.sidebar-meta-card {
+    background: linear-gradient(180deg, rgba(201, 162, 39, 0.16), rgba(201, 162, 39, 0.08));
+    border: 1px solid rgba(201, 162, 39, 0.22);
+    border-radius: 1.25rem;
+}
+
+.content-area {
+    min-width: 0;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    backdrop-filter: blur(18px);
+    background: rgba(248, 247, 242, 0.84);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.search-shell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 999px;
+    padding: 0.75rem 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.search-shell input {
+    border: 0;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+    color: var(--jusai-graphite);
+}
+
+.search-shell input::placeholder {
+    color: #94a3b8;
+}
+
+.glass-card,
+.stat-card,
+.surface-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(215, 220, 229, 0.9);
+    border-radius: 1.4rem;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.hero-card {
+    background:
+        radial-gradient(circle at top right, rgba(201, 162, 39, 0.2), transparent 24%),
+        linear-gradient(135deg, #0b1f3a 0%, #183b67 100%);
+    color: #fff;
+    border-radius: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 48px rgba(11, 31, 58, 0.22);
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.5rem 0.85rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+}
+
+.stat-card {
+    padding: 1.25rem;
+}
+
+.stat-icon {
+    width: 3rem;
+    height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+}
+
+.icon-blue {
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--jusai-action);
+}
+
+.icon-gold {
+    background: rgba(201, 162, 39, 0.14);
+    color: #9a7b12;
+}
+
+.icon-red {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+.icon-green {
+    background: rgba(15, 118, 110, 0.12);
+    color: var(--jusai-success);
+}
+
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jusai-navy);
+}
+
+.section-subtitle {
+    color: var(--jusai-muted);
+    font-size: 0.95rem;
+}
+
+.list-item {
+    border: 1px solid rgba(215, 220, 229, 0.9);
+    border-radius: 1.1rem;
+    padding: 1rem 1.1rem;
+    background: #fff;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 1.3rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 0.2rem;
+    top: 0.45rem;
+    bottom: -1.4rem;
+    width: 1px;
+    background: rgba(148, 163, 184, 0.35);
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--jusai-action);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    position: absolute;
+    left: -0.15rem;
+    top: 0.25rem;
+}
+
+.quick-action {
+    border: 1px solid rgba(215, 220, 229, 0.9);
+    border-radius: 1.2rem;
+    padding: 1rem;
+    background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.26);
+    box-shadow: 0 18px 36px rgba(37, 99, 235, 0.08);
+}
+
+.review-banner {
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    background: rgba(201, 162, 39, 0.08);
+    color: #6c550a;
+}
+
+.placeholder-hero {
+    background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.13), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: rgba(15, 118, 110, 0.11);
+    color: var(--jusai-success);
+}
+
+.status-attention {
+    background: rgba(180, 83, 9, 0.12);
+    color: var(--jusai-warning);
+}
+
+.status-neutral {
+    background: rgba(71, 85, 105, 0.1);
+    color: #475569;
+}
+
+.avatar-chip {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0b1f3a 0%, #294d7f 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 14px 30px rgba(11, 31, 58, 0.18);
+}
+
+.offcanvas.offcanvas-start {
+    width: min(92vw, var(--jusai-sidebar-width));
+}
+
+@media (max-width: 991.98px) {
+    .content-area {
+        width: 100%;
+    }
 }
