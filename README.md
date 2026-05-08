@@ -1,20 +1,20 @@
 # JusAI
 
-Base inicial do projeto em Laravel com infraestrutura Docker via Laravel Sail.
+Base inicial do projeto em Laravel com Docker para a aplicação e Supabase como banco principal.
 
 ## Stack
 
 - Laravel 13
 - PHP 8.5 no runtime do Sail
-- MySQL 8.4
-- Redis
-- Mailpit
+- Supabase Postgres como banco principal
 - Vite para assets
+- Bootstrap 5.3
+- Bootstrap Icons
 
 ## Estrutura criada
 
-- `compose.yaml`: orquestra os containers da aplicação, banco, Redis e Mailpit
-- `.env.example`: configuração padrão do ambiente local com Docker
+- `compose.yaml`: sobe apenas a aplicação Laravel/Vite em Docker
+- `.env.example`: modelo de ambiente local com Supabase e integrações futuras
 - `vendor/bin/sail.bat`: ponto de entrada para subir e operar o ambiente no Windows
 
 ## Como subir o projeto
@@ -23,6 +23,7 @@ Base inicial do projeto em Laravel com infraestrutura Docker via Laravel Sail.
 
 ```powershell
 copy .env.example .env
+notepad .env
 vendor\bin\sail.bat up -d
 vendor\bin\sail.bat artisan migrate
 vendor\bin\sail.bat npm install
@@ -33,18 +34,30 @@ vendor\bin\sail.bat npm run dev
 
 ```bash
 cp .env.example .env
+nano .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan migrate
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
 ```
 
+## Variáveis que você precisa preencher
+
+- `DB_HOST`
+- `DB_PORT`
+- `DB_DATABASE`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_JWT_SECRET`
+
 ## Serviços padrão
 
 - Aplicação: `http://localhost`
-- Mailpit: `http://localhost:8025`
-- MySQL: `127.0.0.1:3306`
-- Redis: `127.0.0.1:6379`
+- Banco principal: Supabase Postgres externo
+- IA: modo `mock` por padrão
 
 ## Comandos úteis
 
@@ -57,6 +70,8 @@ vendor\bin\sail.bat php --version
 
 ## Observações
 
-- O projeto está configurado para rodar a aplicação em Docker com MySQL como banco principal.
-- Os testes automatizados usam SQLite em memória para não depender do banco em container.
+- O projeto está configurado para rodar a aplicação em Docker e usar o Supabase como banco principal.
+- Se o Supabase fornecer uma connection string, você pode preencher `DB_URL`; caso contrário, use `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD`.
+- `DB_SSLMODE=require` já fica preparado para conexões seguras com o Postgres do Supabase.
+- Os testes automatizados usam SQLite em memória para não depender do banco externo.
 - Se o Docker Desktop ainda não estiver instalado ou ativo na máquina, instale e inicie antes de subir os containers.

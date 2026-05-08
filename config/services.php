@@ -35,4 +35,23 @@ return [
         ],
     ],
 
+    'supabase' => [
+        'url' => env('SUPABASE_URL'),
+        'anon_key' => env('SUPABASE_ANON_KEY'),
+        'service_role_key' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        'jwt_secret' => env('SUPABASE_JWT_SECRET'),
+        'storage_bucket_cases' => env('SUPABASE_STORAGE_BUCKET_CASES', 'case-documents'),
+        'storage_bucket_drafts' => env('SUPABASE_STORAGE_BUCKET_DRAFTS', 'draft-attachments'),
+    ],
+
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'organization' => env('OPENAI_ORGANIZATION'),
+        'project' => env('OPENAI_PROJECT'),
+    ],
+
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+    ],
+
 ];
