@@ -18,4 +18,31 @@ return [
         'review_notice' => env('AI_REVIEW_NOTICE', 'Conteudo gerado por IA para apoio operacional. Revisao humana por profissional habilitado e obrigatoria.'),
         'draft_notice' => env('AI_DRAFT_NOTICE', 'Documento gerado como rascunho. Revisao por profissional habilitado e obrigatoria.'),
     ],
+
+    'shell' => [
+        'user' => [
+            'name' => 'Juliana Souza',
+            'role' => 'Administradora do escritorio',
+            'initials' => 'JS',
+        ],
+
+        'navigation' => [
+            [
+                'label' => 'Operacao',
+                'items' => [
+                    ['label' => 'Dashboard', 'icon' => 'bi-grid', 'route' => 'dashboard', 'pattern' => 'dashboard'],
+                    ['label' => 'Casos', 'icon' => 'bi-briefcase', 'route' => 'cases.index', 'pattern' => 'casos*'],
+                    ['label' => 'Documentos', 'icon' => 'bi-file-earmark-text', 'route' => 'documents.index', 'pattern' => 'documentos*'],
+                    ['label' => 'Minutas', 'icon' => 'bi-journal-richtext', 'route' => 'drafts.index', 'pattern' => 'minutas*'],
+                    ['label' => 'Revisor Juridico', 'icon' => 'bi-shield-check', 'route' => 'review.index', 'pattern' => 'revisor*'],
+                ],
+            ],
+            [
+                'label' => 'Administracao',
+                'items' => [
+                    ['label' => 'Configuracoes', 'icon' => 'bi-sliders', 'route' => 'settings.index', 'pattern' => 'configuracoes*'],
+                ],
+            ],
+        ],
+    ],
 ];

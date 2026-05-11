@@ -6,14 +6,14 @@
         <title>@yield('title', 'Dashboard') | {{ config('jusai.brand.name') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body>
-        <div class="app-shell d-flex">
-            @include('layouts.partials.sidebar', ['mobile' => false])
+    <body class="shell-body">
+        <div class="app-shell" data-sidebar-state="expanded">
+            @include('layouts.partials.sidebar', ['mobile' => false, 'sidebarId' => 'desktopSidebar'])
 
-            <div class="content-area flex-grow-1">
+            <div class="content-area">
                 @include('layouts.partials.navbar')
 
-                <main class="px-3 px-lg-4 py-4 py-lg-4">
+                <main class="content-main px-3 px-lg-4 pb-4 pb-lg-5">
                     @yield('content')
                 </main>
             </div>
