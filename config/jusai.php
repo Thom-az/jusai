@@ -38,9 +38,27 @@ return [
                 ],
             ],
             [
-                'label' => 'Administracao',
+                'label' => 'Escritorio',
                 'items' => [
                     ['label' => 'Configuracoes', 'icon' => 'bi-sliders', 'route' => 'settings.index', 'pattern' => 'configuracoes*'],
+                ],
+            ],
+        ],
+
+        'admin_navigation' => [
+            [
+                'label' => 'Visao Geral',
+                'items' => [
+                    ['label' => 'Dashboard', 'icon' => 'bi-grid', 'route' => 'admin.dashboard', 'pattern' => 'admin'],
+                    ['label' => 'Organizacoes', 'icon' => 'bi-building', 'route' => 'admin.organizations.index', 'pattern' => 'admin/organizations*'],
+                ],
+            ],
+            [
+                'label' => 'Gestao',
+                'items' => [
+                    ['label' => 'Financeiro', 'icon' => 'bi-currency-dollar', 'route' => 'admin.finance.index', 'pattern' => 'admin/financeiro*'],
+                    ['label' => 'Chamados', 'icon' => 'bi-headset', 'route' => 'admin.support.index', 'pattern' => 'admin/chamados*'],
+                    ['label' => 'Leads', 'icon' => 'bi-person-lines-fill', 'route' => 'admin.leads.index', 'pattern' => 'admin/leads*'],
                 ],
             ],
         ],

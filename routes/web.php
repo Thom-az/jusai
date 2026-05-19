@@ -1,56 +1,75 @@
 <?php
 
+use App\Http\Controllers\AiReviewController;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DraftController;
+use App\Http\Controllers\LegalCaseController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', fn () => redirect()->route('dashboard'));
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'org.access'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::view('/casos', 'placeholders.module', [
-    'moduleTitle' => 'Gestão de Casos',
-    'moduleEyebrow' => 'Módulo em preparação',
-    'moduleDescription' => 'A listagem com DataTables, filtros avançados e fluxo completo de cadastro será a próxima entrega do MVP.',
-    'moduleIcon' => 'bi-briefcase',
-    'moduleAction' => 'Criar listagem, filtros e formulário de caso.',
-])->name('cases.index');
+    Route::resource('casos', LegalCaseController::class)->names([
+        'index'   => 'cases.index',
+        'create'  => 'cases.create',
+        'store'   => 'cases.store',
+        'show'    => 'cases.show',
+        'edit'    => 'cases.edit',
+        'update'  => 'cases.update',
+        'destroy' => 'cases.destroy',
+    ]);
 
-Route::view('/casos/novo', 'placeholders.module', [
-    'moduleTitle' => 'Novo Caso',
-    'moduleEyebrow' => 'Cadastro guiado',
-    'moduleDescription' => 'Vamos estruturar o formulário de criação de casos com cliente, área jurídica, risco e resumo inicial.',
-    'moduleIcon' => 'bi-folder-plus',
-    'moduleAction' => 'Criar request, formulário e persistência.',
-])->name('cases.create');
+    Route::resource('documentos', DocumentController::class)->names([
+        'index'   => 'documents.index',
+        'create'  => 'documents.create',
+        'store'   => 'documents.store',
+        'show'    => 'documents.show',
+        'edit'    => 'documents.edit',
+        'update'  => 'documents.update',
+        'destroy' => 'documents.destroy',
+    ]);
 
-Route::view('/documentos', 'placeholders.module', [
-    'moduleTitle' => 'Documentos',
-    'moduleEyebrow' => 'Upload e processamento',
-    'moduleDescription' => 'Aqui entraremos com Dropzone.js, visualizador de PDF e serviços mockados de extração e resumo.',
-    'moduleIcon' => 'bi-file-earmark-pdf',
-    'moduleAction' => 'Integrar upload, validações e visualização.',
-])->name('documents.index');
+    Route::resource('minutas', DraftController::class)->names([
+        'index'   => 'drafts.index',
+        'create'  => 'drafts.create',
+        'store'   => 'drafts.store',
+        'show'    => 'drafts.show',
+        'edit'    => 'drafts.edit',
+        'update'  => 'drafts.update',
+        'destroy' => 'drafts.destroy',
+    ]);
 
-Route::view('/minutas', 'placeholders.module', [
-    'moduleTitle' => 'Minutas Jurídicas',
-    'moduleEyebrow' => 'Editor e versionamento',
-    'moduleDescription' => 'Esta área receberá o editor rico, geração assistida e controle de versões dos rascunhos jurídicos.',
-    'moduleIcon' => 'bi-journal-richtext',
-    'moduleAction' => 'Criar fluxo de geração e edição de minutas.',
-])->name('drafts.index');
+    Route::get('/revisor', [AiReviewController::class, 'index'])->name('review.index');
+    Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
 
-Route::view('/revisor', 'placeholders.module', [
-    'moduleTitle' => 'Revisor Jurídico',
-    'moduleEyebrow' => 'Validação assistida',
-    'moduleDescription' => 'O revisor mockado destacará problemas, lacunas e recomendações por severidade antes da integração com IA real.',
-    'moduleIcon' => 'bi-shield-check',
-    'moduleAction' => 'Implementar checklist e retorno mockado.',
-])->name('review.index');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::view('/configuracoes', 'placeholders.module', [
-    'moduleTitle' => 'Configurações',
-    'moduleEyebrow' => 'Organização e IA',
-    'moduleDescription' => 'Nesta etapa futura vamos concentrar organização, usuários, modelos e preferências operacionais da IA.',
-    'moduleIcon' => 'bi-sliders',
-    'moduleAction' => 'Criar telas de escritório, usuários e preferências.',
-])->name('settings.index');
+Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('organizations', Admin\OrganizationController::class)->names([
+        'index'   => 'organizations.index',
+        'create'  => 'organizations.create',
+        'store'   => 'organizations.store',
+        'show'    => 'organizations.show',
+        'edit'    => 'organizations.edit',
+        'update'  => 'organizations.update',
+        'destroy' => 'organizations.destroy',
+    ]);
+
+    Route::get('/financeiro', [Admin\FinanceController::class, 'index'])->name('finance.index');
+    Route::get('/chamados', [Admin\SupportController::class, 'index'])->name('support.index');
+    Route::get('/leads', [Admin\LeadController::class, 'index'])->name('leads.index');
+    Route::get('/leads/comparativo', [Admin\LeadController::class, 'comparison'])->name('leads.comparison');
+});
+
+require __DIR__.'/auth.php';
