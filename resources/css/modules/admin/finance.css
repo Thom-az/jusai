@@ -1,0 +1,23 @@
+/* =========================================
+   Admin — Finance (MRR, faturas, assinaturas)
+   Implementacao completa na proxima fase.
+   ========================================= */
+
+/* Revenue chart area (reserved) */
+.revenue-chart-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    min-height: 220px;
+}
+
+/* Invoice status */
+.invoice-status-paid     { color: var(--jusai-success); }
+.invoice-status-pending  { color: var(--jusai-warning); }
+.invoice-status-overdue  { color: var(--jusai-danger); }
+.invoice-status-canceled { color: var(--jusai-muted); }
+
+/* MRR trend indicator */
+.mrr-trend-up   { color: var(--jusai-success); }
+.mrr-trend-down { color: var(--jusai-danger); }
+.mrr-trend-flat { color: var(--jusai-muted); }

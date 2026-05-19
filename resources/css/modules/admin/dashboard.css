@@ -1,0 +1,38 @@
+/* =========================================
+   Admin Dashboard — admin-specific overrides
+   ========================================= */
+
+/* Admin hero header bar */
+.admin-hero-bar {
+    background:
+        radial-gradient(circle at top right, rgba(185, 28, 28, 0.15), transparent 32%),
+        linear-gradient(135deg, #1a0505 0%, #3b0c0c 100%);
+    color: #fff;
+    border-radius: 1.4rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Elevated metric for admin context */
+.metric-card-admin {
+    border-left: 3px solid var(--jusai-action);
+}
+
+/* Organization count badges in metric cards */
+.metric-sub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--jusai-muted);
+}
+
+[data-theme="dark"] .admin-hero-bar {
+    background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.1), transparent 32%),
+        linear-gradient(135deg, #0d0808 0%, #2a0a0a 100%);
+}
+
+[data-theme="dark"] .metric-sub-badge {
+    color: #3d5a78;
+}

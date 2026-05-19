@@ -1,0 +1,52 @@
+/* =========================================
+   Documentos — upload, lista, preview de IA
+   ========================================= */
+
+/* AI summary line-clamp */
+.doc-ai-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.84rem;
+    color: var(--jusai-muted);
+    line-height: 1.5;
+}
+
+/* Upload file input area */
+.upload-file-wrap {
+    position: relative;
+}
+
+.upload-file-wrap input[type="file"] {
+    cursor: pointer;
+}
+
+.upload-file-wrap input[type="file"]:hover {
+    border-color: rgba(37, 99, 235, 0.4);
+}
+
+/* Document status dots */
+.doc-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.doc-dot-ready      { background: var(--jusai-success); }
+.doc-dot-processing { background: var(--jusai-warning); }
+.doc-dot-error      { background: var(--jusai-danger); }
+.doc-dot-pending    { background: var(--jusai-muted); }
+
+/* AI summary panel inside document show */
+.ai-summary-panel {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    white-space: pre-wrap;
+}
+
+[data-theme="dark"] .doc-ai-summary {
+    color: #8aa4c0;
+}

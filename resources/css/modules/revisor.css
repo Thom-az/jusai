@@ -1,0 +1,54 @@
+/* =========================================
+   Revisor — resultado de IA, estado de processamento
+   ========================================= */
+
+/* AI result text display */
+.result-content {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--jusai-graphite);
+}
+
+[data-theme="dark"] .result-content {
+    color: #eef2f7;
+}
+
+/* AI model badge (monospace) */
+.ai-model-badge {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+}
+
+/* Review type tag on show page */
+.review-type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--jusai-action);
+}
+
+[data-theme="dark"] .review-type-chip {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+}
+
+/* Reviewed confirmation banner */
+.reviewed-banner {
+    background: rgba(15, 118, 110, 0.06);
+    border: 1px solid rgba(15, 118, 110, 0.18);
+    border-radius: 1rem;
+    color: #0f766e;
+}
+
+[data-theme="dark"] .reviewed-banner {
+    background: rgba(15, 118, 110, 0.12);
+    border-color: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+}

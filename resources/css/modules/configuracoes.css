@@ -1,0 +1,73 @@
+/* =========================================
+   Configuracoes — perfil, plano, usuarios
+   ========================================= */
+
+/* Settings section dividers */
+.settings-section-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--jusai-border);
+}
+
+/* Plan card */
+.plan-card {
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: 1.4rem;
+    background: rgba(201, 162, 39, 0.05);
+}
+
+.plan-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: rgba(201, 162, 39, 0.12);
+    color: #9a7b12;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+}
+
+/* User table in settings */
+.settings-user-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(215, 220, 229, 0.5);
+}
+
+.settings-user-row:last-child {
+    border-bottom: none;
+}
+
+/* Danger zone */
+.danger-zone {
+    border: 1px solid rgba(185, 28, 28, 0.2);
+    border-radius: 1.4rem;
+    background: rgba(185, 28, 28, 0.03);
+}
+
+[data-theme="dark"] .settings-section-header {
+    border-bottom-color: #1c2f47;
+}
+
+[data-theme="dark"] .plan-card {
+    border-color: rgba(201, 162, 39, 0.2);
+    background: rgba(201, 162, 39, 0.06);
+}
+
+[data-theme="dark"] .plan-badge {
+    background: rgba(201, 162, 39, 0.16);
+    color: #d4a820;
+}
+
+[data-theme="dark"] .settings-user-row {
+    border-bottom-color: #1c2f47;
+}
+
+[data-theme="dark"] .danger-zone {
+    border-color: rgba(185, 28, 28, 0.25);
+    background: rgba(185, 28, 28, 0.05);
+}

@@ -1,0 +1,43 @@
+/* =========================================
+   Admin — Organizations table
+   ========================================= */
+
+.orgs-table thead th {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--jusai-muted);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background: transparent;
+    border-bottom: 1px solid rgba(215, 220, 229, 0.7);
+}
+
+.orgs-table tbody tr {
+    transition: background-color 0.12s ease;
+}
+
+.orgs-table tbody tr:hover td {
+    background-color: rgba(37, 99, 235, 0.025);
+}
+
+/* Plan badge variants */
+.plan-starter  { background: rgba(71, 85, 105, 0.1);   color: #475569; }
+.plan-pro      { background: rgba(37, 99, 235, 0.1);   color: var(--jusai-action); }
+.plan-business { background: rgba(201, 162, 39, 0.13); color: #9a7b12; }
+.plan-enterprise { background: rgba(11, 31, 58, 0.1);  color: var(--jusai-navy); }
+
+[data-theme="dark"] .orgs-table thead th {
+    color: #3d5a78;
+    border-bottom-color: #1c2f47;
+}
+
+[data-theme="dark"] .orgs-table tbody tr:hover td {
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+[data-theme="dark"] .plan-starter    { background: rgba(61, 90, 120, 0.2);  color: #8aa4c0; }
+[data-theme="dark"] .plan-pro        { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
+[data-theme="dark"] .plan-business   { background: rgba(201, 162, 39, 0.18); color: #d4a820; }
+[data-theme="dark"] .plan-enterprise { background: rgba(238, 242, 247, 0.1); color: #eef2f7; }

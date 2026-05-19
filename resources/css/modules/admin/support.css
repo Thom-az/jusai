@@ -1,0 +1,23 @@
+/* =========================================
+   Admin — Support tickets (SLA, prioridade)
+   Implementacao completa na proxima fase.
+   ========================================= */
+
+/* Ticket priority row accent */
+.ticket-critica { border-left: 3px solid var(--jusai-danger); }
+.ticket-alta    { border-left: 3px solid #f59e0b; }
+.ticket-media   { border-left: 3px solid #3b82f6; }
+.ticket-baixa   { border-left: 3px solid var(--jusai-muted); }
+
+/* SLA countdown */
+.sla-ok      { color: var(--jusai-success); font-weight: 600; }
+.sla-warning { color: var(--jusai-warning); font-weight: 600; }
+.sla-breach  { color: var(--jusai-danger);  font-weight: 600; }
+
+/* Ticket status timeline dot */
+.ticket-timeline-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

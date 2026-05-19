@@ -1,0 +1,67 @@
+/* =========================================
+   Dashboard — hero banner, quick actions, review alert
+   ========================================= */
+
+.hero-card {
+    background:
+        radial-gradient(circle at top right, rgba(201, 162, 39, 0.2), transparent 24%),
+        linear-gradient(135deg, #0b1f3a 0%, #183b67 100%);
+    color: #fff;
+    border-radius: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 48px rgba(11, 31, 58, 0.22);
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.5rem 0.85rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+}
+
+.quick-action {
+    border: 1px solid rgba(215, 220, 229, 0.9);
+    border-radius: 1.2rem;
+    padding: 1rem;
+    background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.quick-action:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.26);
+    box-shadow: 0 18px 36px rgba(37, 99, 235, 0.08);
+    color: inherit;
+}
+
+.review-banner {
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    background: rgba(201, 162, 39, 0.08);
+    color: #6c550a;
+}
+
+[data-theme="dark"] .quick-action {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .quick-action:hover {
+    background: #152338;
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .review-banner {
+    background: rgba(201, 162, 39, 0.07);
+    border-color: rgba(201, 162, 39, 0.18);
+    color: #c9a227;
+}
