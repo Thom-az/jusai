@@ -2,16 +2,34 @@
 
 namespace App\Providers;
 
+use App\Services\AnthropicService;
+use App\Services\SupabaseStorageService;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->singleton(SupabaseStorageService::class, fn () => new SupabaseStorageService(
+            supabaseUrl:    config('services.supabase.url'),
+            serviceRoleKey: config('services.supabase.service_role_key'),
+        ));
+
+        $this->app->singleton(AnthropicService::class, fn () => new AnthropicService(
+            apiKey:      config('services.anthropic.key'),
+            temperature: (float) config('jusai.ai.temperature'),
+            modelFast:   config('jusai.ai.model_fast'),
+            modelStrong: config('jusai.ai.model_strong'),
+        ));
+    }
 
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         View::composer('*', function ($view) {
             $user = Auth::user();
 

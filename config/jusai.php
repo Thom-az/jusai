@@ -12,6 +12,8 @@ return [
         'default_model' => env('AI_DEFAULT_MODEL', 'mock-legal-copilot'),
         'temperature' => (float) env('AI_TEMPERATURE', 0.2),
         'detail_level' => env('AI_DETAIL_LEVEL', 'standard'),
+        'model_fast'   => env('AI_MODEL_FAST',   'claude-haiku-4-5-20251001'),
+        'model_strong' => env('AI_MODEL_STRONG', 'claude-sonnet-4-6'),
         'require_human_review' => filter_var(env('AI_REQUIRE_HUMAN_REVIEW', true), FILTER_VALIDATE_BOOL),
         'require_sources' => filter_var(env('AI_REQUIRE_SOURCES', true), FILTER_VALIDATE_BOOL),
         'block_without_basis' => filter_var(env('AI_BLOCK_WITHOUT_BASIS', true), FILTER_VALIDATE_BOOL),
