@@ -17,7 +17,7 @@ class EnsureOrganizationAccess
         }
 
         if ($user->role === 'super_admin') {
-            return $next($request);
+            return redirect()->route('admin.dashboard');
         }
 
         if (! $user->organization_id || ! $user->is_active) {
