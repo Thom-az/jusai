@@ -1,11 +1,142 @@
 @extends('layouts.app')
-@section('title', 'Documento')
+
+@section('title', $document->title)
+
+@push('styles')
+    @vite(['resources/css/modules/documentos.css'])
+@endpush
+
 @section('content')
     <div class="container-fluid px-0">
-        <div class="placeholder-hero d-flex flex-column align-items-center justify-content-center text-center p-5">
-            <i class="bi bi-file-earmark-text fs-1 text-secondary mb-3"></i>
-            <h5 class="fw-semibold mb-2">Detalhe do Documento</h5>
-            <p class="text-secondary mb-0">Sera implementado na proxima fase.</p>
+        <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+            <a href="{{ $document->legalCase ? route('cases.show', $document->legalCase) : route('documents.index') }}" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i>Voltar
+            </a>
+            <div class="flex-grow-1">
+                <h2 class="fw-semibold mb-1">{{ $document->title }}</h2>
+                <div class="d-flex flex-wrap gap-2 align-items-center text-secondary small">
+                    <span>{{ $document->original_filename }}</span>
+                    <span>&bull;</span>
+                    <span>{{ number_format($document->file_size / 1024, 0) }} KB</span>
+                    <span>&bull;</span>
+                    @php
+                        $statusClass = match($document->status) {
+                            'ready'      => 'text-bg-success',
+                            'processing' => 'text-bg-warning text-dark',
+                            'error'      => 'text-bg-danger',
+                            default      => 'text-bg-secondary',
+                        };
+                    @endphp
+                    <span class="badge {{ $statusClass }}">{{ ucfirst($document->status) }}</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                @if ($downloadUrl)
+                    <a href="{{ $downloadUrl }}" target="_blank" class="btn btn-primary rounded-pill px-3">
+                        <i class="bi bi-download me-1"></i>Baixar
+                    </a>
+                @endif
+                <form method="POST" action="{{ route('documents.destroy', $document) }}" onsubmit="return confirm('Excluir este documento permanentemente?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger rounded-pill px-3">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                @if ($document->ai_summary)
+                    <div class="surface-card p-4 mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-cpu text-primary"></i>
+                            <h5 class="fw-semibold mb-0">Resumo gerado por IA</h5>
+                            @if ($document->ai_extracted_at)
+                                <span class="badge text-bg-success ms-auto">Processado</span>
+                            @endif
+                        </div>
+                        <div class="text-secondary" style="white-space: pre-wrap;">{{ $document->ai_summary }}</div>
+                        <div class="mt-3 p-2 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
+                            <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.review_notice') }}
+                        </div>
+                    </div>
+                @elseif ($document->status === 'processing')
+                    <div class="surface-card p-4 mb-4 text-center">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <div class="fw-semibold">Processando analise de IA...</div>
+                        <div class="text-secondary small">O resumo sera gerado em breve.</div>
+                    </div>
+                @endif
+
+                <div class="surface-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-semibold mb-0">Analises de IA</h5>
+                        <a href="{{ route('review.index') }}?case_id={{ $document->legal_case_id }}" class="btn btn-outline-primary rounded-pill btn-sm">
+                            <i class="bi bi-plus me-1"></i>Nova analise
+                        </a>
+                    </div>
+                    @forelse ($document->aiReviews->sortByDesc('created_at') as $review)
+                        <div class="list-item mb-3">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                <div>
+                                    <div class="fw-semibold">{{ ucfirst(str_replace('_', ' ', $review->type)) }}</div>
+                                    <div class="text-secondary small">{{ $review->created_at->diffForHumans() }}</div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    @php
+                                        $rStatusClass = match($review->status) {
+                                            'concluido'   => 'text-bg-success',
+                                            'processando' => 'text-bg-warning text-dark',
+                                            'erro'        => 'text-bg-danger',
+                                            default       => 'text-bg-secondary',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $rStatusClass }}">{{ ucfirst($review->status) }}</span>
+                                    <a href="{{ route('review.show', $review) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-secondary small">Nenhuma analise iniciada para este documento.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="surface-card p-4">
+                    <h5 class="fw-semibold mb-3">Informacoes</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-5 text-secondary small text-uppercase">Tipo</dt>
+                        <dd class="col-7">{{ $document->mime_type }}</dd>
+
+                        <dt class="col-5 text-secondary small text-uppercase">Tamanho</dt>
+                        <dd class="col-7">{{ number_format($document->file_size / 1024, 0) }} KB</dd>
+
+                        <dt class="col-5 text-secondary small text-uppercase">Enviado</dt>
+                        <dd class="col-7">{{ $document->created_at->format('d/m/Y H:i') }}</dd>
+
+                        @if ($document->ai_extracted_at)
+                            <dt class="col-5 text-secondary small text-uppercase">Analisado</dt>
+                            <dd class="col-7">{{ $document->ai_extracted_at->format('d/m/Y H:i') }}</dd>
+                        @endif
+
+                        @if ($document->legalCase)
+                            <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
+                            <dd class="col-7">
+                                <a href="{{ route('cases.show', $document->legalCase) }}" class="text-decoration-none small">{{ Str::limit($document->legalCase->title, 30) }}</a>
+                            </dd>
+                        @endif
+                    </dl>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

@@ -1,5 +1,10 @@
 @extends('layouts.app')
+
 @section('title', 'Minuta')
+
+@push('styles')
+    @vite(['resources/css/modules/minutas.css'])
+@endpush
 @section('content')
     <div class="container-fluid px-0">
         <div class="placeholder-hero d-flex flex-column align-items-center justify-content-center text-center p-5">

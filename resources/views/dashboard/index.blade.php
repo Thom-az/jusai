@@ -2,6 +2,10 @@
 
 @section('title', 'Dashboard')
 
+@push('styles')
+    @vite(['resources/css/modules/dashboard.css'])
+@endpush
+
 @section('content')
     <div class="container-fluid px-0">
         <section class="hero-card p-4 p-lg-5 mb-4">
@@ -11,16 +15,16 @@
                         <i class="bi bi-stars"></i>
                         Copiloto juridico com suporte de IA
                     </span>
-                    <h1 class="display-6 fw-semibold mb-3">Operacao juridica organizada, rastreavel e pronta para evoluir com IA.</h1>
+                    <h1 class="display-6 fw-semibold mb-3">Operacao juridica organizada, rastreavel e com IA integrada.</h1>
                     <p class="fs-5 text-white-50 mb-4">
-                        Esta primeira etapa entrega a casca administrativa do produto, com dashboard navegavel, identidade visual premium e espaco pronto para casos, documentos, minutas e revisao juridica.
+                        Gerencie casos, documentos e minutas com analise de IA. Todo resultado deve ser validado por profissional habilitado.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('cases.create') }}" class="btn btn-light rounded-pill px-4">
                             <i class="bi bi-folder-plus me-2"></i>Criar caso
                         </a>
-                        <a href="{{ route('documents.index') }}" class="btn btn-outline-light rounded-pill px-4">
-                            <i class="bi bi-cloud-arrow-up me-2"></i>Ver documentos
+                        <a href="{{ route('documents.create') }}" class="btn btn-outline-light rounded-pill px-4">
+                            <i class="bi bi-cloud-arrow-up me-2"></i>Enviar documento
                         </a>
                     </div>
                 </div>
@@ -28,13 +32,13 @@
                     <div class="glass-card p-4 bg-white bg-opacity-10 border border-white border-opacity-10 text-white h-100">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <span class="small text-uppercase text-white-50 fw-semibold">Compliance IA</span>
-                            <span class="badge rounded-pill text-bg-warning text-dark">Mock ativo</span>
+                            <span class="badge rounded-pill text-bg-success">Ativo</span>
                         </div>
                         <p class="mb-3 text-white-50">
                             {{ config('jusai.ai.review_notice') }}
                         </p>
-                        <div class="small text-white-50">Provider padrao</div>
-                        <div class="fw-semibold">{{ strtoupper(config('jusai.ai.provider')) }} / {{ config('jusai.ai.default_model') }}</div>
+                        <div class="small text-white-50">Provider</div>
+                        <div class="fw-semibold">{{ strtoupper(config('jusai.ai.provider')) }} / {{ config('jusai.ai.model_strong') }}</div>
                     </div>
                 </div>
             </div>
@@ -65,7 +69,7 @@
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
                         <div>
                             <h2 class="section-title mb-1">Casos recentes</h2>
-                            <p class="section-subtitle mb-0">Visao rapida dos dossies mais movimentados no momento.</p>
+                            <p class="section-subtitle mb-0">Dossies mais movimentados no momento.</p>
                         </div>
                         <a href="{{ route('cases.index') }}" class="btn btn-outline-primary rounded-pill">
                             <i class="bi bi-arrow-right me-2"></i>Ver todos
@@ -73,25 +77,29 @@
                     </div>
 
                     <div class="d-grid gap-3">
-                        @foreach ($recentCases as $case)
+                        @forelse ($recentCases as $case)
                             <article class="list-item">
                                 <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                     <div>
-                                        <h3 class="h5 mb-1">{{ $case['title'] }}</h3>
-                                        <div class="text-secondary mb-2">{{ $case['client'] }} • {{ $case['area'] }}</div>
+                                        <a href="{{ route('cases.show', $case) }}" class="h5 mb-1 text-decoration-none text-dark fw-semibold d-block">{{ $case->title }}</a>
+                                        <div class="text-secondary mb-2">{{ $case->client_name }} &bull; {{ ucfirst($case->area) }}</div>
                                         <div class="d-flex flex-wrap gap-2">
-                                            <span class="status-badge {{ $case['status_class'] }}">
-                                                <i class="bi bi-record-circle"></i>{{ $case['status'] }}
+                                            <span class="status-badge status-active">
+                                                <i class="bi bi-record-circle"></i>{{ ucfirst(str_replace('_', ' ', $case->status)) }}
                                             </span>
-                                            <span class="status-badge status-neutral">
-                                                <i class="bi bi-shield-exclamation"></i>Risco {{ $case['risk'] }}
-                                            </span>
+                                            @if ($case->risk_level)
+                                                <span class="status-badge status-neutral">
+                                                    <i class="bi bi-shield-exclamation"></i>Risco {{ ucfirst($case->risk_level) }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="text-secondary small">{{ $case['updated_at'] }}</div>
+                                    <div class="text-secondary small">{{ $case->updated_at->diffForHumans() }}</div>
                                 </div>
                             </article>
-                        @endforeach
+                        @empty
+                            <p class="text-secondary">Nenhum caso cadastrado ainda. <a href="{{ route('cases.create') }}">Criar primeiro caso.</a></p>
+                        @endforelse
                     </div>
                 </div>
 
@@ -99,22 +107,21 @@
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
                         <div>
                             <h2 class="section-title mb-1">Atividades recentes</h2>
-                            <p class="section-subtitle mb-0">Auditoria visual dos eventos mais importantes da operacao.</p>
+                            <p class="section-subtitle mb-0">Auditoria dos eventos mais recentes da operacao.</p>
                         </div>
-                        <a href="{{ route('settings.index') }}" class="btn btn-outline-secondary rounded-pill">
-                            <i class="bi bi-clock-history me-2"></i>Politicas
-                        </a>
                     </div>
 
                     <div class="d-grid gap-4">
-                        @foreach ($activities as $activity)
+                        @forelse ($activities as $activity)
                             <article class="timeline-item">
                                 <span class="timeline-dot"></span>
-                                <div class="fw-semibold mb-1">{{ $activity['title'] }}</div>
-                                <p class="text-secondary mb-1">{{ $activity['description'] }}</p>
-                                <div class="small text-secondary">{{ $activity['time'] }}</div>
+                                <div class="fw-semibold mb-1">{{ $activity->event }}</div>
+                                <p class="text-secondary mb-1">{{ $activity->description }}</p>
+                                <div class="small text-secondary">{{ $activity->created_at->diffForHumans() }}</div>
                             </article>
-                        @endforeach
+                        @empty
+                            <p class="text-secondary small">Nenhuma atividade registrada ainda.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -123,7 +130,7 @@
                 <div class="surface-card p-4 mb-4">
                     <div class="mb-4">
                         <h2 class="section-title mb-1">Atalhos rapidos</h2>
-                        <p class="section-subtitle mb-0">Entradas principais para os fluxos do MVP.</p>
+                        <p class="section-subtitle mb-0">Entradas principais para os fluxos.</p>
                     </div>
 
                     <div class="d-grid gap-3">
@@ -155,10 +162,8 @@
 
                 <div class="surface-card p-4">
                     <div class="mb-3">
-                        <h2 class="section-title mb-1">Alertas e proximos passos</h2>
-                        <p class="section-subtitle mb-0">Pontos que orientam a evolucao da plataforma.</p>
+                        <h2 class="section-title mb-1">Avisos</h2>
                     </div>
-
                     <div class="d-grid gap-3">
                         @foreach ($alerts as $alert)
                             <div class="list-item">

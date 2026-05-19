@@ -2,6 +2,10 @@
 
 @section('title', 'Minutas')
 
+@push('styles')
+    @vite(['resources/css/modules/minutas.css'])
+@endpush
+
 @section('content')
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
