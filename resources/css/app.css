@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -15,7 +16,11 @@
     --jusai-sidebar-width: 302px;
     --jusai-sidebar-collapsed-width: 80px;
     --jusai-shell-gap: 1.25rem;
-    --bs-body-font-family: 'Segoe UI', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    --bs-body-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    --bs-body-font-size: 0.9375rem;
+    --bs-body-line-height: 1.6;
+    --bs-headings-font-weight: 600;
+    --bs-font-sans-serif: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
     --bs-body-bg: var(--jusai-offwhite);
     --bs-body-color: var(--jusai-graphite);
     --bs-border-color: var(--jusai-border);
@@ -34,6 +39,10 @@ body {
     background:
         linear-gradient(135deg, rgba(37, 99, 235, 0.18) 0%, rgba(255, 255, 255, 0.96) 42%, #ffffff 100%);
     color: var(--jusai-graphite);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern', 'liga', 'calt';
+    text-rendering: optimizeLegibility;
 }
 
 a {
@@ -99,9 +108,10 @@ a {
 
 .sidebar-section-label {
     color: #94a3b8;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     overflow: hidden;
     white-space: nowrap;
     max-height: 3rem;
@@ -116,6 +126,9 @@ a {
     display: flex;
     align-items: center;
     gap: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     transition: all 0.2s ease, padding 0.2s ease;
 }
 
@@ -223,6 +236,17 @@ a {
     color: var(--jusai-action);
     border-color: rgba(37, 99, 235, 0.22);
     background: #fff;
+}
+
+/* --- Bootstrap Tooltip --- */
+.tooltip {
+    --bs-tooltip-color: #f1f5f9;
+    --bs-tooltip-bg: #1e2d3d;
+}
+
+[data-theme="dark"] .tooltip {
+    --bs-tooltip-color: #eef2f7;
+    --bs-tooltip-bg: #152338;
 }
 
 .sidebar-toggle-button {
@@ -443,38 +467,38 @@ a {
     position: static;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .shell-sidebar {
+html[data-sidebar-state='collapsed'] .shell-sidebar {
     width: var(--jusai-sidebar-collapsed-width);
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-card {
+html[data-sidebar-state='collapsed'] .sidebar-card {
     padding-left: 0;
     padding-right: 0;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-brand {
+html[data-sidebar-state='collapsed'] .sidebar-brand {
     max-width: 0;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-brand-copy,
-.app-shell[data-sidebar-state='collapsed'] .sidebar-link-label,
-.app-shell[data-sidebar-state='collapsed'] .sidebar-meta-copy {
+html[data-sidebar-state='collapsed'] .sidebar-brand-copy,
+html[data-sidebar-state='collapsed'] .sidebar-link-label,
+html[data-sidebar-state='collapsed'] .sidebar-meta-copy {
     max-width: 0;
     opacity: 0;
     transform: translateX(-4px);
     pointer-events: none;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-section-label {
+html[data-sidebar-state='collapsed'] .sidebar-section-label {
     max-height: 0;
     opacity: 0;
     margin-bottom: 0 !important;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-link {
+html[data-sidebar-state='collapsed'] .sidebar-link {
     justify-content: center;
     width: 48px;
     height: 48px;
@@ -483,31 +507,31 @@ a {
     gap: 0;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-link:hover,
-.app-shell[data-sidebar-state='collapsed'] .sidebar-link.active {
+html[data-sidebar-state='collapsed'] .sidebar-link:hover,
+html[data-sidebar-state='collapsed'] .sidebar-link.active {
     transform: none;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-link-icon {
+html[data-sidebar-state='collapsed'] .sidebar-link-icon {
     margin: 0;
     flex-shrink: 0;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-header {
+html[data-sidebar-state='collapsed'] .sidebar-header {
     padding-right: 0;
     min-height: 2.5rem;
     margin-bottom: 0.5rem;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-section {
+html[data-sidebar-state='collapsed'] .sidebar-section {
     margin-bottom: 0.25rem !important;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .sidebar-scroll {
+html[data-sidebar-state='collapsed'] .sidebar-scroll {
     padding-top: 0;
 }
 
-.app-shell[data-sidebar-state='collapsed'] .content-area {
+html[data-sidebar-state='collapsed'] .content-area {
     margin-left: calc(var(--jusai-sidebar-collapsed-width) + var(--jusai-shell-gap));
 }
 
@@ -537,7 +561,412 @@ a {
 }
 
 @media (min-width: 992px) {
-    .app-shell[data-sidebar-state='collapsed'] .topbar-search-wrap {
+    html[data-sidebar-state='collapsed'] .topbar-search-wrap {
         max-width: 640px !important;
     }
+}
+
+/* =========================================
+   Sidebar footer (user profile)
+   ========================================= */
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(215, 220, 229, 0.55);
+}
+
+.sidebar-footer-name {
+    font-size: 0.875rem;
+    color: var(--jusai-navy);
+    white-space: nowrap;
+}
+
+.sidebar-footer-role {
+    font-size: 0.72rem;
+    color: var(--jusai-muted);
+    white-space: nowrap;
+}
+
+html[data-sidebar-state='collapsed'] .sidebar-footer {
+    justify-content: center;
+}
+
+/* =========================================
+   Dark theme — paleta navy profunda
+   =========================================
+   Base:     #07101d  corpo
+   Surface:  #0d1a2e  sidebar, cards, topbar
+   Elevated: #152338  hover, botões
+   Border:   #1c2f47  divisores
+   Text-1:   #eef2f7  texto principal
+   Text-2:   #8aa4c0  texto secundário
+   Text-3:   #3d5a78  labels, placeholder
+   Accent:   #2563eb  azul ativo (mesmo do light)
+   ========================================= */
+
+[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Variáveis JusAI */
+    --jusai-navy: #eef2f7;
+    --jusai-graphite: #eef2f7;
+    --jusai-offwhite: #07101d;
+    --jusai-border: #1c2f47;
+    --jusai-muted: #8aa4c0;
+
+    /* Bootstrap — base */
+    --bs-body-bg: #07101d;
+    --bs-body-color: #eef2f7;
+    --bs-border-color: #1c2f47;
+    --bs-secondary-color: #8aa4c0;
+    --bs-link-color: #60a5fa;
+    --bs-link-hover-color: #93c5fd;
+    --bs-heading-color: #eef2f7;
+    --bs-emphasis-color: #eef2f7;
+    --bs-emphasis-color-rgb: 238, 242, 247;
+
+    /* Bootstrap — utilities de cor (text-dark, text-secondary etc.) */
+    --bs-dark: #eef2f7;
+    --bs-dark-rgb: 238, 242, 247;
+    --bs-light: #152338;
+    --bs-light-rgb: 21, 35, 56;
+    --bs-secondary: #8aa4c0;
+    --bs-secondary-rgb: 138, 164, 192;
+
+    /* Bootstrap — outline buttons */
+    --bs-btn-bg: transparent;
+}
+
+[data-theme="dark"] body {
+    background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.07) 0%, #09131f 36%, #07101d 100%);
+    color: #eef2f7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Sidebar --- */
+[data-theme="dark"] .sidebar-card {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    box-shadow: 0 24px 54px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .sidebar-brand {
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .sidebar-brand .text-secondary {
+    color: #3d5a78 !important;
+}
+
+[data-theme="dark"] .sidebar-section-label {
+    color: #2e4a65;
+}
+
+[data-theme="dark"] .sidebar-link {
+    color: #7a9ab8;
+    font-weight: 400;
+}
+
+[data-theme="dark"] .sidebar-link:hover {
+    background: #152338;
+    color: #c7dff7;
+    border-color: rgba(37, 99, 235, 0.18);
+    box-shadow: none;
+    transform: translateX(2px);
+}
+
+[data-theme="dark"] .sidebar-link-icon {
+    background: rgba(37, 99, 235, 0.14);
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .sidebar-link.active .sidebar-link-icon {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .sidebar-footer {
+    border-top-color: #1c2f47;
+}
+
+[data-theme="dark"] .sidebar-footer-name {
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .sidebar-footer-role {
+    color: #3d5a78;
+}
+
+[data-theme="dark"] .sidebar-toggle-button {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #60a5fa;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .sidebar-toggle-button:hover {
+    background: #152338;
+    border-color: rgba(37, 99, 235, 0.35);
+    color: #93c5fd;
+}
+
+/* --- Topbar --- */
+[data-theme="dark"] .topbar {
+    background: rgba(13, 26, 46, 0.82);
+    border-color: #1c2f47;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .search-shell {
+    background: rgba(7, 16, 29, 0.7);
+    border-color: #1c2f47;
+}
+
+[data-theme="dark"] .search-shell input {
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .search-shell input::placeholder {
+    color: #2e4a65;
+}
+
+[data-theme="dark"] .shell-icon-button {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #8aa4c0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .shell-icon-button:hover {
+    background: #152338;
+    border-color: rgba(37, 99, 235, 0.3);
+    color: #93c5fd;
+}
+
+/* --- Cards e superfícies --- */
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .surface-card {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .list-item {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .quick-action {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .quick-action:hover {
+    background: #152338;
+    border-color: rgba(37, 99, 235, 0.28);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .review-banner {
+    background: rgba(201, 162, 39, 0.07);
+    border-color: rgba(201, 162, 39, 0.18);
+    color: #c9a227;
+}
+
+/* --- Tipografia --- */
+[data-theme="dark"] .section-title {
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .section-subtitle {
+    color: #8aa4c0;
+}
+
+[data-theme="dark"] .fw-semibold {
+    color: inherit;
+}
+
+[data-theme="dark"] .text-secondary {
+    color: #8aa4c0 !important;
+}
+
+[data-theme="dark"] .small.text-secondary {
+    color: #3d5a78 !important;
+}
+
+/* --- Status badges --- */
+[data-theme="dark"] .status-neutral {
+    background: rgba(61, 90, 120, 0.22);
+    color: #8aa4c0;
+}
+
+[data-theme="dark"] .status-active {
+    background: rgba(15, 118, 110, 0.18);
+    color: #34d399;
+}
+
+[data-theme="dark"] .status-attention {
+    background: rgba(180, 83, 9, 0.18);
+    color: #fb923c;
+}
+
+/* --- Toast --- */
+[data-theme="dark"] #appToast {
+    background: #0d1a2e;
+    border-color: #1c2f47 !important;
+    color: #eef2f7;
+}
+
+[data-theme="dark"] #appToast .toast-header {
+    background: #0d1a2e;
+    color: #eef2f7;
+    border-bottom-color: #1c2f47;
+}
+
+/* --- Texto e tipografia genérica --- */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+    color: #eef2f7;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div,
+[data-theme="dark"] article {
+    color: inherit;
+}
+
+[data-theme="dark"] .text-dark {
+    color: #eef2f7 !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: #8aa4c0 !important;
+}
+
+/* --- Placeholder hero (módulos em branco) --- */
+[data-theme="dark"] .placeholder-hero {
+    background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 30%),
+        linear-gradient(180deg, #0d1a2e 0%, #0a1624 100%) !important;
+}
+
+/* --- Botões outline --- */
+[data-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: #60a5fa;
+    --bs-btn-border-color: rgba(96, 165, 250, 0.45);
+    --bs-btn-hover-bg: rgba(37, 99, 235, 0.18);
+    --bs-btn-hover-color: #93c5fd;
+    --bs-btn-hover-border-color: #60a5fa;
+    --bs-btn-active-bg: rgba(37, 99, 235, 0.25);
+    --bs-btn-active-color: #bfdbfe;
+    --bs-btn-active-border-color: #93c5fd;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    --bs-btn-color: #8aa4c0;
+    --bs-btn-border-color: rgba(138, 164, 192, 0.35);
+    --bs-btn-hover-bg: rgba(138, 164, 192, 0.12);
+    --bs-btn-hover-color: #c7dff7;
+    --bs-btn-hover-border-color: #8aa4c0;
+    --bs-btn-active-bg: rgba(138, 164, 192, 0.18);
+    --bs-btn-active-color: #eef2f7;
+    --bs-btn-active-border-color: #c7dff7;
+}
+
+[data-theme="dark"] .btn-outline-light {
+    --bs-btn-color: #eef2f7;
+    --bs-btn-border-color: rgba(238, 242, 247, 0.35);
+    --bs-btn-hover-bg: rgba(238, 242, 247, 0.1);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-border-color: rgba(238, 242, 247, 0.7);
+}
+
+[data-theme="dark"] .btn-light {
+    --bs-btn-bg: rgba(238, 242, 247, 0.12);
+    --bs-btn-color: #eef2f7;
+    --bs-btn-border-color: rgba(238, 242, 247, 0.15);
+    --bs-btn-hover-bg: rgba(238, 242, 247, 0.2);
+    --bs-btn-hover-color: #ffffff;
+}
+
+/* --- Timeline --- */
+[data-theme="dark"] .timeline-item::before {
+    background: rgba(28, 47, 71, 0.9);
+}
+
+[data-theme="dark"] .timeline-dot {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+/* --- Avatar --- */
+[data-theme="dark"] .avatar-chip {
+    background: linear-gradient(135deg, #1c2f47 0%, #1a3a6e 100%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* --- Badge --- */
+[data-theme="dark"] .badge.text-bg-warning {
+    background-color: rgba(201, 162, 39, 0.22) !important;
+    color: #f0c040 !important;
+}
+
+/* --- Stat card: valor numérico principal --- */
+[data-theme="dark"] .stat-card .display-6 {
+    color: #eef2f7;
+}
+
+/* --- Texto auxiliar em cards --- */
+[data-theme="dark"] .stat-card .text-secondary,
+[data-theme="dark"] .surface-card .text-secondary,
+[data-theme="dark"] .list-item .text-secondary {
+    color: #8aa4c0 !important;
+}
+
+/* --- Ícones coloridos nos cards --- */
+[data-theme="dark"] .icon-blue {
+    background: rgba(37, 99, 235, 0.18);
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .icon-gold {
+    background: rgba(201, 162, 39, 0.16);
+    color: #d4a820;
+}
+
+[data-theme="dark"] .icon-red {
+    background: rgba(239, 68, 68, 0.16);
+    color: #f87171;
+}
+
+[data-theme="dark"] .icon-green {
+    background: rgba(15, 118, 110, 0.18);
+    color: #34d399;
+}
+
+/* Auth pages */
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid var(--jusai-border);
+    border-radius: 2rem;
+    box-shadow: 0 24px 54px rgba(15, 23, 42, 0.1);
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(16px);
+}
+
+[data-theme="dark"] .auth-card {
+    background: rgba(13, 26, 46, 0.97);
+    border-color: rgba(28, 47, 71, 0.9);
 }

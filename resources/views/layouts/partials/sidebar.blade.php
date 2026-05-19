@@ -51,6 +51,14 @@
                     </div>
                 @endforeach
             </div>
+
+            <div class="sidebar-footer d-flex align-items-center gap-3">
+                <div class="avatar-chip flex-shrink-0">{{ $shellUser['initials'] }}</div>
+                <div class="sidebar-meta-copy">
+                    <div class="sidebar-footer-name fw-semibold">{{ $shellUser['name'] }}</div>
+                    <div class="sidebar-footer-role">{{ $shellUser['role'] }}</div>
+                </div>
+            </div>
         </div>
     </div>
 </aside>

@@ -32,13 +32,9 @@
                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
             </button>
 
-            <div class="d-flex align-items-center gap-2 ps-lg-1">
-                <div class="avatar-chip">{{ $shellUser['initials'] }}</div>
-                <div class="d-none d-sm-block">
-                    <div class="fw-semibold">{{ $shellUser['name'] }}</div>
-                    <div class="small text-secondary">{{ $shellUser['role'] }}</div>
-                </div>
-            </div>
+            <button class="btn shell-icon-button" type="button" id="themeToggle" aria-label="Mudar para tema escuro">
+                <i class="bi bi-moon" id="themeToggleIcon"></i>
+            </button>
         </div>
     </div>
 </header>

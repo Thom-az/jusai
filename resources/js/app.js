@@ -2,7 +2,6 @@ import 'bootstrap';
 import { Tooltip, Toast } from 'bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const shell = document.querySelector('.app-shell');
     const sidebarToggleButtons = document.querySelectorAll('[data-sidebar-toggle]');
     const sidebarToggleIcons = document.querySelectorAll('[data-sidebar-toggle-icon]');
     const sidebarStorageKey = 'jusai.sidebar.state';
@@ -27,11 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const applySidebarState = (state) => {
-        if (!shell) {
-            return;
-        }
-
-        shell.dataset.sidebarState = state;
+        document.documentElement.setAttribute('data-sidebar-state', state);
 
         sidebarToggleIcons.forEach((icon) => {
             icon.classList.remove('bi-chevron-left', 'bi-chevron-right');
@@ -50,14 +45,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sidebarToggleButtons.forEach((button) => {
         button.addEventListener('click', () => {
-            if (!shell) {
-                return;
-            }
-
-            const nextState = shell.dataset.sidebarState === 'collapsed' ? 'expanded' : 'collapsed';
+            const nextState = document.documentElement.getAttribute('data-sidebar-state') === 'collapsed' ? 'expanded' : 'collapsed';
             applySidebarState(nextState);
             localStorage.setItem(sidebarStorageKey, nextState);
         });
+    });
+
+    const themeToggle = document.getElementById('themeToggle');
+    const themeToggleIcon = document.getElementById('themeToggleIcon');
+    const themeStorageKey = 'jusai.theme';
+
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (themeToggleIcon) {
+            themeToggleIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+        }
+        if (themeToggle) {
+            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro');
+        }
+    };
+
+    applyTheme(localStorage.getItem(themeStorageKey) || 'light');
+
+    themeToggle?.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem(themeStorageKey, next);
     });
 
     document.querySelectorAll('[data-disabled-action]').forEach((element) => {
