@@ -46,6 +46,11 @@ Route::middleware(['auth', 'org.access'])->group(function () {
     ]);
 
     Route::get('/revisor', [AiReviewController::class, 'index'])->name('review.index');
+    Route::post('/revisor', [AiReviewController::class, 'store'])->name('review.store');
+    Route::get('/revisor/{aiReview}', [AiReviewController::class, 'show'])->name('review.show');
+    Route::get('/revisor/{aiReview}/status', [AiReviewController::class, 'status'])->name('review.status');
+    Route::post('/revisor/{aiReview}/approve', [AiReviewController::class, 'approve'])->name('review.approve');
+
     Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
