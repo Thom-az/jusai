@@ -3,34 +3,37 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
+        <title>@yield('title', 'Dashboard') | {{ config('jusai.brand.name') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <body class="shell-body">
+        <div class="app-shell" data-sidebar-state="expanded">
+            @include('layouts.partials.sidebar', ['mobile' => false, 'sidebarId' => 'desktopSidebar'])
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            <div class="content-area">
+                @include('layouts.partials.navbar')
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <main class="content-main px-3 px-lg-4 pb-4 pb-lg-5">
+                    @yield('content')
+                </main>
+            </div>
         </div>
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+            <div id="appToast" class="toast border-0 shadow-lg" role="status" aria-live="polite" aria-atomic="true">
+                <div class="toast-header">
+                    <i class="bi bi-info-circle text-primary me-2"></i>
+                    <strong class="me-auto">{{ config('jusai.brand.name') }}</strong>
+                    <small>Agora</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+                </div>
+                <div class="toast-body" id="appToastBody">
+                    Este recurso sera entregue na proxima etapa.
+                </div>
+            </div>
+        </div>
+
+        @stack('scripts')
     </body>
 </html>

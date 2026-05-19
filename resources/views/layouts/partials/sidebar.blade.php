@@ -54,9 +54,15 @@
 
             <div class="sidebar-footer d-flex align-items-center gap-3">
                 <div class="avatar-chip flex-shrink-0">{{ $shellUser['initials'] }}</div>
-                <div class="sidebar-meta-copy">
+                <div class="sidebar-meta-copy flex-grow-1 min-width-0">
                     <div class="sidebar-footer-name fw-semibold">{{ $shellUser['name'] }}</div>
                     <div class="sidebar-footer-role">{{ $shellUser['role'] }}</div>
+                    <form method="POST" action="{{ route('logout') }}" class="mt-1">
+                        @csrf
+                        <button type="submit" class="btn btn-link p-0 text-secondary" style="font-size: 0.72rem; text-decoration: none; line-height: 1.2;">
+                            <i class="bi bi-box-arrow-right me-1"></i>Sair
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <script>(function(){var d=document.documentElement;d.setAttribute('data-theme',localStorage.getItem('jusai.theme')||'light');d.setAttribute('data-sidebar-state',localStorage.getItem('jusai.sidebar.state')||'expanded');})()</script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
     </head>
     <body class="shell-body">
         <div class="app-shell">
@@ -35,5 +36,7 @@
                 </div>
             </div>
         </div>
+
+        @stack('scripts')
     </body>
 </html>
