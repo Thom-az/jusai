@@ -30,23 +30,38 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        View::composer('*', function ($view) {
-            $user = Auth::user();
-
-            if ($user) {
-                $shellUser = [
-                    'name'     => $user->name,
-                    'role'     => $this->roleLabel($user->role),
-                    'initials' => $this->initials($user->name),
-                ];
-            } else {
-                $shellUser = config('jusai.shell.user');
-            }
-
-            $view->with('shellUser', $shellUser);
+        View::composer([
+            'layouts.app',
+            'layouts.partials.navbar',
+            'layouts.partials.sidebar',
+        ], function ($view) {
+            $view->with('shellUser', $this->shellUser());
             $view->with('shellNavigation', config('jusai.shell.navigation'));
+        });
+
+        View::composer([
+            'layouts.admin',
+            'layouts.partials.admin-navbar',
+            'layouts.partials.admin-sidebar',
+        ], function ($view) {
+            $view->with('shellUser', $this->shellUser());
             $view->with('adminNavigation', config('jusai.shell.admin_navigation'));
         });
+    }
+
+    private function shellUser(): array
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return config('jusai.shell.user');
+        }
+
+        return [
+            'name'     => $user->name,
+            'role'     => $this->roleLabel($user->role),
+            'initials' => $this->initials($user->name),
+        ];
     }
 
     private function roleLabel(string $role): string

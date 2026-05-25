@@ -19,8 +19,8 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 gap-lg-3">
-            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-3">
-                <i class="bi bi-arrow-left me-2"></i>Voltar ao app
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-grid me-2"></i>Visao geral
             </a>
 
             <button class="btn shell-icon-button" type="button" id="themeToggle" aria-label="Mudar para tema escuro">
