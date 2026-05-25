@@ -6,11 +6,40 @@
         <title>@yield('title', 'Admin') | {{ config('jusai.brand.name') }}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <script>(function(){var d=document.documentElement;d.setAttribute('data-theme',localStorage.getItem('jusai.theme')||'light');d.setAttribute('data-sidebar-state',localStorage.getItem('jusai.sidebar.state')||'expanded');})()</script>
+        <script>
+            (function () {
+                const root = document.documentElement;
+                const navigationKey = 'jusai.pending.navigation';
+                let pendingNavigation = null;
+
+                root.setAttribute('data-theme', localStorage.getItem('jusai.theme') || 'light');
+                root.setAttribute('data-sidebar-state', localStorage.getItem('jusai.sidebar.state') || 'expanded');
+
+                try {
+                    pendingNavigation = sessionStorage.getItem(navigationKey);
+
+                    if (pendingNavigation) {
+                        const parsedNavigation = JSON.parse(pendingNavigation);
+
+                        if (!parsedNavigation?.startedAt || (Date.now() - parsedNavigation.startedAt) > 15000) {
+                            sessionStorage.removeItem(navigationKey);
+                            pendingNavigation = null;
+                        }
+                    }
+                } catch (error) {
+                    sessionStorage.removeItem(navigationKey);
+                    pendingNavigation = null;
+                }
+
+                if (pendingNavigation) {
+                    root.setAttribute('data-page-loading', 'pending');
+                }
+            }());
+        </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
     </head>
-    <body class="shell-body">
+    <body class="shell-body" data-shell-context="admin">
         <div class="app-shell">
             @include('layouts.partials.admin-sidebar', ['mobile' => false, 'sidebarId' => 'desktopAdminSidebar'])
 

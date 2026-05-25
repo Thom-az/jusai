@@ -4,10 +4,40 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>@yield('title', 'Dashboard') | {{ config('jusai.brand.name') }}</title>
+        <script>
+            (function () {
+                const root = document.documentElement;
+                const navigationKey = 'jusai.pending.navigation';
+                let pendingNavigation = null;
+
+                root.setAttribute('data-theme', localStorage.getItem('jusai.theme') || 'light');
+                root.setAttribute('data-sidebar-state', localStorage.getItem('jusai.sidebar.state') || 'expanded');
+
+                try {
+                    pendingNavigation = sessionStorage.getItem(navigationKey);
+
+                    if (pendingNavigation) {
+                        const parsedNavigation = JSON.parse(pendingNavigation);
+
+                        if (!parsedNavigation?.startedAt || (Date.now() - parsedNavigation.startedAt) > 15000) {
+                            sessionStorage.removeItem(navigationKey);
+                            pendingNavigation = null;
+                        }
+                    }
+                } catch (error) {
+                    sessionStorage.removeItem(navigationKey);
+                    pendingNavigation = null;
+                }
+
+                if (pendingNavigation) {
+                    root.setAttribute('data-page-loading', 'pending');
+                }
+            }());
+        </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
     </head>
-    <body class="shell-body">
+    <body class="shell-body" data-shell-context="app">
         <div class="app-shell" data-sidebar-state="expanded">
             @include('layouts.partials.sidebar', ['mobile' => false, 'sidebarId' => 'desktopSidebar'])
 
