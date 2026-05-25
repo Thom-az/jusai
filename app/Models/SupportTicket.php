@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +34,13 @@ class SupportTicket extends Model
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
         ];
+    }
+
+    protected function protocol(): Attribute
+    {
+        return Attribute::get(
+            fn () => 'TKT-' . $this->created_at->format('Y') . '-' . strtoupper(substr($this->id, 0, 8))
+        );
     }
 
     public function organization(): BelongsTo

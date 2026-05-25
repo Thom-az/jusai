@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/modules/revisor.css',
                 'resources/css/modules/minutas.css',
                 'resources/css/modules/configuracoes.css',
+                'resources/css/modules/chamados.css',
 
                 // CSS — admin modules
                 'resources/css/modules/admin/dashboard.css',
@@ -29,6 +30,7 @@ export default defineConfig({
                 'resources/js/modules/documentos-create.js',
                 'resources/js/modules/revisor-index.js',
                 'resources/js/modules/revisor-show.js',
+                'resources/js/modules/chamados-index.js',
 
                 // JS — admin modules
                 'resources/js/modules/admin/dashboard.js',

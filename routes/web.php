@@ -8,6 +8,7 @@ use App\Http\Controllers\DraftController;
 use App\Http\Controllers\LegalCaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SupportTicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -50,6 +51,9 @@ Route::middleware(['auth', 'org.access'])->group(function () {
     Route::get('/revisor/{aiReview}', [AiReviewController::class, 'show'])->name('review.show');
     Route::get('/revisor/{aiReview}/status', [AiReviewController::class, 'status'])->name('review.status');
     Route::post('/revisor/{aiReview}/approve', [AiReviewController::class, 'approve'])->name('review.approve');
+
+    Route::get('/chamados', [SupportTicketController::class, 'index'])->name('tickets.index');
+    Route::post('/chamados', [SupportTicketController::class, 'store'])->name('tickets.store');
 
     Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
 
