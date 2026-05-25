@@ -20,10 +20,34 @@
 
 .upload-file-wrap input[type="file"] {
     cursor: pointer;
+    border-radius: 1rem;
+    border: 1.5px dashed var(--jusai-border);
+    padding: 1rem;
+    background: rgba(37, 99, 235, 0.03);
+    transition: border-color 0.18s ease, background 0.18s ease;
+    width: 100%;
 }
 
 .upload-file-wrap input[type="file"]:hover {
     border-color: rgba(37, 99, 235, 0.4);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.upload-file-wrap input[type="file"]:focus {
+    outline: none;
+    border-color: var(--jusai-action);
+    box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.13);
+}
+
+[data-theme="dark"] .upload-file-wrap input[type="file"] {
+    border-color: #1c2f47;
+    background: rgba(37, 99, 235, 0.04);
+    color: #8aa4c0;
+}
+
+[data-theme="dark"] .upload-file-wrap input[type="file"]:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    background: rgba(37, 99, 235, 0.08);
 }
 
 /* Document status dots */
