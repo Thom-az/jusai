@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Document extends Model
 {
-    use HasUuids;
+    use HasUuids, Auditable;
+
+    protected string $auditLabel = 'Documento';
+
+    protected array $auditExclude = ['storage_path', 'ai_extracted_at'];
 
     protected $fillable = [
         'organization_id',
