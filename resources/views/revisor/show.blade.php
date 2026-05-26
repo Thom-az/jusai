@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-            <a href="{{ route('review.index') }}" class="btn btn-outline-secondary rounded-pill px-3">
+            <a href="{{ route('review.index') }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i>Voltar
             </a>
             <div class="flex-grow-1">
@@ -139,7 +139,7 @@
                             @if ($review->legalCase)
                                 <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
                                 <dd class="col-7">
-                                    <a href="{{ route('cases.show', $review->legalCase) }}" class="small text-decoration-none">{{ Str::limit($review->legalCase->title, 30) }}</a>
+                                    <a href="{{ route('cases.show', $review->legalCase) }}" wire:navigate class="small text-decoration-none">{{ Str::limit($review->legalCase->title, 30) }}</a>
                                 </dd>
                             @endif
                         </dl>

@@ -13,7 +13,7 @@
                 <h2 class="fw-semibold mb-1">Documentos</h2>
                 <p class="text-secondary mb-0 small">PDFs e documentos analisados por IA.</p>
             </div>
-            <a href="{{ route('documents.create') }}" class="btn btn-primary rounded-pill px-4">
+            <a href="{{ route('documents.create') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
                 <i class="bi bi-cloud-arrow-up me-2"></i>Enviar documento
             </a>
         </div>
@@ -41,7 +41,7 @@
                 <div class="col-auto">
                     <button type="submit" class="btn btn-outline-primary">Filtrar</button>
                     @if (request()->hasAny(['search', 'status']))
-                        <a href="{{ route('documents.index') }}" class="btn btn-outline-secondary ms-1">Limpar</a>
+                        <a href="{{ route('documents.index') }}" wire:navigate class="btn btn-outline-secondary ms-1">Limpar</a>
                     @endif
                 </div>
             </form>
@@ -72,7 +72,7 @@
                                 </td>
                                 <td class="text-secondary small">
                                     @if ($doc->legalCase)
-                                        <a href="{{ route('cases.show', $doc->legalCase) }}" class="text-decoration-none">{{ Str::limit($doc->legalCase->title, 40) }}</a>
+                                        <a href="{{ route('cases.show', $doc->legalCase) }}" wire:navigate class="text-decoration-none">{{ Str::limit($doc->legalCase->title, 40) }}</a>
                                     @else
                                         <span class="text-muted">Sem caso</span>
                                     @endif
@@ -91,7 +91,7 @@
                                 </td>
                                 <td class="text-secondary small">{{ $doc->created_at->diffForHumans() }}</td>
                                 <td>
-                                    <a href="{{ route('documents.show', $doc) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                    <a href="{{ route('documents.show', $doc) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                                 </td>
                             </tr>
                         @empty
@@ -99,7 +99,7 @@
                                 <td colspan="6" class="text-center py-5 text-secondary">
                                     <i class="bi bi-file-earmark fs-2 d-block mb-2"></i>
                                     Nenhum documento encontrado.
-                                    <a href="{{ route('documents.create') }}" class="d-block mt-1">Enviar primeiro documento</a>
+                                    <a href="{{ route('documents.create') }}" wire:navigate class="d-block mt-1">Enviar primeiro documento</a>
                                 </td>
                             </tr>
                         @endforelse

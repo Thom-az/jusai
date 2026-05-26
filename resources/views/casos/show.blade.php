@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-            <a href="{{ route('cases.index') }}" class="btn btn-outline-secondary rounded-pill px-3">
+            <a href="{{ route('cases.index') }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i>Voltar
             </a>
             <div class="flex-grow-1">
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('cases.edit', $case) }}" class="btn btn-outline-primary rounded-pill px-3">
+                <a href="{{ route('cases.edit', $case) }}" wire:navigate class="btn btn-outline-primary rounded-pill px-3">
                     <i class="bi bi-pencil me-1"></i>Editar
                 </a>
                 <form method="POST" action="{{ route('cases.destroy', $case) }}" onsubmit="return confirm('Excluir este caso permanentemente?')">
@@ -76,7 +76,7 @@
             <div class="tab-pane fade show active" id="documentos">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-semibold mb-0">Documentos do caso</h5>
-                    <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" class="btn btn-primary rounded-pill">
+                    <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" wire:navigate class="btn btn-primary rounded-pill">
                         <i class="bi bi-cloud-arrow-up me-2"></i>Enviar documento
                     </a>
                 </div>
@@ -84,7 +84,7 @@
                     <div class="surface-card p-3 mb-3">
                         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                             <div>
-                                <a href="{{ route('documents.show', $doc) }}" class="fw-semibold text-decoration-none">{{ $doc->title }}</a>
+                                <a href="{{ route('documents.show', $doc) }}" wire:navigate class="fw-semibold text-decoration-none">{{ $doc->title }}</a>
                                 <div class="text-secondary small">{{ $doc->original_filename }} &bull; {{ number_format($doc->file_size / 1024, 0) }} KB</div>
                                 @if ($doc->ai_summary)
                                     <p class="text-secondary small mt-1 mb-0">{{ Str::limit($doc->ai_summary, 120) }}</p>
@@ -100,7 +100,7 @@
                                     };
                                 @endphp
                                 <span class="badge {{ $statusClass }}">{{ ucfirst($doc->status) }}</span>
-                                <a href="{{ route('documents.show', $doc) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                <a href="{{ route('documents.show', $doc) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                     <div class="surface-card p-4 text-center text-secondary">
                         <i class="bi bi-file-earmark fs-2 d-block mb-2"></i>
                         Nenhum documento enviado.
-                        <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" class="d-block mt-1">Enviar primeiro documento</a>
+                        <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" wire:navigate class="d-block mt-1">Enviar primeiro documento</a>
                     </div>
                 @endforelse
             </div>
@@ -116,7 +116,7 @@
             <div class="tab-pane fade" id="analises">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-semibold mb-0">Analises de IA</h5>
-                    <a href="{{ route('review.index') }}?case_id={{ $case->id }}" class="btn btn-primary rounded-pill">
+                    <a href="{{ route('review.index') }}?case_id={{ $case->id }}" wire:navigate class="btn btn-primary rounded-pill">
                         <i class="bi bi-cpu me-2"></i>Nova analise
                     </a>
                 </div>
@@ -142,7 +142,7 @@
                                 @if ($review->reviewed_at)
                                     <span class="badge text-bg-info">Revisado</span>
                                 @endif
-                                <a href="{{ route('review.show', $review) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                <a href="{{ route('review.show', $review) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                             </div>
                         </div>
                     </div>

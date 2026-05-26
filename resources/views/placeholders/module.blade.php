@@ -13,7 +13,7 @@
                         {{ $moduleDescription }}
                     </p>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('dashboard') }}" class="btn btn-primary rounded-pill px-4">
+                        <a href="{{ route('dashboard') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
                             <i class="bi bi-arrow-left me-2"></i>Voltar ao dashboard
                         </a>
                         <button class="btn btn-outline-secondary rounded-pill px-4" type="button" data-disabled-action="{{ $moduleAction }}">

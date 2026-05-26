@@ -122,7 +122,7 @@
                                     @if ($review->reviewed_at)
                                         <span class="badge text-bg-info">Revisado</span>
                                     @endif
-                                    <a href="{{ route('review.show', $review) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                    <a href="{{ route('review.show', $review) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                                 </div>
                             </div>
                         </div>

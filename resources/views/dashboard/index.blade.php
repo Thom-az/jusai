@@ -20,10 +20,10 @@
                         Gerencie casos, documentos e minutas com analise de IA. Todo resultado deve ser validado por profissional habilitado.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('cases.create') }}" class="btn btn-light rounded-pill px-4">
+                        <a href="{{ route('cases.create') }}" wire:navigate class="btn btn-light rounded-pill px-4">
                             <i class="bi bi-folder-plus me-2"></i>Criar caso
                         </a>
-                        <a href="{{ route('documents.create') }}" class="btn btn-outline-light rounded-pill px-4">
+                        <a href="{{ route('documents.create') }}" wire:navigate class="btn btn-outline-light rounded-pill px-4">
                             <i class="bi bi-cloud-arrow-up me-2"></i>Enviar documento
                         </a>
                     </div>
@@ -71,7 +71,7 @@
                             <h2 class="section-title mb-1">Casos recentes</h2>
                             <p class="section-subtitle mb-0">Dossies mais movimentados no momento.</p>
                         </div>
-                        <a href="{{ route('cases.index') }}" class="btn btn-outline-primary rounded-pill">
+                        <a href="{{ route('cases.index') }}" wire:navigate class="btn btn-outline-primary rounded-pill">
                             <i class="bi bi-arrow-right me-2"></i>Ver todos
                         </a>
                     </div>
@@ -81,7 +81,7 @@
                             <article class="list-item">
                                 <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                     <div>
-                                        <a href="{{ route('cases.show', $case) }}" class="h5 mb-1 text-decoration-none text-dark fw-semibold d-block">{{ $case->title }}</a>
+                                        <a href="{{ route('cases.show', $case) }}" wire:navigate class="h5 mb-1 text-decoration-none text-dark fw-semibold d-block">{{ $case->title }}</a>
                                         <div class="text-secondary mb-2">{{ $case->client_name }} &bull; {{ ucfirst($case->area) }}</div>
                                         <div class="d-flex flex-wrap gap-2">
                                             <span class="status-badge status-active">
@@ -98,7 +98,7 @@
                                 </div>
                             </article>
                         @empty
-                            <p class="text-secondary">Nenhum caso cadastrado ainda. <a href="{{ route('cases.create') }}">Criar primeiro caso.</a></p>
+                            <p class="text-secondary">Nenhum caso cadastrado ainda. <a href="{{ route('cases.create') }}" wire:navigate>Criar primeiro caso.</a></p>
                         @endforelse
                     </div>
                 </div>
@@ -135,7 +135,7 @@
 
                     <div class="d-grid gap-3">
                         @foreach ($quickActions as $action)
-                            <a href="{{ $action['route'] }}" class="quick-action">
+                            <a href="{{ $action['route'] }}" wire:navigate class="quick-action">
                                 <div class="d-flex align-items-start gap-3">
                                     <div class="stat-icon icon-blue flex-shrink-0">
                                         <i class="bi {{ $action['icon'] }}"></i>

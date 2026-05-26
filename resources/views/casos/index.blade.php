@@ -13,7 +13,7 @@
                 <h2 class="fw-semibold mb-1">Casos</h2>
                 <p class="text-secondary mb-0 small">Dossies juridicos do escritorio.</p>
             </div>
-            <a href="{{ route('cases.create') }}" class="btn btn-primary rounded-pill px-4">
+            <a href="{{ route('cases.create') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
                 <i class="bi bi-folder-plus me-2"></i>Novo caso
             </a>
         </div>
@@ -57,7 +57,7 @@
                 <div class="col-auto">
                     <button type="submit" class="btn btn-outline-primary">Filtrar</button>
                     @if (request()->hasAny(['search', 'status', 'area', 'risk_level']))
-                        <a href="{{ route('cases.index') }}" class="btn btn-outline-secondary ms-1">Limpar</a>
+                        <a href="{{ route('cases.index') }}" wire:navigate class="btn btn-outline-secondary ms-1">Limpar</a>
                     @endif
                 </div>
             </form>
@@ -107,7 +107,7 @@
                                 <td class="text-secondary small">{{ $case->assignedUser?->name ?? '—' }}</td>
                                 <td class="text-secondary small">{{ $case->updated_at->diffForHumans() }}</td>
                                 <td>
-                                    <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-primary rounded-pill">Visualizar</a>
+                                    <a href="{{ route('cases.show', $case) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Visualizar</a>
                                 </td>
                             </tr>
                         @empty
@@ -115,7 +115,7 @@
                                 <td colspan="7" class="text-center py-5 text-secondary">
                                     <i class="bi bi-briefcase fs-2 d-block mb-2"></i>
                                     Nenhum caso encontrado.
-                                    <a href="{{ route('cases.create') }}" class="d-block mt-2">Criar primeiro caso</a>
+                                    <a href="{{ route('cases.create') }}" wire:navigate class="d-block mt-2">Criar primeiro caso</a>
                                 </td>
                             </tr>
                         @endforelse

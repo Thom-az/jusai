@@ -13,7 +13,7 @@
                 <h2 class="fw-semibold mb-1">Minutas</h2>
                 <p class="text-secondary mb-0 small">Rascunhos juridicos gerados e revisados.</p>
             </div>
-            <a href="{{ route('drafts.create') }}" class="btn btn-primary rounded-pill px-4">
+            <a href="{{ route('drafts.create') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
                 <i class="bi bi-magic me-2"></i>Nova minuta
             </a>
         </div>

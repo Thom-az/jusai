@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center gap-3 mb-4">
-            <a href="{{ route('cases.show', $case) }}" class="btn btn-outline-secondary rounded-pill px-3">
+            <a href="{{ route('cases.show', $case) }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i>Voltar
             </a>
             <h2 class="fw-semibold mb-0">Editar Caso</h2>

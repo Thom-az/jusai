@@ -9,7 +9,7 @@
 @section('content')
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-            <a href="{{ $document->legalCase ? route('cases.show', $document->legalCase) : route('documents.index') }}" class="btn btn-outline-secondary rounded-pill px-3">
+            <a href="{{ $document->legalCase ? route('cases.show', $document->legalCase) : route('documents.index') }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i>Voltar
             </a>
             <div class="flex-grow-1">
@@ -79,7 +79,7 @@
                 <div class="surface-card p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-semibold mb-0">Analises de IA</h5>
-                        <a href="{{ route('review.index') }}?case_id={{ $document->legal_case_id }}" class="btn btn-outline-primary rounded-pill btn-sm">
+                        <a href="{{ route('review.index') }}?case_id={{ $document->legal_case_id }}" wire:navigate class="btn btn-outline-primary rounded-pill btn-sm">
                             <i class="bi bi-plus me-1"></i>Nova analise
                         </a>
                     </div>
@@ -100,7 +100,7 @@
                                         };
                                     @endphp
                                     <span class="badge {{ $rStatusClass }}">{{ ucfirst($review->status) }}</span>
-                                    <a href="{{ route('review.show', $review) }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
+                                    <a href="{{ route('review.show', $review) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                         @if ($document->legalCase)
                             <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
                             <dd class="col-7">
-                                <a href="{{ route('cases.show', $document->legalCase) }}" class="text-decoration-none small">{{ Str::limit($document->legalCase->title, 30) }}</a>
+                                <a href="{{ route('cases.show', $document->legalCase) }}" wire:navigate class="text-decoration-none small">{{ Str::limit($document->legalCase->title, 30) }}</a>
                             </dd>
                         @endif
                     </dl>

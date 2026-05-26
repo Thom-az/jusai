@@ -106,7 +106,7 @@ $prioColors = [
 
                 {{-- Clear filters --}}
                 @if (request()->hasAny(['search', 'status', 'priority']))
-                    <a href="{{ route('tickets.index') }}" class="cham-clear-btn">
+                    <a href="{{ route('tickets.index') }}" wire:navigate class="cham-clear-btn">
                         <i class="bi bi-x"></i>Limpar
                     </a>
                 @endif
@@ -207,7 +207,7 @@ $prioColors = [
                                     <div class="cham-empty-sub">
                                         @if (request()->hasAny(['search', 'status', 'priority']))
                                             Tente ajustar os filtros ou
-                                            <a href="{{ route('tickets.index') }}" class="text-primary">limpar a busca</a>.
+                                            <a href="{{ route('tickets.index') }}" wire:navigate class="text-primary">limpar a busca</a>.
                                         @else
                                             Você ainda não abriu nenhum chamado de suporte.
                                             <a href="#" class="text-primary d-block mt-2"
