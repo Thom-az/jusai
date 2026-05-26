@@ -1,4 +1,4 @@
-/* =========================================
+﻿/* =========================================
    Chamados — premium ticket module
    Inspired by: Linear, Notion, Stripe
    ========================================= */
@@ -174,32 +174,6 @@
     flex-shrink: 0;
 }
 
-.cham-view-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.9rem;
-    height: 1.9rem;
-    border-radius: 0.4rem;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--jusai-muted);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.13s;
-}
-
-.cham-view-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--jusai-graphite);
-}
-
-.cham-view-btn.active {
-    background: var(--jusai-graphite);
-    color: #fff;
-    border-color: var(--jusai-graphite);
-}
-
 .cham-density-btn {
     display: flex;
     align-items: center;
@@ -263,7 +237,7 @@
     text-transform: uppercase;
     letter-spacing: 0.065em;
     color: var(--jusai-muted);
-    background: transparent;
+    background: rgba(0, 0, 0, 0.028);
     white-space: nowrap;
 }
 
@@ -286,6 +260,15 @@
 
 .cham-row td:first-child { padding-left: 1.1rem; }
 .cham-row td:last-child  { padding-right: 1.1rem; }
+
+/* Left border accent by status — uses inset box-shadow to work with border-collapse */
+.cham-row td:first-child { box-shadow: inset 3px 0 0 transparent; transition: box-shadow 0.1s; }
+.cham-row[data-status="aberto"]             td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-novo); }
+.cham-row[data-status="triagem"]            td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-triagem); }
+.cham-row[data-status="em_andamento"]       td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-andamento); }
+.cham-row[data-status="aguardando_cliente"] td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-aguardando); }
+.cham-row[data-status="resolvido"]          td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-resolvido); }
+.cham-row[data-status="fechado"]            td:first-child { box-shadow: inset 3px 0 0 var(--cham-st-fechado); }
 
 /* compact density */
 .cham-list.is-compact .cham-row td { padding-top: 0.45rem; padding-bottom: 0.45rem; }
@@ -456,116 +439,6 @@
 
 .cham-skel-row:last-child { border-bottom: none; }
 
-/* ── Kanban ────────────────────────────────────────────────── */
-.cham-kanban {
-    display: flex;
-    gap: 0.65rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    padding-bottom: 0.5rem;
-    align-items: flex-start;
-}
-
-.cham-kcol {
-    width: 262px;
-    min-width: 262px;
-    flex-shrink: 0;
-}
-
-.cham-kcol-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.55rem 0.7rem;
-    border-radius: 0.6rem 0.6rem 0 0;
-    border: 1px solid var(--jusai-border);
-    border-bottom: none;
-    background: rgba(0, 0, 0, 0.012);
-    border-top: 2.5px solid var(--stage-color, var(--jusai-action));
-}
-
-.cham-kcol-title {
-    font-size: 0.81rem;
-    font-weight: 600;
-    color: var(--jusai-graphite);
-}
-
-.cham-kcol-count {
-    font-size: 0.71rem;
-    font-weight: 700;
-    color: var(--jusai-muted);
-    background: rgba(0, 0, 0, 0.055);
-    padding: 0.07rem 0.38rem;
-    border-radius: 999px;
-}
-
-.cham-kcol-body {
-    border: 1px solid var(--jusai-border);
-    border-top: none;
-    border-radius: 0 0 0.6rem 0.6rem;
-    background: rgba(0, 0, 0, 0.01);
-    padding: 0.45rem;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.38rem;
-}
-
-.cham-kcard {
-    background: #fff;
-    border: 1px solid var(--jusai-border);
-    border-left: 2.5px solid var(--prio-color, var(--cham-pr-baixa));
-    border-radius: 0.5rem;
-    padding: 0.6rem 0.7rem;
-    cursor: pointer;
-    transition: box-shadow 0.13s, transform 0.13s;
-}
-
-.cham-kcard:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
-}
-
-.cham-kcard-proto {
-    font-family: ui-monospace, monospace;
-    font-size: 0.69rem;
-    font-weight: 600;
-    color: var(--jusai-muted);
-    margin-bottom: 0.22rem;
-    letter-spacing: 0.03em;
-}
-
-.cham-kcard-title {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--jusai-graphite);
-    line-height: 1.4;
-    margin-bottom: 0.38rem;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.cham-kcard-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-}
-
-.cham-kempty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2.25rem 1rem;
-    gap: 0.35rem;
-    color: var(--jusai-muted);
-    font-size: 0.77rem;
-    opacity: 0.6;
-}
 
 /* ── Keyboard hint ─────────────────────────────────────────── */
 .cham-kbd {
@@ -868,10 +741,6 @@
 [data-theme="dark"] .cham-filter-select option    { background: var(--dk-1); }
 [data-theme="dark"] .cham-cmd-sep                 { background: var(--dk-bd-s); }
 
-[data-theme="dark"] .cham-view-btn               { color: var(--dk-t-c); }
-[data-theme="dark"] .cham-view-btn:hover          { background: var(--dk-3); color: var(--dk-t-a); }
-[data-theme="dark"] .cham-view-btn.active         { background: var(--dk-t-a); color: var(--dk-0); border-color: var(--dk-t-a); }
-
 [data-theme="dark"] .cham-density-btn            { border-color: var(--dk-bd-n); color: var(--dk-t-c); }
 [data-theme="dark"] .cham-density-btn:hover       { background: var(--dk-3); color: var(--dk-t-a); }
 
@@ -884,7 +753,7 @@
     border-color: var(--dk-bd-n);
 }
 
-[data-theme="dark"] .cham-list-head th           { color: var(--dk-t-c); border-bottom-color: var(--dk-bd-n); }
+[data-theme="dark"] .cham-list-head th           { background: rgba(255, 255, 255, 0.055); color: var(--dk-t-c); border-bottom-color: var(--dk-bd-n); }
 [data-theme="dark"] .cham-row                    { border-bottom-color: var(--dk-bd-s); }
 [data-theme="dark"] .cham-row:hover              { background: var(--dk-2); }
 [data-theme="dark"] .cham-protocol-tag           { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
@@ -905,31 +774,7 @@
 [data-theme="dark"] .cham-empty-title            { color: var(--dk-t-a); }
 [data-theme="dark"] .cham-empty-sub              { color: var(--dk-t-c); }
 
-/* ── Kanban ─────────────────────────────────────────────────── */
-[data-theme="dark"] .cham-kcol-head {
-    background: var(--dk-1);
-    border-color: var(--dk-bd-n);
-    border-top-color: var(--stage-color);
-}
 
-[data-theme="dark"] .cham-kcol-title             { color: var(--dk-t-a); }
-[data-theme="dark"] .cham-kcol-count             { background: var(--dk-3); color: var(--dk-t-c); }
-
-[data-theme="dark"] .cham-kcol-body {
-    background: var(--dk-0);
-    border-color: var(--dk-bd-n);
-}
-
-[data-theme="dark"] .cham-kcard {
-    background: var(--dk-1);
-    border-color: var(--dk-bd-n);
-    border-left-color: var(--prio-color, var(--cham-pr-baixa));
-}
-
-[data-theme="dark"] .cham-kcard:hover            { background: var(--dk-2); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45); }
-[data-theme="dark"] .cham-kcard-proto            { color: var(--dk-t-d); }
-[data-theme="dark"] .cham-kcard-title            { color: var(--dk-t-a); }
-[data-theme="dark"] .cham-kempty                 { color: var(--dk-t-d); }
 
 /* ── Keyboard hint ──────────────────────────────────────────── */
 [data-theme="dark"] .cham-kbd {

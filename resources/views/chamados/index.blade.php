@@ -117,15 +117,6 @@ $prioColors = [
                     <i class="bi bi-layout-split" id="chamDensityIcon"></i>
                 </button>
 
-                {{-- View toggle --}}
-                <button type="button" class="cham-view-btn" data-view="lista"
-                        title="Lista (L)">
-                    <i class="bi bi-list-ul"></i>
-                </button>
-                <button type="button" class="cham-view-btn" data-view="kanban"
-                        title="Kanban (K)">
-                    <i class="bi bi-kanban"></i>
-                </button>
             </div>
         </div>
     </form>
@@ -165,7 +156,7 @@ $prioColors = [
                             $hours     = $ticket->updated_at->diffInHours(now());
                             $timeClass = $hours > 48 ? 't-urgent' : ($hours > 12 ? 't-aged' : '');
                         @endphp
-                        <tr class="cham-row">
+                        <tr class="cham-row" data-status="{{ $ticket->status }}">
                             <td>
                                 <span class="cham-protocol-tag">{{ $ticket->protocol }}</span>
                             </td>
@@ -228,43 +219,6 @@ $prioColors = [
         </div>
     </div>
 
-    {{-- Vista: Kanban --}}
-    <div id="viewKanban" class="d-none">
-        <div class="cham-kanban">
-            @foreach ($stages as $stage)
-                @php $colTickets = $tickets->getCollection()->where('status', $stage['key']); @endphp
-                <div class="cham-kcol">
-                    <div class="cham-kcol-head" style="--stage-color: {{ $stage['color'] }}">
-                        <span class="cham-kcol-title">{{ $stage['label'] }}</span>
-                        <span class="cham-kcol-count">{{ $counts[$stage['key']] ?? 0 }}</span>
-                    </div>
-                    <div class="cham-kcol-body">
-                        @forelse ($colTickets as $ticket)
-                            <div class="cham-kcard"
-                                 style="--prio-color: {{ $prioColors[$ticket->priority] ?? '#6b7280' }}">
-                                <div class="cham-kcard-proto">{{ $ticket->protocol }}</div>
-                                <div class="cham-kcard-title">{{ Str::limit($ticket->title, 60) }}</div>
-                                <div class="cham-kcard-foot">
-                                    <span class="cham-prio" data-prio="{{ $ticket->priority }}">
-                                        <i class="bi {{ $prioIcons[$ticket->priority] ?? 'bi-dash' }}"></i>
-                                        {{ $prioLabels[$ticket->priority] ?? '' }}
-                                    </span>
-                                    <span class="cham-time">
-                                        {{ $ticket->updated_at->diffForHumans(null, true, true) }}
-                                    </span>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="cham-kempty">
-                                <i class="bi bi-inbox" style="font-size:1.15rem; opacity:0.4;"></i>
-                                <span>Vazio</span>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
 
 </div>
 

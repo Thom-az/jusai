@@ -25,7 +25,7 @@
         <div class="surface-card p-0 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead>
+                    <thead class="table-light">
                         <tr style="border-bottom: 1px solid rgba(215,220,229,0.9);">
                             <th class="ps-4 py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Escritório</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Plano</th>

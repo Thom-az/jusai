@@ -1,4 +1,4 @@
-/* chamados-index.js — stepper modal, view toggle, filters, keyboard shortcuts */
+/* chamados-index.js — stepper modal, filters, keyboard shortcuts */
 import { Modal, Toast } from 'bootstrap';
 
 const CATEGORY_LABELS = {
@@ -11,13 +11,10 @@ const PRIORITY_LABELS = {
 };
 
 /* ── Storage keys ───────────────────────────────────────── */
-const VIEW_KEY    = 'chamados_view';
 const DENSITY_KEY = 'chamados_density';
 
 /* ── DOM refs ───────────────────────────────────────────── */
-const viewBtns    = document.querySelectorAll('.cham-view-btn');
 const viewLista   = document.getElementById('viewLista');
-const viewKanban  = document.getElementById('viewKanban');
 const filterForm  = document.getElementById('filterForm');
 const statusInput = document.getElementById('statusHiddenInput');
 const listTable   = document.getElementById('chamListTable');
@@ -25,18 +22,6 @@ const densityBtn  = document.getElementById('chamDensityBtn');
 const densityIcon = document.getElementById('chamDensityIcon');
 const searchInput = document.getElementById('chamSearchInput');
 const prioFilter  = document.getElementById('chamPrioFilter');
-
-/* ── View toggle ────────────────────────────────────────── */
-function applyView(view) {
-    viewBtns.forEach(b => b.classList.toggle('active', b.dataset.view === view));
-    viewLista?.classList.toggle('d-none',  view !== 'lista');
-    viewKanban?.classList.toggle('d-none', view !== 'kanban');
-    localStorage.setItem(VIEW_KEY, view);
-}
-
-applyView(localStorage.getItem(VIEW_KEY) || 'lista');
-
-viewBtns.forEach(btn => btn.addEventListener('click', () => applyView(btn.dataset.view)));
 
 /* ── Density toggle ─────────────────────────────────────── */
 function applyDensity(density) {
@@ -60,7 +45,6 @@ densityBtn?.addEventListener('click', () => {
 function showLoadingSkeleton() {
     document.getElementById('ticketsLoading')?.classList.remove('d-none');
     viewLista?.classList.add('d-none');
-    viewKanban?.classList.add('d-none');
 }
 
 document.querySelectorAll('[data-filter-status]').forEach((card, idx) => {
@@ -123,12 +107,6 @@ document.addEventListener('keydown', e => {
         if (modalEl) Modal.getOrCreateInstance(modalEl).show();
         return;
     }
-
-    // 'l' — switch to lista
-    if (key === 'l' || key === 'L') { applyView('lista'); return; }
-
-    // 'k' — switch to kanban
-    if (key === 'k' || key === 'K') { applyView('kanban'); return; }
 
     // 'd' — toggle density
     if (key === 'd' || key === 'D') {

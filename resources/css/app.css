@@ -1846,6 +1846,19 @@ textarea.form-control {
     border-bottom-color: #1c2f47;
 }
 
+/* Distinct table header — slightly darker in light mode, lighter in dark mode */
+.table > thead.table-light > tr > th,
+.table > thead.table-light > tr > td {
+    background-color: #ebedf1;
+}
+
+[data-theme="dark"] .table > thead.table-light > tr > th,
+[data-theme="dark"] .table > thead.table-light > tr > td {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.6);
+    border-bottom-color: #1c2f47;
+}
+
 [data-theme="dark"] .page-link {
     background: #0d1a2e;
     border-color: #1c2f47;

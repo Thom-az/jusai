@@ -24,8 +24,8 @@
         </x-slot>
     </x-drawer>
 
-    {{-- Trigger em qualquer lugar da página --}}
-    <button @click="$dispatch('open-drawer', { id: 'drawerCaso' })">Ver detalhes</button>
+    // Trigger em qualquer lugar da página:
+    // <button @click="$dispatch('open-drawer', { id: 'drawerCaso' })">Ver detalhes</button>
 --}}
 
 @props([
