@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Organizacoes')
+@section('title', 'Organizações')
 
 @push('styles')
     @vite(['resources/css/modules/admin/organizations.css'])
@@ -14,11 +14,11 @@
     <div class="container-fluid px-0">
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
             <div>
-                <h2 class="fw-semibold mb-1">Organizacoes</h2>
+                <h2 class="fw-semibold mb-1">Organizações</h2>
                 <p class="text-secondary mb-0 small">Escritorios ativos, trials e planos.</p>
             </div>
             <span class="badge text-bg-secondary rounded-pill px-3 py-2">
-                {{ $organizations->total() }} escritorios
+                {{ $organizations->total() }} escritórios
             </span>
         </div>
 
@@ -27,10 +27,10 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr style="border-bottom: 1px solid rgba(215,220,229,0.9);">
-                            <th class="ps-4 py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Escritorio</th>
+                            <th class="ps-4 py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Escritório</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Plano</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Status</th>
-                            <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Usuarios</th>
+                            <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Usuários</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Criado em</th>
                         </tr>
                     </thead>
@@ -65,7 +65,7 @@
                             <tr>
                                 <td colspan="5" class="text-center text-secondary py-5">
                                     <i class="bi bi-building fs-2 d-block mb-2 opacity-50"></i>
-                                    Nenhuma organizacao cadastrada.
+                                    Nenhuma organização cadastrada.
                                 </td>
                             </tr>
                         @endforelse

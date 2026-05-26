@@ -15,7 +15,7 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge text-bg-warning text-dark rounded-pill px-3 py-2">
-                    <i class="bi bi-clock me-1"></i>Proxima fase
+                    <i class="bi bi-clock me-1"></i>Próxima fase
                 </span>
                 <a href="{{ route('admin.leads.comparison') }}" class="btn btn-outline-primary rounded-pill px-3">
                     <i class="bi bi-bar-chart me-2"></i>Comparativo
@@ -24,7 +24,7 @@
         </div>
 
         <div class="row g-3 mb-4">
-            @foreach ([['label'=>'Total no funil'], ['label'=>'Demos agendadas'], ['label'=>'Taxa de conversao'], ['label'=>'Ticket medio']] as $sk)
+            @foreach ([['label'=>'Total no funil'], ['label'=>'Demos agendadas'], ['label'=>'Taxa de conversão'], ['label'=>'Ticket médio']] as $sk)
                 <div class="col-sm-6 col-xl-3">
                     <div class="metric-card">
                         <div class="d-flex align-items-start justify-content-between gap-3">
@@ -65,7 +65,7 @@
 
         <div class="text-center mt-4">
             <span class="badge text-bg-secondary rounded-pill px-3 py-2 small">
-                <i class="bi bi-clock me-1"></i>Kanban completo disponivel na proxima fase
+                <i class="bi bi-clock me-1"></i>Kanban completo disponível na próxima fase
             </span>
         </div>
     </div>

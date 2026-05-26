@@ -71,16 +71,16 @@
                 @elseif ($document->status === 'processing')
                     <div class="surface-card p-4 mb-4 text-center">
                         <div class="spinner-border text-primary mb-3" role="status"></div>
-                        <div class="fw-semibold">Processando analise de IA...</div>
-                        <div class="text-secondary small">O resumo sera gerado em breve.</div>
+                        <div class="fw-semibold">Processando análise de IA...</div>
+                        <div class="text-secondary small">O resumo será gerado em breve.</div>
                     </div>
                 @endif
 
                 <div class="surface-card p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-semibold mb-0">Analises de IA</h5>
+                        <h5 class="fw-semibold mb-0">Análises de IA</h5>
                         <a href="{{ route('review.index') }}?case_id={{ $document->legal_case_id }}" wire:navigate class="btn btn-outline-primary rounded-pill btn-sm">
-                            <i class="bi bi-plus me-1"></i>Nova analise
+                            <i class="bi bi-plus me-1"></i>Nova análise
                         </a>
                     </div>
                     @forelse ($document->aiReviews->sortByDesc('created_at') as $review)
@@ -105,14 +105,14 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-secondary small">Nenhuma analise iniciada para este documento.</p>
+                        <p class="text-secondary small">Nenhuma análise iniciada para este documento.</p>
                     @endforelse
                 </div>
             </div>
 
             <div class="col-lg-4">
                 <div class="surface-card p-4">
-                    <h5 class="fw-semibold mb-3">Informacoes</h5>
+                    <h5 class="fw-semibold mb-3">Informações</h5>
                     <dl class="row mb-0">
                         <dt class="col-5 text-secondary small text-uppercase">Tipo</dt>
                         <dd class="col-7">{{ $document->mime_type }}</dd>

@@ -61,7 +61,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" href="#analises">
-                    <i class="bi bi-cpu me-1"></i>Analises de IA
+                    <i class="bi bi-cpu me-1"></i>Análises de IA
                     <span class="badge text-bg-secondary ms-1">{{ $case->aiReviews->count() }}</span>
                 </a>
             </li>
@@ -115,9 +115,9 @@
 
             <div class="tab-pane fade" id="analises">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-semibold mb-0">Analises de IA</h5>
+                    <h5 class="fw-semibold mb-0">Análises de IA</h5>
                     <a href="{{ route('review.index') }}?case_id={{ $case->id }}" wire:navigate class="btn btn-primary rounded-pill">
-                        <i class="bi bi-cpu me-2"></i>Nova analise
+                        <i class="bi bi-cpu me-2"></i>Nova análise
                     </a>
                 </div>
                 @forelse ($case->aiReviews->sortByDesc('created_at') as $review)
@@ -149,7 +149,7 @@
                 @empty
                     <div class="surface-card p-4 text-center text-secondary">
                         <i class="bi bi-cpu fs-2 d-block mb-2"></i>
-                        Nenhuma analise de IA realizada ainda.
+                        Nenhuma análise de IA realizada ainda.
                     </div>
                 @endforelse
             </div>
@@ -174,8 +174,8 @@
                             </div>
                         @endif
                         <div class="col-sm-6">
-                            <div class="text-secondary small text-uppercase fw-semibold mb-1">Responsavel</div>
-                            <div>{{ $case->assignedUser?->name ?? 'Nao atribuido' }}</div>
+                            <div class="text-secondary small text-uppercase fw-semibold mb-1">Responsável</div>
+                            <div>{{ $case->assignedUser?->name ?? 'Não atribuído' }}</div>
                         </div>
                         <div class="col-sm-6">
                             <div class="text-secondary small text-uppercase fw-semibold mb-1">Criado por</div>
@@ -187,7 +187,7 @@
                         </div>
                         @if ($case->description)
                             <div class="col-12">
-                                <div class="text-secondary small text-uppercase fw-semibold mb-1">Descricao</div>
+                                <div class="text-secondary small text-uppercase fw-semibold mb-1">Descrição</div>
                                 <div style="white-space: pre-wrap;">{{ $case->description }}</div>
                             </div>
                         @endif

@@ -14,7 +14,7 @@
                 <p class="text-secondary mb-0 small">Gerenciamento de tickets e SLA.</p>
             </div>
             <span class="badge text-bg-warning text-dark rounded-pill px-3 py-2">
-                <i class="bi bi-clock me-1"></i>Proxima fase
+                <i class="bi bi-clock me-1"></i>Próxima fase
             </span>
         </div>
 
@@ -61,7 +61,7 @@
                         </div>
                     @endfor
                     <div class="text-center pt-2">
-                        <span class="badge text-bg-secondary rounded-pill px-3 py-2 small">Disponivel na proxima fase</span>
+                        <span class="badge text-bg-secondary rounded-pill px-3 py-2 small">Disponível na próxima fase</span>
                     </div>
                 </div>
             </div>

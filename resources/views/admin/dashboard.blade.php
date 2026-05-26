@@ -16,7 +16,7 @@
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
             <div>
                 <h2 class="fw-semibold mb-1">Painel Administrativo</h2>
-                <p class="text-secondary mb-0 small">Visao geral de MRR, suporte e pipeline de vendas.</p>
+                <p class="text-secondary mb-0 small">Visão geral de MRR, suporte e pipeline de vendas.</p>
             </div>
             <span class="badge text-bg-danger px-3 py-2 rounded-pill fs-6">
                 <i class="bi bi-shield-lock-fill me-1"></i>Acesso restrito
@@ -47,8 +47,8 @@
                 <div class="surface-card p-4 h-100">
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <div>
-                            <h5 class="fw-semibold mb-1">Organizacoes recentes</h5>
-                            <p class="text-secondary small mb-0">Ultimos escritorios cadastrados.</p>
+                            <h5 class="fw-semibold mb-1">Organizações recentes</h5>
+                            <p class="text-secondary small mb-0">Últimos escritórios cadastrados.</p>
                         </div>
                         <a href="{{ route('admin.organizations.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver todas</a>
                     </div>
@@ -76,7 +76,7 @@
                     @empty
                         <div class="text-center text-secondary py-4">
                             <i class="bi bi-building fs-2 d-block mb-2 opacity-50"></i>
-                            Nenhuma organizacao cadastrada.
+                            Nenhuma organização cadastrada.
                         </div>
                     @endforelse
                 </div>

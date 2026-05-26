@@ -24,16 +24,16 @@
                         <h5 class="fw-semibold mb-4">Dados do caso</h5>
 
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-semibold">Titulo do caso <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label fw-semibold">Título do caso <span class="text-danger">*</span></label>
                             <input type="text" id="title" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $case->title) }}">
                             @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <label for="area" class="form-label fw-semibold">Area juridica</label>
+                                <label for="area" class="form-label fw-semibold">Área jurídica</label>
                                 <select id="area" name="area" class="form-select @error('area') is-invalid @enderror">
-                                    @foreach (['civil' => 'Civil', 'criminal' => 'Criminal', 'trabalhista' => 'Trabalhista', 'tributario' => 'Tributario', 'empresarial' => 'Empresarial', 'familia' => 'Familia', 'imobiliario' => 'Imobiliario', 'previdenciario' => 'Previdenciario', 'administrativo' => 'Administrativo', 'outro' => 'Outro'] as $val => $label)
+                                    @foreach (['civil' => 'Civil', 'criminal' => 'Criminal', 'trabalhista' => 'Trabalhista', 'tributario' => 'Tributário', 'empresarial' => 'Empresarial', 'familia' => 'Família', 'imobiliario' => 'Imobiliário', 'previdenciario' => 'Previdenciário', 'administrativo' => 'Administrativo', 'outro' => 'Outro'] as $val => $label)
                                         <option value="{{ $val }}" @selected(old('area', $case->area) === $val)>{{ $label }}</option>
                                     @endforeach
                                 </select>
@@ -52,10 +52,10 @@
 
                         <div class="row g-3 mt-0">
                             <div class="col-sm-6">
-                                <label for="risk_level" class="form-label fw-semibold">Nivel de risco</label>
+                                <label for="risk_level" class="form-label fw-semibold">Nível de risco</label>
                                 <select id="risk_level" name="risk_level" class="form-select @error('risk_level') is-invalid @enderror">
-                                    <option value="">Nao definido</option>
-                                    @foreach (['baixo' => 'Baixo', 'medio' => 'Medio', 'alto' => 'Alto', 'critico' => 'Critico'] as $val => $label)
+                                    <option value="">Não definido</option>
+                                    @foreach (['baixo' => 'Baixo', 'medio' => 'Médio', 'alto' => 'Alto', 'critico' => 'Crítico'] as $val => $label)
                                         <option value="{{ $val }}" @selected(old('risk_level', $case->risk_level) === $val)>{{ $label }}</option>
                                     @endforeach
                                 </select>
@@ -69,9 +69,9 @@
                         </div>
 
                         <div class="mt-3">
-                            <label for="assigned_to" class="form-label fw-semibold">Responsavel</label>
+                            <label for="assigned_to" class="form-label fw-semibold">Responsável</label>
                             <select id="assigned_to" name="assigned_to" class="form-select @error('assigned_to') is-invalid @enderror">
-                                <option value="">Nao atribuido</option>
+                                <option value="">Não atribuído</option>
                                 @foreach ($lawyers as $lawyer)
                                     <option value="{{ $lawyer->id }}" @selected(old('assigned_to', $case->assigned_to) == $lawyer->id)>{{ $lawyer->name }}</option>
                                 @endforeach
@@ -80,7 +80,7 @@
                         </div>
 
                         <div class="mt-3">
-                            <label for="description" class="form-label fw-semibold">Descricao</label>
+                            <label for="description" class="form-label fw-semibold">Descrição</label>
                             <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="4">{{ old('description', $case->description) }}</textarea>
                             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -117,7 +117,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">
-                        <i class="bi bi-check-circle me-2"></i>Salvar alteracoes
+                        <i class="bi bi-check-circle me-2"></i>Salvar alterações
                     </button>
                 </div>
             </div>

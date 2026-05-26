@@ -13,11 +13,11 @@
                 <div class="col-xl-8">
                     <span class="hero-chip mb-3">
                         <i class="bi bi-stars"></i>
-                        Copiloto juridico com suporte de IA
+                        Copiloto jurídico com suporte de IA
                     </span>
-                    <h1 class="display-6 fw-semibold mb-3">Operacao juridica organizada, rastreavel e com IA integrada.</h1>
+                    <h1 class="display-6 fw-semibold mb-3">Operação jurídica organizada, rastreável e com IA integrada.</h1>
                     <p class="fs-5 text-white-50 mb-4">
-                        Gerencie casos, documentos e minutas com analise de IA. Todo resultado deve ser validado por profissional habilitado.
+                        Gerencie casos, documentos e minutas com análise de IA. Todo resultado deve ser validado por profissional habilitado.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('cases.create') }}" wire:navigate class="btn btn-light rounded-pill px-4">
@@ -69,7 +69,7 @@
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
                         <div>
                             <h2 class="section-title mb-1">Casos recentes</h2>
-                            <p class="section-subtitle mb-0">Dossies mais movimentados no momento.</p>
+                            <p class="section-subtitle mb-0">Dossiês mais movimentados no momento.</p>
                         </div>
                         <a href="{{ route('cases.index') }}" wire:navigate class="btn btn-outline-primary rounded-pill">
                             <i class="bi bi-arrow-right me-2"></i>Ver todos
@@ -107,7 +107,7 @@
                     <div class="d-flex justify-content-between align-items-start gap-3 mb-4 flex-wrap">
                         <div>
                             <h2 class="section-title mb-1">Atividades recentes</h2>
-                            <p class="section-subtitle mb-0">Auditoria dos eventos mais recentes da operacao.</p>
+                            <p class="section-subtitle mb-0">Auditoria dos eventos mais recentes da operação.</p>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@
             <div class="col-xl-4">
                 <div class="surface-card p-4 mb-4">
                     <div class="mb-4">
-                        <h2 class="section-title mb-1">Atalhos rapidos</h2>
+                        <h2 class="section-title mb-1">Atalhos rápidos</h2>
                         <p class="section-subtitle mb-0">Entradas principais para os fluxos.</p>
                     </div>
 
@@ -154,7 +154,7 @@
                     <div class="d-flex align-items-start gap-3">
                         <i class="bi bi-exclamation-diamond fs-3"></i>
                         <div>
-                            <div class="fw-semibold mb-2">Revisao juridica obrigatoria</div>
+                            <div class="fw-semibold mb-2">Revisão jurídica obrigatória</div>
                             <p class="mb-0 small">{{ config('jusai.ai.review_notice') }}</p>
                         </div>
                     </div>

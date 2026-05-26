@@ -14,12 +14,12 @@
                 <p class="text-secondary mb-0 small">Assinaturas, faturas e receita recorrente.</p>
             </div>
             <span class="badge text-bg-warning text-dark rounded-pill px-3 py-2">
-                <i class="bi bi-clock me-1"></i>Proxima fase
+                <i class="bi bi-clock me-1"></i>Próxima fase
             </span>
         </div>
 
         <div class="row g-3 mb-4">
-            @foreach ([['label'=>'MRR', 'w'=>'90px'], ['label'=>'ARR', 'w'=>'80px'], ['label'=>'Churn', 'w'=>'70px'], ['label'=>'LTV medio', 'w'=>'100px']] as $sk)
+            @foreach ([['label'=>'MRR', 'w'=>'90px'], ['label'=>'ARR', 'w'=>'80px'], ['label'=>'Churn', 'w'=>'70px'], ['label'=>'LTV médio', 'w'=>'100px']] as $sk)
                 <div class="col-sm-6 col-xl-3">
                     <div class="metric-card h-100">
                         <div class="d-flex align-items-start justify-content-between gap-3">
@@ -59,7 +59,7 @@
                         </div>
                     @endfor
                     <div class="text-center pt-2">
-                        <span class="badge text-bg-secondary rounded-pill px-3 py-2 small">Disponivel na proxima fase</span>
+                        <span class="badge text-bg-secondary rounded-pill px-3 py-2 small">Disponível na próxima fase</span>
                     </div>
                 </div>
             </div>

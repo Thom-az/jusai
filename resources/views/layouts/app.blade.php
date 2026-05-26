@@ -60,7 +60,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
                 </div>
                 <div class="toast-body" id="appToastBody">
-                    Este recurso sera entregue na proxima etapa.
+                    Este recurso será entregue na próxima etapa.
                 </div>
             </div>
         </div>
