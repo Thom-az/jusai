@@ -31,7 +31,7 @@
             @endif
 
             <div class="sidebar-header d-flex align-items-start gap-3">
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-brand d-flex align-items-center gap-3">
+                <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="sidebar-brand d-flex align-items-center gap-3">
                     <span class="sidebar-brand-copy">
                         <span class="d-block fw-semibold fs-5">{{ config('jusai.brand.name') }}</span>
                         <span class="small text-secondary">Painel Admin</span>

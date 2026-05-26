@@ -23,7 +23,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 gap-lg-3">
-            <a href="{{ route('cases.create') }}" class="btn btn-primary rounded-pill px-3 px-lg-4">
+            <a href="{{ route('cases.create') }}" wire:navigate class="btn btn-primary rounded-pill px-3 px-lg-4">
                 <i class="bi bi-plus-circle me-2"></i>Novo caso
             </a>
 
@@ -47,12 +47,12 @@
                     </li>
                     <li><hr class="dropdown-divider my-1"></li>
                     <li>
-                        <a class="dropdown-item rounded-2 py-2" href="{{ route('profile.edit') }}">
+                        <a class="dropdown-item rounded-2 py-2" wire:navigate href="{{ route('profile.edit') }}">
                             <i class="bi bi-person me-2 text-secondary"></i>Meu perfil
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item rounded-2 py-2" href="{{ route('settings.index') }}">
+                        <a class="dropdown-item rounded-2 py-2" wire:navigate href="{{ route('settings.index') }}">
                             <i class="bi bi-gear me-2 text-secondary"></i>Configurações
                         </a>
                     </li>

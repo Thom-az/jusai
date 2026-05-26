@@ -3,6 +3,7 @@
         @php $isActive = request()->is($item['pattern']); @endphp
         <a
             href="{{ route($item['route']) }}"
+            wire:navigate.hover
             class="sidebar-link {{ $isActive ? 'active' : '' }}"
             title="{{ $item['label'] }}"
             data-bs-toggle="tooltip"

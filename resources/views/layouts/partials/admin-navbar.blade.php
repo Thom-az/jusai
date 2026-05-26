@@ -19,7 +19,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 gap-lg-3">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-pill px-3">
+            <a href="{{ route('admin.dashboard') }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                 <i class="bi bi-grid me-2"></i>Visao geral
             </a>
 
