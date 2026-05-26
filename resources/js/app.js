@@ -1,6 +1,304 @@
 import 'bootstrap';
 import { Tooltip, Toast } from 'bootstrap';
 
+const sk = {
+    text:    (w = '60%', mb = 2) => `<div class="skeleton skeleton-text mb-${mb}" style="width:${w}"></div>`,
+    heading: (w = '40%')         => `<div class="skeleton skeleton-heading mb-2" style="width:${w}"></div>`,
+    circle:  (s = '2.5rem')      => `<div class="skeleton skeleton-circle flex-shrink-0" style="width:${s};height:${s}"></div>`,
+    btn:     (w = '8rem')        => `<div class="skeleton skeleton-btn rounded-pill" style="width:${w}"></div>`,
+    badge:   (w = '5rem')        => `<div class="skeleton skeleton-badge" style="width:${w}"></div>`,
+    block:   (h = '3rem', w = '100%', r = '.5rem') => `<div class="skeleton" style="width:${w};height:${h};border-radius:${r}"></div>`,
+    input:   () => `<div class="mb-3"><div class="skeleton skeleton-text mb-1" style="width:30%"></div><div class="skeleton" style="height:2.5rem;border-radius:.5rem"></div></div>`,
+    metricCard: () => `<div class="metric-card"><div class="d-flex align-items-start justify-content-between gap-3"><div class="flex-grow-1"><div class="skeleton skeleton-text mb-2" style="width:52%"></div><div class="skeleton mb-2" style="width:45%;height:1.85rem;border-radius:.5rem"></div><div class="skeleton skeleton-text" style="width:68%"></div></div><div class="skeleton skeleton-circle flex-shrink-0" style="width:3rem;height:3rem"></div></div></div>`,
+    listRow: (w = '60%') => `<div class="list-item d-flex align-items-center gap-3 mb-2"><div class="skeleton skeleton-circle flex-shrink-0" style="width:2.25rem;height:2.25rem"></div><div class="flex-grow-1"><div class="skeleton skeleton-text mb-1" style="width:${w}"></div><div class="skeleton skeleton-text" style="width:40%"></div></div><div class="skeleton skeleton-badge flex-shrink-0" style="width:5rem"></div><div class="skeleton skeleton-text flex-shrink-0" style="width:3.5rem;margin-bottom:0"></div></div>`,
+};
+
+function getSkeletonForUrl(href) {
+    let p;
+    try { p = new URL(href, window.location.href).pathname.replace(/\/$/, '') || '/'; } catch { p = href; }
+
+    const wrap = (inner) => `<div class="container-fluid px-0">${inner}</div>`;
+
+    const pageHeader = (btnW = '9rem', sub = true) => `
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div>${sk.heading('12rem')}${sub ? sk.text('18rem') : ''}</div>
+            ${btnW ? `<div class="skeleton skeleton-btn rounded-pill" style="width:${btnW}"></div>` : ''}
+        </div>`;
+
+    const formSurface = (n = 4) =>
+        `<div class="surface-card p-4">${Array.from({length: n}, () => sk.input()).join('')}</div>`;
+
+    const filterSurface = (n = 4) => {
+        const col = n <= 3 ? 'col-sm-6 col-lg-4' : 'col-sm-6 col-lg-3';
+        return `
+        <div class="surface-card p-3 mb-4">
+            <div class="row g-3">
+                ${Array.from({length: n}, () => `<div class="${col}">${sk.input()}</div>`).join('')}
+            </div>
+        </div>`;
+    };
+
+    const listRows = (ws = [62, 71, 55, 78, 65, 58]) => ws.map(w => sk.listRow(`${w}%`)).join('');
+
+    // /dashboard
+    if (p === '/dashboard' || p === '') {
+        return wrap(`
+            ${pageHeader()}
+            <div class="row g-3 mb-4">
+                ${[0,1,2,3].map(() => `<div class="col-sm-6 col-xxl-3">${sk.metricCard()}</div>`).join('')}
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${listRows([62, 71, 55, 78, 65])}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="surface-card p-4">
+                        ${sk.heading('8rem')}
+                        ${[0,1,2,3].map(() => `<div class="d-flex align-items-center gap-3 mb-3">${sk.circle('2.25rem')}<div class="flex-grow-1">${sk.text('70%', 0)}</div></div>`).join('')}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /casos/create — must be before the wildcard /casos/{id}
+    if (p === '/casos/create') {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(5)}`);
+    }
+
+    // /casos/{id}/edit
+    if (/^\/casos\/[^/]+\/edit$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(5)}`);
+    }
+
+    // /casos/{id} (show)
+    if (/^\/casos\/[^/]+$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">${sk.btn('6rem')}<div>${sk.heading('16rem')}${sk.text('12rem')}</div></div>
+                <div class="d-flex gap-2">${sk.btn('7rem')}${sk.btn('5rem')}</div>
+            </div>
+            <div class="surface-card p-0 mb-4">
+                <div class="d-flex gap-3 p-3 border-bottom">${[0,1,2].map(() => sk.badge('6rem')).join('')}</div>
+                <div class="p-4">
+                    ${[0,1,2,3].map(() => `<div class="surface-card p-3 mb-3"><div class="d-flex align-items-center gap-3">${sk.circle('2.5rem')}<div class="flex-grow-1">${sk.text('55%',1)}${sk.text('35%')}</div>${sk.btn('5rem')}</div></div>`).join('')}
+                </div>
+            </div>`);
+    }
+
+    // /casos (list)
+    if (p === '/casos') {
+        return wrap(`
+            ${pageHeader('9rem')}
+            ${filterSurface(4)}
+            <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // /documentos/create — before wildcard
+    if (p === '/documentos/create') {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(4)}`);
+    }
+
+    // /documentos/{id}/edit
+    if (/^\/documentos\/[^/]+\/edit$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(4)}`);
+    }
+
+    // /documentos/{id} (show) — 2-column AI summary + info sidebar
+    if (/^\/documentos\/[^/]+$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">${sk.btn('6rem')}<div>${sk.heading('16rem')}${sk.text('12rem')}</div></div>
+                ${sk.btn('9rem')}
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${[0,1,2,3,4].map(() => sk.text('100%')).join('')}
+                        <div class="mt-3">${[0,1,2].map(() => sk.text('80%')).join('')}</div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="surface-card p-4">
+                        ${sk.heading('8rem')}
+                        ${[0,1,2,3].map(() => `<div class="d-flex justify-content-between mb-2">${sk.text('40%',0)}${sk.text('35%',0)}</div>`).join('')}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /documentos (list)
+    if (p === '/documentos') {
+        return wrap(`
+            ${pageHeader('10rem')}
+            ${filterSurface(3)}
+            <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // /revisor/{id} (show) — 2-column result + details
+    if (/^\/revisor\/[^/]+$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+                ${sk.badge('6rem')}
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${[0,1,2,3,4,5].map(() => sk.text('100%')).join('')}
+                        <div class="mt-4">${[0,1,2].map(() => sk.text('80%')).join('')}</div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="surface-card p-4">
+                        ${sk.heading('8rem')}
+                        ${[0,1,2,3].map(() => `<div class="d-flex justify-content-between mb-2">${sk.text('40%',0)}${sk.text('35%',0)}</div>`).join('')}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /revisor (list) — form left + list right
+    if (p === '/revisor') {
+        return wrap(`
+            ${pageHeader('10rem')}
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <div class="surface-card p-4">
+                        ${sk.heading('8rem')}
+                        ${[0,1,2].map(() => sk.input()).join('')}
+                        ${sk.btn('7rem')}
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${listRows([62, 55, 71, 68, 58])}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /minutas
+    if (p === '/minutas') {
+        return wrap(`
+            ${pageHeader('9rem')}
+            <div class="surface-card p-5 text-center">
+                <div class="d-flex justify-content-center mb-3">${sk.circle('5rem')}</div>
+                ${sk.heading('14rem')}
+                <div class="d-flex justify-content-center">${sk.text('18rem')}</div>
+            </div>`);
+    }
+
+    // /chamados — header + badge strip + command bar + list
+    if (p === '/chamados') {
+        return wrap(`
+            ${pageHeader('9rem')}
+            <div class="d-flex gap-2 mb-4 flex-wrap">
+                ${[0,1,2,3,4,5].map(() => sk.badge('7rem')).join('')}
+            </div>
+            <div class="surface-card p-3 mb-3">${sk.block('2.5rem', '100%', '.5rem')}</div>
+            <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // /configuracoes or /profile
+    if (p === '/configuracoes' || p === '/profile') {
+        return wrap(`
+            <div class="mb-4">${sk.heading('12rem')}${sk.text('18rem')}</div>
+            <div class="row g-3">
+                <div class="col-lg-3">
+                    <div class="surface-card p-4 text-center">
+                        <div class="d-flex justify-content-center mb-3">${sk.circle('5rem')}</div>
+                        ${sk.heading('10rem')}
+                        <div class="d-flex justify-content-center">${sk.text('8rem')}</div>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${[0,1,2,3].map(() => sk.input()).join('')}
+                        ${sk.btn('8rem')}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /admin (dashboard) — 4 metric cards + 2-column lists
+    if (p === '/admin') {
+        return wrap(`
+            ${pageHeader('9rem')}
+            <div class="row g-3 mb-4">
+                ${[0,1,2,3].map(() => `<div class="col-sm-6 col-xxl-3">${sk.metricCard()}</div>`).join('')}
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${listRows([62, 71, 55, 78, 65])}
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="surface-card p-4">
+                        ${sk.heading('10rem')}
+                        ${listRows([55, 68, 72, 60, 58])}
+                    </div>
+                </div>
+            </div>`);
+    }
+
+    // /admin/organizations/create — before wildcard
+    if (p === '/admin/organizations/create') {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(5)}`);
+    }
+
+    // /admin/organizations/{id}/edit
+    if (/^\/admin\/organizations\/[^/]+\/edit$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            ${formSurface(5)}`);
+    }
+
+    // /admin/organizations/{id}
+    if (/^\/admin\/organizations\/[^/]+$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+                ${sk.btn('8rem')}
+            </div>
+            <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // /admin/* generic (financeiro, chamados, leads, organizations list)
+    if (p.startsWith('/admin/')) {
+        return wrap(`
+            ${pageHeader('9rem')}
+            ${filterSurface(3)}
+            <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // fallback
+    return wrap(`
+        ${pageHeader()}
+        <div class="row g-3 mb-4">
+            ${[0,1,2,3].map(() => `<div class="col-sm-6 col-xxl-3">${sk.metricCard()}</div>`).join('')}
+        </div>
+        <div class="surface-card p-4">${listRows()}</div>`);
+}
+
 const PAGE_NAVIGATION_STORAGE_KEY = 'jusai.pending.navigation';
 const PAGE_NAVIGATION_MIN_DURATION = 420;
 const PAGE_NAVIGATION_MAX_AGE = 15000;
@@ -53,18 +351,22 @@ const clearPendingNavigation = () => {
     document.body.prepend(loader);
 
     const root = document.documentElement;
-    const contentMain = document.querySelector('.content-main');
     const incomingNavigation = root.getAttribute('data-page-loading') === 'pending'
         ? readPendingNavigation()
         : null;
 
+    // Sempre consulta o DOM ao executar para suportar navegação SPA (Livewire).
     const showLoader = (shouldDimContent = true) => {
         loader.classList.add('is-loading');
-        if (contentMain && shouldDimContent) contentMain.classList.add('is-navigating');
+        if (shouldDimContent) {
+            const contentMain = document.querySelector('.content-main');
+            if (contentMain) contentMain.classList.add('is-navigating');
+        }
     };
 
-    const finishIncomingLoad = () => {
+    const finishLoad = () => {
         loader.classList.remove('is-loading');
+        const contentMain = document.querySelector('.content-main');
         if (contentMain) contentMain.classList.remove('is-navigating');
         root.removeAttribute('data-page-loading');
         clearPendingNavigation();
@@ -83,7 +385,7 @@ const clearPendingNavigation = () => {
             const remaining = Math.max(0, PAGE_NAVIGATION_MIN_DURATION - elapsed);
 
             window.setTimeout(() => {
-                finishIncomingLoad();
+                finishLoad();
             }, remaining);
         };
 
@@ -96,6 +398,33 @@ const clearPendingNavigation = () => {
         clearPendingNavigation();
     }
 
+    // Capture-phase: roda ANTES do Livewire e do Bootstrap para links wire:navigate.
+    // Garante skeleton + progress bar independente do Livewire estar inicializado.
+    document.addEventListener('click', (event) => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+
+        const anchor = event.target.closest('a[href]');
+        if (!anchor) return;
+
+        const isWireNav = anchor.hasAttribute('wire:navigate') || anchor.hasAttribute('wire:navigate.hover');
+        if (!isWireNav) return;
+        if (anchor.getAttribute('href')?.startsWith('#')) return;
+
+        showLoader(false);
+
+        const cm = document.querySelector('.content-main');
+        if (cm) {
+            cm.style.transition = 'opacity 0.06s ease';
+            cm.style.opacity = '0';
+            setTimeout(() => {
+                cm.innerHTML = getSkeletonForUrl(anchor.href);
+                cm.style.transition = '';
+                cm.style.opacity = '1';
+            }, 60);
+        }
+    }, { capture: true });
+
+    // Bubble-phase: links internos sem wire:navigate (full-page reload).
     document.addEventListener('click', (event) => {
         const anchor = event.target.closest('a[href]');
         if (!anchor) return;
@@ -103,6 +432,10 @@ const clearPendingNavigation = () => {
         const href = anchor.getAttribute('href');
         const bootstrapToggle = anchor.getAttribute('data-bs-toggle');
         const blocksNavigationLoader = ['collapse', 'dropdown', 'modal', 'offcanvas', 'pill', 'tab'].includes(bootstrapToggle ?? '');
+
+        if (anchor.hasAttribute('wire:navigate') || anchor.hasAttribute('wire:navigate.hover')) {
+            return;
+        }
 
         if (
             !href ||
@@ -147,9 +480,20 @@ const clearPendingNavigation = () => {
             href: `${url.pathname}${url.search}${url.hash}`,
         });
 
+        const contentMainNow = document.querySelector('.content-main');
+        if (contentMainNow) {
+            contentMainNow.style.transition = 'opacity 0.06s ease';
+            contentMainNow.style.opacity = '0';
+            window.setTimeout(() => {
+                contentMainNow.innerHTML = getSkeletonForUrl(url.href);
+                contentMainNow.style.transition = '';
+                contentMainNow.style.opacity = '1';
+            }, 60);
+        }
+
         window.setTimeout(() => {
             window.location.assign(url.href);
-        }, 40);
+        }, 120);
     });
 
     document.addEventListener('submit', (event) => {
@@ -177,13 +521,42 @@ const clearPendingNavigation = () => {
         }
 
         loader.classList.remove('is-loading');
+        const contentMain = document.querySelector('.content-main');
         if (contentMain) contentMain.classList.remove('is-navigating');
         root.removeAttribute('data-page-loading');
         clearPendingNavigation();
     });
+
+    // Integração com navegação SPA do Livewire (wire:navigate / wire:navigate.hover).
+    // O skeleton já foi injetado pelo capture listener no click — aqui só garante o loader.
+    document.addEventListener('livewire:navigating', () => {
+        showLoader(false);
+    });
+
+    document.addEventListener('livewire:navigated', () => {
+        finishLoad();
+        initShell();
+
+        // Fade suave para o conteúdo real após o Livewire trocar o DOM.
+        const contentMain = document.querySelector('.content-main');
+        if (!contentMain) return;
+
+        contentMain.style.opacity = '0';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                contentMain.style.transition = 'opacity 0.22s ease';
+                contentMain.style.opacity = '1';
+                // Limpa o inline style após a transição terminar.
+                contentMain.addEventListener('transitionend', () => {
+                    contentMain.style.transition = '';
+                    contentMain.style.opacity = '';
+                }, { once: true });
+            });
+        });
+    });
 }());
 
-document.addEventListener('DOMContentLoaded', () => {
+function initShell() {
     const sidebarToggleButtons = document.querySelectorAll('[data-sidebar-toggle]');
     const sidebarToggleIcons = document.querySelectorAll('[data-sidebar-toggle-icon]');
     const sidebarStorageKey = 'jusai.sidebar.state';
@@ -272,4 +645,6 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.show();
         });
     });
-});
+}
+
+document.addEventListener('DOMContentLoaded', initShell);

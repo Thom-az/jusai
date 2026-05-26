@@ -989,11 +989,10 @@ html[data-sidebar-state='collapsed'] .sidebar-footer {
     100% { width: 100%; opacity: 0; }
 }
 
-/* Fade-out da área de conteúdo ao navegar */
+/* Bloqueia interação durante navegação tradicional (não-SPA).
+   Para wire:navigate, o JS injeta o skeleton diretamente via opacity inline. */
 .content-main.is-navigating {
-    opacity: 0.45;
     pointer-events: none;
-    transition: opacity 0.18s ease;
 }
 
 [data-theme="dark"] #pageLoader {
