@@ -1,3 +1,20 @@
+@php
+    $topbarAction = null;
+    if (request()->routeIs('cases.index')) {
+        $topbarAction = ['type' => 'modal', 'target' => '#modalNovoCaso', 'icon' => 'bi-folder-plus', 'label' => 'Novo caso'];
+    } elseif (request()->is('casos*')) {
+        $topbarAction = ['type' => 'link', 'href' => route('cases.create'), 'icon' => 'bi-folder-plus', 'label' => 'Novo caso'];
+    } elseif (request()->routeIs('documents.index')) {
+        $topbarAction = ['type' => 'modal', 'target' => '#modalEnviarDoc', 'icon' => 'bi-cloud-arrow-up', 'label' => 'Enviar documento'];
+    } elseif (request()->is('documentos*')) {
+        $topbarAction = ['type' => 'link', 'href' => route('documents.create'), 'icon' => 'bi-cloud-arrow-up', 'label' => 'Enviar documento'];
+    } elseif (request()->is('revisor*')) {
+        $topbarAction = ['type' => 'link', 'href' => route('review.index'), 'icon' => 'bi-cpu', 'label' => 'Nova análise'];
+    } elseif (request()->is('chamados*')) {
+        $topbarAction = ['type' => 'modal', 'target' => '#modalNovoChamado', 'icon' => 'bi-headset', 'label' => 'Novo chamado'];
+    }
+@endphp
+
 <header class="topbar-wrap px-3 px-lg-4 pt-3 pt-lg-4">
     <div class="topbar d-flex align-items-center justify-content-between gap-3 flex-wrap">
         <div class="d-flex align-items-center gap-3 flex-grow-1">
@@ -23,9 +40,18 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 gap-lg-3">
-            <a href="{{ route('cases.create') }}" wire:navigate class="btn btn-primary rounded-pill px-3 px-lg-4">
-                <i class="bi bi-plus-circle me-2"></i>Novo caso
-            </a>
+            @if ($topbarAction)
+                @if ($topbarAction['type'] === 'link')
+                    <a href="{{ $topbarAction['href'] }}" wire:navigate class="btn btn-primary rounded-pill px-3 px-lg-4">
+                        <i class="bi {{ $topbarAction['icon'] }} me-2"></i>{{ $topbarAction['label'] }}
+                    </a>
+                @else
+                    <button type="button" class="btn btn-primary rounded-pill px-3 px-lg-4"
+                            data-bs-toggle="modal" data-bs-target="{{ $topbarAction['target'] }}">
+                        <i class="bi {{ $topbarAction['icon'] }} me-2"></i>{{ $topbarAction['label'] }}
+                    </button>
+                @endif
+            @endif
 
             <button class="btn shell-icon-button position-relative" type="button" data-disabled-action="Central de notificacoes sera conectada na proxima etapa.">
                 <i class="bi bi-bell"></i>

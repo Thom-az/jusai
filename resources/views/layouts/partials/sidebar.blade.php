@@ -52,6 +52,42 @@
                 @endforeach
             </div>
 
+            {{-- Utilidades: indicador de uso de IA + atalhos rápidos (oculto quando recolhido) --}}
+            @if(!$isMobile)
+            <div class="sidebar-utils">
+                @php
+                    $aiUsed  = 245;
+                    $aiLimit = 1000;
+                    $aiPct   = min(100, round($aiUsed / $aiLimit * 100, 1));
+                @endphp
+                <div class="sidebar-usage">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="sidebar-usage-label">
+                            <i class="bi bi-cpu me-1" aria-hidden="true"></i>Análises de IA
+                        </span>
+                        <span class="sidebar-usage-count">{{ $aiUsed }} / {{ number_format($aiLimit, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="sidebar-usage-track">
+                        <div class="sidebar-usage-fill" style="width: {{ $aiPct }}%"></div>
+                    </div>
+                </div>
+
+                <div class="sidebar-quick-links mt-2">
+                    <a href="{{ route('tickets.index') }}" wire:navigate.hover class="sidebar-quick-link">
+                        <i class="bi bi-headset" aria-hidden="true"></i>
+                        <span>Suporte</span>
+                    </a>
+                    <a href="#" class="sidebar-quick-link"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="top"
+                       data-bs-title="Em breve">
+                        <i class="bi bi-stars" aria-hidden="true"></i>
+                        <span>Novidades</span>
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <div class="sidebar-footer d-flex align-items-center gap-3">
                 <div class="avatar-chip flex-shrink-0">{{ $shellUser['initials'] }}</div>
                 <div class="sidebar-meta-copy flex-grow-1 min-width-0">

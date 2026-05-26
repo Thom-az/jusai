@@ -555,6 +555,101 @@ html[data-sidebar-state='collapsed'] .sidebar-footer {
 }
 
 /* =========================================
+   Sidebar utils — uso de IA + atalhos
+   ========================================= */
+
+.sidebar-utils {
+    padding: 0.75rem 0.9rem;
+    border-top: 1px solid rgba(215, 220, 229, 0.5);
+    flex-shrink: 0;
+}
+
+.sidebar-usage-label {
+    font-size: 0.71rem;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.sidebar-usage-count {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.sidebar-usage-track {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(215, 220, 229, 0.65);
+    overflow: hidden;
+}
+
+.sidebar-usage-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--jusai-action) 0%, #60a5fa 100%);
+    transition: width 0.4s ease;
+}
+
+.sidebar-quick-links {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.sidebar-quick-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.73rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.sidebar-quick-link:hover {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--jusai-action);
+}
+
+.sidebar-quick-link i {
+    font-size: 0.88rem;
+    flex-shrink: 0;
+}
+
+html[data-sidebar-state='collapsed'] .sidebar-utils {
+    display: none;
+}
+
+/* Badge "Em breve" nos links da sidebar */
+.sidebar-badge {
+    font-size: 0.6rem;
+    padding: 0.16rem 0.42rem;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--jusai-action);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    overflow: hidden;
+    transition: max-width 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
+    max-width: 5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+html[data-sidebar-state='collapsed'] .sidebar-badge {
+    max-width: 0;
+    opacity: 0;
+    margin: 0 !important;
+}
+
+/* =========================================
    Dark theme — camadas de profundidade
    =========================================
    Inspiração: Linear, Vercel, Raycast
@@ -665,6 +760,170 @@ html[data-sidebar-state='collapsed'] .sidebar-footer {
 [data-theme="dark"] .sidebar-footer         { border-top-color: var(--dk-bd-s); }
 [data-theme="dark"] .sidebar-footer-name    { color: var(--dk-t-a); }
 [data-theme="dark"] .sidebar-footer-role    { color: var(--dk-t-c); }
+
+[data-theme="dark"] .sidebar-utils         { border-top-color: rgba(255,255,255,0.06); }
+[data-theme="dark"] .sidebar-usage-label   { color: rgba(255,255,255,0.3); }
+[data-theme="dark"] .sidebar-usage-count   { color: rgba(255,255,255,0.3); }
+[data-theme="dark"] .sidebar-usage-track   { background: rgba(255,255,255,0.08); }
+[data-theme="dark"] .sidebar-usage-fill    { background: linear-gradient(90deg, #3767d4 0%, #60a5fa 100%); }
+[data-theme="dark"] .sidebar-quick-link    { color: rgba(255,255,255,0.3); }
+[data-theme="dark"] .sidebar-quick-link:hover { background: rgba(96,165,250,0.08); color: #60a5fa; }
+[data-theme="dark"] .sidebar-badge         { background: rgba(96,165,250,0.12); color: #60a5fa; }
+
+/* =========================================
+   Tabela — sortable headers
+   ========================================= */
+
+.sort-th a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: inherit;
+}
+.sort-th a i { font-size: 0.72rem; opacity: 0.5; }
+.sort-th a:hover { color: var(--jusai-action); }
+.sort-th a:hover i { opacity: 1; }
+.sort-th.active a i { opacity: 1; color: var(--jusai-action); }
+
+/* =========================================
+   Bulk action bar flutuante
+   ========================================= */
+
+.bulk-action-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 1.1rem;
+    background: rgba(15, 23, 42, 0.94);
+    border-radius: 999px;
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255,255,255,0.07);
+    backdrop-filter: blur(12px);
+    z-index: 1030;
+    color: #fff;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .bulk-action-bar {
+    background: rgba(30, 41, 59, 0.97);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+/* =========================================
+   Drag & drop overlay
+   ========================================= */
+
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(37, 99, 235, 0.1);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px dashed rgba(37, 99, 235, 0.45);
+    pointer-events: none;
+}
+
+.drop-overlay-inner {
+    text-align: center;
+    color: var(--jusai-action);
+}
+
+.drop-overlay-inner i {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+[data-theme="dark"] .drop-overlay {
+    background: rgba(96, 165, 250, 0.08);
+    border-color: rgba(96, 165, 250, 0.35);
+}
+
+[data-theme="dark"] .drop-overlay-inner { color: #60a5fa; }
+
+/* =========================================
+   Analysis type cards (Revisor)
+   ========================================= */
+
+.analysis-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem 0.75rem;
+    border-radius: 0.875rem;
+    border: 1.5px solid rgba(215, 220, 229, 0.7);
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    user-select: none;
+    min-height: 5.5rem;
+}
+
+.analysis-type-card:hover {
+    border-color: rgba(37, 99, 235, 0.3);
+    background: rgba(37, 99, 235, 0.03);
+}
+
+.analysis-type-card.active,
+.analysis-type-card:has(input:checked) {
+    border-color: var(--jusai-action);
+    background: rgba(37, 99, 235, 0.06);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.analysis-type-card i {
+    font-size: 1.4rem;
+    color: var(--jusai-action);
+}
+
+/* Revisor solo layout */
+.revisor-solo-wrap {
+    width: 100%;
+    max-width: 520px;
+}
+
+.revisor-solo-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    background: rgba(37, 99, 235, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--jusai-action);
+    font-size: 1.5rem;
+}
+
+[data-theme="dark"] .analysis-type-card {
+    border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .analysis-type-card:hover {
+    border-color: rgba(96, 165, 250, 0.3);
+    background: rgba(96, 165, 250, 0.05);
+}
+[data-theme="dark"] .analysis-type-card.active,
+[data-theme="dark"] .analysis-type-card:has(input:checked) {
+    border-color: #3767d4;
+    background: rgba(55, 103, 212, 0.12);
+    box-shadow: 0 0 0 3px rgba(55, 103, 212, 0.2);
+}
+[data-theme="dark"] .analysis-type-card i { color: #60a5fa; }
+[data-theme="dark"] .revisor-solo-icon {
+    background: rgba(96, 165, 250, 0.1);
+    color: #60a5fa;
+}
 
 [data-theme="dark"] .sidebar-toggle-button {
     background: var(--dk-1);
@@ -804,6 +1063,39 @@ html[data-sidebar-state='collapsed'] .sidebar-footer {
     --bs-btn-border-color: var(--dk-bd-n);
     --bs-btn-hover-bg: var(--dk-3);
     --bs-btn-hover-color: #ffffff;
+}
+
+/* --- Botão primário dark (saturação ~15% menor) --- */
+[data-theme="dark"] .btn-primary {
+    background: linear-gradient(135deg, #3767d4 0%, #2c5bb8 100%);
+    box-shadow: 0 6px 18px rgba(55, 103, 212, 0.22);
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    background: linear-gradient(135deg, #2c5bb8 0%, #2450a0 100%);
+    box-shadow: 0 8px 22px rgba(55, 103, 212, 0.30);
+}
+
+[data-theme="dark"] .btn-primary:active,
+[data-theme="dark"] .btn-primary:focus-visible {
+    background: linear-gradient(135deg, #2450a0 0%, #1c448a 100%);
+    box-shadow: 0 4px 12px rgba(55, 103, 212, 0.18);
+}
+
+[data-theme="dark"] .btn-primary:focus-visible {
+    outline-color: rgba(55, 103, 212, 0.35);
+}
+
+/* --- Sidebar ativo dark (saturação ~15% menor) --- */
+[data-theme="dark"] .sidebar-link.active {
+    background: linear-gradient(135deg, #3767d4 0%, #2c5bb8 100%);
+    border-color: rgba(55, 103, 212, 0.22);
+    box-shadow: 0 8px 24px rgba(55, 103, 212, 0.22);
+}
+
+[data-theme="dark"] .sidebar-link.active:hover {
+    background: linear-gradient(135deg, #2c5bb8 0%, #2450a0 100%);
+    box-shadow: 0 10px 28px rgba(55, 103, 212, 0.28);
 }
 
 /* --- Timeline --- */
@@ -1592,6 +1884,35 @@ textarea.form-control {
 [data-theme="dark"] .auth-card {
     background: rgba(13, 26, 46, 0.97);
     border-color: rgba(28, 47, 71, 0.9);
+}
+
+/* =========================================
+   Navigation progress bar (x-navigation-progress)
+   ========================================= */
+
+.nav-progress-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 1099;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.nav-progress-bar {
+    height: 100%;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--jusai-action) 0%, #60a5fa 60%, #bfdbfe 100%);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+    transition: width 0.1s linear;
+    will-change: width;
+}
+
+[data-theme="dark"] .nav-progress-bar {
+    background: linear-gradient(90deg, #60a5fa 0%, #93c5fd 60%, #dbeafe 100%);
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.35);
 }
 
 /* =========================================

@@ -14,6 +14,9 @@
                 <i class="bi {{ $item['icon'] }}" aria-hidden="true"></i>
             </span>
             <span class="sidebar-link-label fw-medium">{{ $item['label'] }}</span>
+            @if (!empty($item['coming_soon']))
+                <span class="sidebar-badge ms-auto">Em breve</span>
+            @endif
         </a>
     @endforeach
 </nav>
