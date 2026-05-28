@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasOrgPermissions;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, HasOrgPermissions;
 
     protected $fillable = [
         'name',
@@ -21,6 +23,17 @@ class User extends Authenticatable
         'organization_id',
         'role',
         'is_active',
+        'phone',
+        'oab_number',
+        'oab_uf',
+        'avatar',
+        'job_title',
+        'theme',
+        'timezone',
+        'notification_prefs',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     protected $hidden = [
@@ -31,9 +44,13 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
+            'email_verified_at'          => 'datetime',
+            'two_factor_confirmed_at'    => 'datetime',
+            'password'                   => 'hashed',
+            'is_active'                  => 'boolean',
+            'notification_prefs'         => 'array',
+            'two_factor_secret'          => 'encrypted',
+            'two_factor_recovery_codes'  => 'encrypted:array',
         ];
     }
 

@@ -12,8 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
+            // Middleware interno do projeto (verifica coluna `role` — mantido para super_admin JusAI)
+            'role'       => \App\Http\Middleware\CheckRole::class,
             'org.access' => \App\Http\Middleware\EnsureOrganizationAccess::class,
+
+            // Middlewares Spatie Permission (roles/permissões granulares do escritório)
+            'spatie.role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'        => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

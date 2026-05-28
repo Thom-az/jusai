@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,10 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Organization extends Model
 {
-    use HasUuids;
+    use HasUuids, Auditable;
+
+    protected string $auditLabel = 'Escritório';
 
     protected $fillable = [
         'name',
+        'legal_name',
         'slug',
         'email',
         'phone',
@@ -20,12 +24,25 @@ class Organization extends Model
         'status',
         'plan',
         'trial_ends_at',
+        'zip_code',
+        'street',
+        'street_number',
+        'complement',
+        'neighborhood',
+        'city',
+        'state',
+        'logo',
+        'logo_dark',
+        'practice_areas',
+        'password_policy',
     ];
 
     protected function casts(): array
     {
         return [
-            'trial_ends_at' => 'datetime',
+            'trial_ends_at'   => 'datetime',
+            'practice_areas'  => 'array',
+            'password_policy' => 'array',
         ];
     }
 
