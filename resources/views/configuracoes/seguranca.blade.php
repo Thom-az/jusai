@@ -18,7 +18,7 @@
                 <p class="text-secondary mb-0 small">Autenticação em dois fatores, sessões ativas, política de senha e conformidade LGPD.</p>
             </div>
 
-            <livewire:admin.configuracoes.seguranca />
+            <livewire:admin.configuracoes.seguranca lazy />
 
         </div>
     </div>

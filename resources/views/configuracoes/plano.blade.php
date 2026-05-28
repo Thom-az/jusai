@@ -18,7 +18,7 @@
                 <p class="text-secondary mb-0 small">Plano atual, uso do mês, histórico de faturas e método de pagamento.</p>
             </div>
 
-            <livewire:admin.configuracoes.plano />
+            <livewire:admin.configuracoes.plano lazy />
 
         </div>
     </div>

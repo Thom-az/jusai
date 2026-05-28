@@ -10,7 +10,7 @@
             navigator.clipboard?.writeText(text);
         }
     }"
-    @show-security-toast.window="showToast($event.detail.message, $event.detail.type)"
+    x-on:show-security-toast.window="showToast($event.detail.message, $event.detail.type)"
 >
 
     {{-- Toast ----------------------------------------------------------------- --}}

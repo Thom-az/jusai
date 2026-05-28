@@ -18,7 +18,7 @@
                 <p class="text-secondary mb-0 small">Convide usuários, gerencie perfis de acesso e acompanhe atividades.</p>
             </div>
 
-            <livewire:admin.configuracoes.equipe />
+            <livewire:admin.configuracoes.equipe lazy />
 
         </div>
     </div>

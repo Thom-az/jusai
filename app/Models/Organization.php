@@ -73,7 +73,8 @@ class Organization extends Model
 
     public function subscription(): HasOne
     {
-        return $this->hasOne(Subscription::class)->latestOfMany('created_at');
+        // latestOfMany generates MAX(uuid) which fails in PostgreSQL; latest() uses ORDER BY + LIMIT 1.
+        return $this->hasOne(Subscription::class)->latest('created_at');
     }
 
     public function subscriptions(): HasMany

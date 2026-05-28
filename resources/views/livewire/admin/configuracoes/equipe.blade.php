@@ -11,7 +11,7 @@
     x-init="invModal = bootstrap.Modal.getOrCreateInstance($refs.modalConvite)"
     @open-invite-modal.window="invModal.show()"
     @close-user-drawer.window="$dispatch('close-drawer', { id: 'drawerUsuario' })"
-    @show-team-toast.window="showToast($event.detail.message, $event.detail.type)"
+    x-on:show-team-toast.window="showToast($event.detail.message, $event.detail.type)"
 >
 
     {{-- =====================================================================

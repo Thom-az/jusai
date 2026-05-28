@@ -18,7 +18,7 @@
                 <p class="text-secondary mb-0 small">Tema, idioma, fuso horário, densidade da interface e notificações.</p>
             </div>
 
-            <livewire:admin.configuracoes.preferencias />
+            <livewire:admin.configuracoes.preferencias lazy />
 
         </div>
     </div>
