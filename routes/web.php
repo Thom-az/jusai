@@ -55,7 +55,28 @@ Route::middleware(['auth', 'org.access'])->group(function () {
     Route::get('/chamados', [SupportTicketController::class, 'index'])->name('tickets.index');
     Route::post('/chamados', [SupportTicketController::class, 'store'])->name('tickets.store');
 
-    Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
+    // Configurações — redireciona raiz para Perfil
+    Route::get('/configuracoes', fn () => redirect()->route('settings.perfil'))->name('settings.index');
+
+    Route::prefix('configuracoes')->name('settings.')->group(function () {
+        // Sempre acessíveis para qualquer usuário autenticado do escritório
+        Route::get('perfil',      [SettingsController::class, 'perfil'])->name('perfil');
+        Route::get('preferencias', [SettingsController::class, 'preferencias'])->name('preferencias');
+        Route::get('seguranca',   [SettingsController::class, 'seguranca'])->name('seguranca');
+
+        // Acesso condicionado a permissões Spatie (defense in depth)
+        Route::get('escritorio', [SettingsController::class, 'escritorio'])
+            ->middleware('permission:view-firm')
+            ->name('escritorio');
+
+        Route::get('equipe', [SettingsController::class, 'equipe'])
+            ->middleware('permission:view-team')
+            ->name('equipe');
+
+        Route::get('plano', [SettingsController::class, 'plano'])
+            ->middleware('permission:view-billing')
+            ->name('plano');
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

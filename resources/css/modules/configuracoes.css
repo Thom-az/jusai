@@ -1,15 +1,157 @@
-/* =========================================
-   Configuracoes — perfil, plano, usuarios
-   ========================================= */
+/* Oculta elementos Alpine até hidratação completa */
+[x-cloak] { display: none !important; }
 
-/* Settings section dividers */
-.settings-section-header {
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--jusai-border);
+/* =============================================================================
+   Configurações — Shell, Sidebar Secundária e Seções
+   =============================================================================
+   Layout padrão (inspirado em GitHub/Linear/Vercel):
+   [Main Sidebar] | content-main > [settings-shell > [settings-sidebar] | [settings-content]]
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   1. SHELL — Wrapper dois-colunas
+   ----------------------------------------------------------------------------- */
+
+.settings-shell {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    min-height: calc(100vh - 120px);
 }
 
-/* Plan card */
+.settings-content {
+    flex: 1;
+    min-width: 0; /* previne overflow em flex */
+}
+
+/* -----------------------------------------------------------------------------
+   2. SIDEBAR SECUNDÁRIA
+   ----------------------------------------------------------------------------- */
+
+.settings-sidebar {
+    width: 216px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.settings-sidebar-header {
+    padding: 0 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--jusai-border, #d7dce5);
+}
+
+/* -----------------------------------------------------------------------------
+   3. NAVEGAÇÃO
+   ----------------------------------------------------------------------------- */
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: 0.5rem;
+}
+
+.settings-nav-group {
+    margin-bottom: 1.25rem;
+}
+
+.settings-nav-group-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--jusai-muted, #6b7280);
+    padding: 0 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.settings-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.6rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--jusai-graphite, #1f2937);
+    text-decoration: none;
+    transition: background 150ms ease, color 150ms ease;
+    line-height: 1.4;
+}
+
+.settings-nav-link:hover {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--jusai-action, #2563eb);
+}
+
+.settings-nav-link.active {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--jusai-action, #2563eb);
+    font-weight: 600;
+}
+
+.settings-nav-link-icon {
+    width: 1.1rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.settings-nav-link.active .settings-nav-link-icon {
+    opacity: 1;
+}
+
+.settings-nav-link-label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* -----------------------------------------------------------------------------
+   4. CABEÇALHO DA SEÇÃO
+   ----------------------------------------------------------------------------- */
+
+.settings-section-header {
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--jusai-border, #d7dce5);
+}
+
+/* -----------------------------------------------------------------------------
+   5. CARDS DE CONFIGURAÇÃO (reaproveitados pelas seções)
+   ----------------------------------------------------------------------------- */
+
+.settings-card {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid var(--jusai-border, #d7dce5);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.settings-card-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.settings-card-description {
+    font-size: 0.8125rem;
+    color: var(--jusai-muted, #6b7280);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+/* -----------------------------------------------------------------------------
+   6. PLAN CARD (Seção Plano)
+   ----------------------------------------------------------------------------- */
+
 .plan-card {
     border: 1px solid rgba(201, 162, 39, 0.3);
     border-radius: 1.4rem;
@@ -29,7 +171,10 @@
     letter-spacing: 0.02em;
 }
 
-/* User table in settings */
+/* -----------------------------------------------------------------------------
+   7. TABELA DE USUÁRIOS (Seção Equipe)
+   ----------------------------------------------------------------------------- */
+
 .settings-user-row {
     display: flex;
     align-items: center;
@@ -42,15 +187,137 @@
     border-bottom: none;
 }
 
-/* Danger zone */
+/* -----------------------------------------------------------------------------
+   8. DANGER ZONE (Seção Segurança / LGPD)
+   ----------------------------------------------------------------------------- */
+
 .danger-zone {
     border: 1px solid rgba(185, 28, 28, 0.2);
     border-radius: 1.4rem;
     background: rgba(185, 28, 28, 0.03);
+    padding: 1.25rem 1.5rem;
+}
+
+/* -----------------------------------------------------------------------------
+   9. PROGRESS BAR DE USO (Seção Plano)
+   ----------------------------------------------------------------------------- */
+
+.usage-bar-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.1);
+    overflow: hidden;
+}
+
+.usage-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--jusai-action, #2563eb);
+    transition: width 400ms ease;
+}
+
+.usage-bar-fill.warning { background: #d97706; } /* > 80% */
+.usage-bar-fill.danger  { background: #b91c1c; } /* > 95% */
+
+/* -----------------------------------------------------------------------------
+   10. RESPONSIVE — Mobile
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+    .settings-shell {
+        flex-direction: column;
+        gap: 0;
+        min-height: auto;
+    }
+
+    .settings-sidebar {
+        width: 100%;
+        position: static;
+        border-bottom: 1px solid var(--jusai-border, #d7dce5);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .settings-sidebar-header {
+        display: none; /* Oculta cabeçalho no mobile — o título da seção é suficiente */
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.25rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 0.25rem;
+    }
+
+    .settings-nav::-webkit-scrollbar { display: none; }
+
+    .settings-nav-group {
+        display: contents; /* "flatten" os grupos para ficarem em linha no mobile */
+        margin-bottom: 0;
+    }
+
+    .settings-nav-group-label {
+        display: none; /* Oculta labels de grupo no mobile */
+    }
+
+    .settings-nav-link {
+        flex-shrink: 0;
+        gap: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+        border-radius: 999px;
+    }
+}
+
+/* =============================================================================
+   DARK MODE
+   ============================================================================= */
+
+[data-theme="dark"] .settings-sidebar-header {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .settings-nav-group-label {
+    color: rgba(255, 255, 255, 0.38);
+}
+
+[data-theme="dark"] .settings-nav-link {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="dark"] .settings-nav-link:hover {
+    background: rgba(96, 165, 250, 0.1);
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .settings-nav-link.active {
+    background: rgba(96, 165, 250, 0.14);
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .settings-sidebar-header span {
+    color: rgba(255, 255, 255, 0.75);
 }
 
 [data-theme="dark"] .settings-section-header {
-    border-bottom-color: #1c2f47;
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .settings-section-header h2 {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme="dark"] .settings-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .settings-card-title {
+    color: rgba(255, 255, 255, 0.92);
 }
 
 [data-theme="dark"] .plan-card {
@@ -64,10 +331,305 @@
 }
 
 [data-theme="dark"] .settings-user-row {
-    border-bottom-color: #1c2f47;
+    border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] .danger-zone {
     border-color: rgba(185, 28, 28, 0.25);
     background: rgba(185, 28, 28, 0.05);
+}
+
+[data-theme="dark"] .usage-bar-track {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .settings-sidebar {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+/* =============================================================================
+   FASE 4 — EQUIPE
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Stat cards (topo)
+   ----------------------------------------------------------------------------- */
+
+.team-stat-card {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid var(--jusai-border, #d7dce5);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    text-align: center;
+}
+
+.team-stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    color: var(--jusai-graphite, #1f2937);
+}
+
+.team-stat-label {
+    font-size: 0.725rem;
+    color: var(--jusai-muted, #6b7280);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+[data-theme="dark"] .team-stat-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .team-stat-number {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* -----------------------------------------------------------------------------
+   User row — clicável
+   ----------------------------------------------------------------------------- */
+
+.team-user-row {
+    cursor: pointer;
+    transition: background 120ms ease;
+}
+
+.team-user-row:hover {
+    background: rgba(37, 99, 235, 0.035);
+}
+
+.team-user-row:focus-visible {
+    outline: 2px solid var(--jusai-action, #2563eb);
+    outline-offset: -2px;
+}
+
+[data-theme="dark"] .team-user-row:hover {
+    background: rgba(96, 165, 250, 0.06);
+}
+
+/* -----------------------------------------------------------------------------
+   Avatar com iniciais + imagem
+   ----------------------------------------------------------------------------- */
+
+.team-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    overflow: hidden;
+    letter-spacing: 0.02em;
+}
+
+.team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Cores de avatar por role (light) */
+.team-avatar.role--admin      { background: rgba(185, 28, 28, 0.1);  color: #b91c1c; }
+.team-avatar.role--socio      { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+.team-avatar.role--advogado   { background: rgba(37, 99, 235, 0.1);  color: #2563eb; }
+.team-avatar.role--estagiario { background: rgba(6, 182, 212, 0.1);  color: #0891b2; }
+.team-avatar.role--secretario { background: rgba(5, 150, 105, 0.1);  color: #059669; }
+.team-avatar.role--financeiro  { background: rgba(217, 119, 6, 0.1);  color: #d97706; }
+.team-avatar.role--default    { background: rgba(107, 114, 128, 0.1);color: #6b7280; }
+
+/* Cores de avatar por role (dark) */
+[data-theme="dark"] .team-avatar.role--admin      { background: rgba(185, 28, 28, 0.18);  color: #fca5a5; }
+[data-theme="dark"] .team-avatar.role--socio      { background: rgba(124, 58, 237, 0.18); color: #c4b5fd; }
+[data-theme="dark"] .team-avatar.role--advogado   { background: rgba(37, 99, 235, 0.18);  color: #93c5fd; }
+[data-theme="dark"] .team-avatar.role--estagiario { background: rgba(6, 182, 212, 0.18);  color: #67e8f9; }
+[data-theme="dark"] .team-avatar.role--secretario { background: rgba(5, 150, 105, 0.18);  color: #6ee7b7; }
+[data-theme="dark"] .team-avatar.role--financeiro  { background: rgba(217, 119, 6, 0.18);  color: #fcd34d; }
+[data-theme="dark"] .team-avatar.role--default    { background: rgba(107, 114, 128, 0.18);color: #9ca3af; }
+
+/* -----------------------------------------------------------------------------
+   Role badge (inline, na lista e no drawer)
+   ----------------------------------------------------------------------------- */
+
+.team-role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+}
+
+.team-role-badge.role--admin      { background: rgba(185, 28, 28, 0.08);  color: #b91c1c; }
+.team-role-badge.role--socio      { background: rgba(124, 58, 237, 0.08); color: #7c3aed; }
+.team-role-badge.role--advogado   { background: rgba(37, 99, 235, 0.08);  color: #2563eb; }
+.team-role-badge.role--estagiario { background: rgba(6, 182, 212, 0.08);  color: #0891b2; }
+.team-role-badge.role--secretario { background: rgba(5, 150, 105, 0.08);  color: #059669; }
+.team-role-badge.role--financeiro  { background: rgba(217, 119, 6, 0.08);  color: #d97706; }
+.team-role-badge.role--default    { background: rgba(107, 114, 128, 0.08);color: #6b7280; }
+
+[data-theme="dark"] .team-role-badge.role--admin      { background: rgba(185, 28, 28, 0.18);  color: #fca5a5; }
+[data-theme="dark"] .team-role-badge.role--socio      { background: rgba(124, 58, 237, 0.18); color: #c4b5fd; }
+[data-theme="dark"] .team-role-badge.role--advogado   { background: rgba(37, 99, 235, 0.18);  color: #93c5fd; }
+[data-theme="dark"] .team-role-badge.role--estagiario { background: rgba(6, 182, 212, 0.18);  color: #67e8f9; }
+[data-theme="dark"] .team-role-badge.role--secretario { background: rgba(5, 150, 105, 0.18);  color: #6ee7b7; }
+[data-theme="dark"] .team-role-badge.role--financeiro  { background: rgba(217, 119, 6, 0.18);  color: #fcd34d; }
+[data-theme="dark"] .team-role-badge.role--default    { background: rgba(107, 114, 128, 0.18);color: #9ca3af; }
+
+/* -----------------------------------------------------------------------------
+   Status badge
+   ----------------------------------------------------------------------------- */
+
+.team-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.team-status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.team-status-badge.status--active   { background: rgba(5, 150, 105, 0.1);  color: #059669; }
+.team-status-badge.status--inactive { background: rgba(107, 114, 128, 0.1);color: #6b7280; }
+
+.team-status-badge.status--active   .team-status-dot { background: #059669; }
+.team-status-badge.status--inactive .team-status-dot { background: #9ca3af; }
+
+[data-theme="dark"] .team-status-badge.status--active   { background: rgba(5, 150, 105, 0.18);  color: #6ee7b7; }
+[data-theme="dark"] .team-status-badge.status--inactive { background: rgba(107, 114, 128, 0.18);color: #9ca3af; }
+
+/* -----------------------------------------------------------------------------
+   Invite modal — dica de role e tela de sucesso
+   ----------------------------------------------------------------------------- */
+
+.invite-role-hint {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.65rem 0.875rem;
+    font-size: 0.79rem;
+    color: var(--jusai-muted, #6b7280);
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .invite-role-hint {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(96, 165, 250, 0.15);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.invite-success-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+[data-theme="dark"] .invite-success-icon {
+    background: rgba(5, 150, 105, 0.18);
+    color: #6ee7b7;
+}
+
+.temp-password-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.875rem;
+}
+
+[data-theme="dark"] .temp-password-box {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(96, 165, 250, 0.18);
+}
+
+/* -----------------------------------------------------------------------------
+   Drawer — linhas de detalhe e seções
+   ----------------------------------------------------------------------------- */
+
+.drawer-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(215, 220, 229, 0.45);
+    gap: 1rem;
+}
+
+.drawer-detail-row:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0.5rem;
+}
+
+.drawer-detail-label {
+    font-size: 0.8rem;
+    color: var(--jusai-muted, #6b7280);
+    flex-shrink: 0;
+}
+
+.drawer-detail-value {
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: right;
+}
+
+.drawer-section-label {
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--jusai-muted, #6b7280);
+    margin-bottom: 0.625rem;
+}
+
+.remove-confirm-box {
+    background: rgba(185, 28, 28, 0.04);
+    border: 1px solid rgba(185, 28, 28, 0.18);
+    border-radius: 0.875rem;
+    padding: 1rem 1.1rem;
+}
+
+[data-theme="dark"] .drawer-detail-row {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .drawer-detail-label {
+    color: rgba(255, 255, 255, 0.38);
+}
+
+[data-theme="dark"] .drawer-detail-value {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+[data-theme="dark"] .drawer-section-label {
+    color: rgba(255, 255, 255, 0.32);
+}
+
+[data-theme="dark"] .remove-confirm-box {
+    background: rgba(185, 28, 28, 0.06);
+    border-color: rgba(185, 28, 28, 0.25);
 }

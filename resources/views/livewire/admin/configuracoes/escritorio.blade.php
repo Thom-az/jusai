@@ -1,0 +1,540 @@
+<div
+    x-data="escritorioForm()"
+    @input.capture="hasChanges = true"
+    @change.capture="hasChanges = true"
+    @escritorio-saved.window="onSaved()"
+>
+
+{{-- ============================================================
+     Banner view-only (sem manage-firm)
+     ============================================================ --}}
+@unless($canEdit)
+    <div class="alert d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
+         style="background: rgba(37,99,235,0.07); color: var(--jusai-action);">
+        <i class="bi bi-eye" aria-hidden="true"></i>
+        <span>Você está em modo de visualização. Fale com o administrador do escritório para editar estes dados.</span>
+    </div>
+@endunless
+
+{{-- Banner de sucesso --}}
+<div
+    x-show="saved"
+    x-transition
+    class="alert d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
+    style="background: rgba(15,118,110,0.1); color: #0f766e;"
+    role="alert"
+>
+    <i class="bi bi-check-circle-fill"></i>
+    <span>Dados do escritório atualizados com sucesso.</span>
+</div>
+
+@error('geral')
+    <div class="alert alert-danger rounded-3 border-0 mb-4">{{ $message }}</div>
+@enderror
+
+
+{{-- ============================================================
+     CARD 1: Identidade e logotipo
+     ============================================================ --}}
+<div class="settings-card">
+    <div class="settings-card-title">Identidade</div>
+    <div class="settings-card-description">Logo, nome fantasia e razão social do escritório.</div>
+
+    {{-- Logos --}}
+    <div class="row g-3 mb-4">
+
+        {{-- Logo modo claro --}}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Logotipo (modo claro)</label>
+            <div class="logo-upload-area rounded-3 d-flex flex-column align-items-center justify-content-center gap-2 p-3"
+                 style="border: 2px dashed var(--jusai-border); min-height: 120px; cursor: {{ $canEdit ? 'pointer' : 'default' }}; transition: border-color 200ms;"
+                 @if($canEdit) @click="$refs.logoInput.click()" @endif
+                 @mouseenter="if(@js($canEdit)) $event.target.style.borderColor='var(--jusai-action)'"
+                 @mouseleave="$event.target.style.borderColor='var(--jusai-border)'">
+                <template x-if="logoPreview">
+                    <img :src="logoPreview" alt="Logo" style="max-height:80px;max-width:100%;object-fit:contain;">
+                </template>
+                <template x-if="!logoPreview">
+                    @if(Auth::user()->organization?->logo)
+                        <img src="{{ asset('storage/' . Auth::user()->organization->logo) }}"
+                             alt="Logotipo" style="max-height:80px;max-width:100%;object-fit:contain;">
+                    @else
+                        <i class="bi bi-image text-secondary" style="font-size: 2rem;"></i>
+                        <span class="text-secondary small">{{ $canEdit ? 'Clique para carregar' : 'Sem logotipo' }}</span>
+                    @endif
+                </template>
+            </div>
+            @if($canEdit)
+                <input type="file" wire:model="logoUpload" x-ref="logoInput"
+                       accept="image/*" class="d-none"
+                       @change="onLogoSelected($event, 'logo')">
+                <div class="form-text">JPG, PNG, SVG ou WebP — máx. 3 MB</div>
+            @endif
+            @error('logoUpload') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Logo modo escuro --}}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Logotipo (modo escuro)
+                <span class="text-secondary fw-normal small">(opcional)</span>
+            </label>
+            <div class="logo-upload-area rounded-3 d-flex flex-column align-items-center justify-content-center gap-2 p-3"
+                 style="border: 2px dashed var(--jusai-border); min-height: 120px; background: #1a1a1a; cursor: {{ $canEdit ? 'pointer' : 'default' }};"
+                 @if($canEdit) @click="$refs.logoDarkInput.click()" @endif>
+                <template x-if="logoDarkPreview">
+                    <img :src="logoDarkPreview" alt="Logo escuro" style="max-height:80px;max-width:100%;object-fit:contain;">
+                </template>
+                <template x-if="!logoDarkPreview">
+                    @if(Auth::user()->organization?->logo_dark)
+                        <img src="{{ asset('storage/' . Auth::user()->organization->logo_dark) }}"
+                             alt="Logotipo modo escuro" style="max-height:80px;max-width:100%;object-fit:contain;">
+                    @else
+                        <i class="bi bi-image" style="font-size: 2rem; color: rgba(255,255,255,0.3);"></i>
+                        <span class="small" style="color: rgba(255,255,255,0.35);">{{ $canEdit ? 'Versão para fundo escuro' : 'Sem logotipo escuro' }}</span>
+                    @endif
+                </template>
+            </div>
+            @if($canEdit)
+                <input type="file" wire:model="logoDarkUpload" x-ref="logoDarkInput"
+                       accept="image/*" class="d-none"
+                       @change="onLogoSelected($event, 'dark')">
+                <div class="form-text">Recomendado: versão branca ou clara do logotipo</div>
+            @endif
+            @error('logoDarkUpload') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+        </div>
+    </div>
+
+    {{-- Nome fantasia + Razão social --}}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label fw-medium" for="orgNome">
+                Nome fantasia <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="orgNome" wire:model="name"
+                   class="form-control rounded-3 @error('name') is-invalid @enderror"
+                   placeholder="Como o escritório é conhecido"
+                   @disabled(!$canEdit)>
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-medium" for="orgRazao">Razão social</label>
+            <input type="text" id="orgRazao" wire:model="legalName"
+                   class="form-control rounded-3 @error('legalName') is-invalid @enderror"
+                   placeholder="Denominação formal"
+                   @disabled(!$canEdit)>
+            @error('legalName') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+    </div>
+</div>
+
+
+{{-- ============================================================
+     CARD 2: Dados legais e contato
+     ============================================================ --}}
+<div class="settings-card">
+    <div class="settings-card-title">Dados legais e contato</div>
+    <div class="settings-card-description">CNPJ, telefone e email comercial do escritório.</div>
+
+    <div class="row g-3">
+        {{-- CNPJ --}}
+        <div class="col-md-4">
+            <label class="form-label fw-medium" for="orgCnpj">
+                CNPJ <span class="text-danger">*</span>
+            </label>
+            <input
+                type="text"
+                id="orgCnpj"
+                wire:model="document"
+                @input="document = maskCnpj($event.target.value); $event.target.value = document"
+                class="form-control rounded-3 @error('document') is-invalid @enderror"
+                placeholder="12.345.678/0001-90"
+                maxlength="18"
+                @disabled(!$canEdit)
+            >
+            @error('document') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Telefone --}}
+        <div class="col-md-4">
+            <label class="form-label fw-medium" for="orgTelefone">Telefone comercial</label>
+            <input
+                type="tel"
+                id="orgTelefone"
+                wire:model="phone"
+                @input="phone = maskPhone($event.target.value); $event.target.value = phone"
+                class="form-control rounded-3 @error('phone') is-invalid @enderror"
+                placeholder="(11) 3456-7890"
+                maxlength="15"
+                @disabled(!$canEdit)
+            >
+            @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Email --}}
+        <div class="col-md-4">
+            <label class="form-label fw-medium" for="orgEmail">Email comercial</label>
+            <input
+                type="email"
+                id="orgEmail"
+                wire:model="email"
+                class="form-control rounded-3 @error('email') is-invalid @enderror"
+                placeholder="contato@escritorio.adv.br"
+                @disabled(!$canEdit)
+            >
+            @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+    </div>
+</div>
+
+
+{{-- ============================================================
+     CARD 3: Endereço (com auto-preenchimento via ViaCEP)
+     ============================================================ --}}
+<div class="settings-card">
+    <div class="settings-card-title">Endereço</div>
+    <div class="settings-card-description">Localização física do escritório.</div>
+
+    <div class="row g-3">
+        {{-- CEP --}}
+        <div class="col-md-3">
+            <label class="form-label fw-medium" for="orgCep">CEP</label>
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="orgCep"
+                    wire:model="zipCode"
+                    @input="zipCode = maskCep($event.target.value); $event.target.value = zipCode; maybeFetchCep()"
+                    class="form-control rounded-start-3 @error('zipCode') is-invalid @enderror"
+                    placeholder="00000-000"
+                    maxlength="9"
+                    @disabled(!$canEdit)
+                >
+                <span class="input-group-text" style="border-radius: 0 0.75rem 0.75rem 0;">
+                    <span x-show="cepLoading" class="spinner-border spinner-border-sm text-secondary"></span>
+                    <i x-show="!cepLoading && cepOk" class="bi bi-check-circle-fill text-success"></i>
+                    <i x-show="!cepLoading && cepError" class="bi bi-x-circle-fill text-danger"></i>
+                    <i x-show="!cepLoading && !cepOk && !cepError" class="bi bi-geo-alt text-secondary"></i>
+                </span>
+            </div>
+            @error('zipCode') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            <div class="form-text" x-show="cepError" style="color: var(--jusai-danger);">CEP não encontrado.</div>
+        </div>
+
+        {{-- Logradouro --}}
+        <div class="col-md-6">
+            <label class="form-label fw-medium" for="orgRua">Logradouro</label>
+            <input type="text" id="orgRua" wire:model="street"
+                   class="form-control rounded-3 @error('street') is-invalid @enderror"
+                   placeholder="Rua, Avenida, Alameda..."
+                   @disabled(!$canEdit)>
+            @error('street') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Número --}}
+        <div class="col-md-3">
+            <label class="form-label fw-medium" for="orgNumero">Número</label>
+            <input type="text" id="orgNumero" wire:model="streetNumber"
+                   x-ref="streetNumber"
+                   class="form-control rounded-3 @error('streetNumber') is-invalid @enderror"
+                   placeholder="123 ou S/N"
+                   @disabled(!$canEdit)>
+            @error('streetNumber') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Complemento --}}
+        <div class="col-md-4">
+            <label class="form-label fw-medium" for="orgComplemento">
+                Complemento <span class="text-secondary fw-normal small">(opcional)</span>
+            </label>
+            <input type="text" id="orgComplemento" wire:model="complement"
+                   class="form-control rounded-3"
+                   placeholder="Sala 201, Andar 5..."
+                   @disabled(!$canEdit)>
+        </div>
+
+        {{-- Bairro --}}
+        <div class="col-md-4">
+            <label class="form-label fw-medium" for="orgBairro">Bairro</label>
+            <input type="text" id="orgBairro" wire:model="neighborhood"
+                   class="form-control rounded-3 @error('neighborhood') is-invalid @enderror"
+                   placeholder="Preenchido pelo CEP"
+                   @disabled(!$canEdit)>
+            @error('neighborhood') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        {{-- Cidade + UF --}}
+        <div class="col-md-3">
+            <label class="form-label fw-medium" for="orgCidade">Cidade</label>
+            <input type="text" id="orgCidade" wire:model="city"
+                   class="form-control rounded-3 @error('city') is-invalid @enderror"
+                   placeholder="Cidade"
+                   @disabled(!$canEdit)>
+            @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+        <div class="col-md-1">
+            <label class="form-label fw-medium" for="orgEstado">UF</label>
+            <select id="orgEstado" wire:model="state"
+                    class="form-select rounded-3 @error('state') is-invalid @enderror"
+                    @disabled(!$canEdit)>
+                <option value=""></option>
+                @foreach($ufs as $uf)
+                    <option value="{{ $uf }}">{{ $uf }}</option>
+                @endforeach
+            </select>
+            @error('state') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+    </div>
+</div>
+
+
+{{-- ============================================================
+     CARD 4: Áreas de atuação
+     ============================================================ --}}
+<div class="settings-card">
+    <div class="settings-card-title">Áreas de atuação</div>
+    <div class="settings-card-description">
+        Selecione as áreas do direito em que o escritório atua.
+        @if($canEdit) Clique para marcar ou desmarcar. @endif
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        @foreach($availablePracticeAreas as $area)
+            <button
+                type="button"
+                wire:click="{{ $canEdit ? 'toggleArea(\'' . $area . '\')' : '' }}"
+                class="area-chip {{ in_array($area, $practiceAreas) ? 'active' : '' }}"
+                @disabled(!$canEdit)
+                aria-pressed="{{ in_array($area, $practiceAreas) ? 'true' : 'false' }}"
+            >
+                @if(in_array($area, $practiceAreas))
+                    <i class="bi bi-check me-1" aria-hidden="true"></i>
+                @endif
+                {{ $area }}
+            </button>
+        @endforeach
+    </div>
+
+    @if($canEdit && count($practiceAreas) > 0)
+        <div class="mt-3 text-secondary small">
+            <i class="bi bi-check-circle-fill text-success me-1"></i>
+            {{ count($practiceAreas) }} {{ count($practiceAreas) === 1 ? 'área selecionada' : 'áreas selecionadas' }}
+        </div>
+    @endif
+</div>
+
+
+{{-- ============================================================
+     BOTÃO SALVAR
+     ============================================================ --}}
+@if($canEdit)
+    <div class="d-flex align-items-center gap-3 pb-2">
+        <button
+            type="button"
+            wire:click="salvar"
+            wire:loading.attr="disabled"
+            :disabled="!hasChanges"
+            class="btn btn-primary rounded-pill px-4"
+        >
+            <span wire:loading.remove wire:target="salvar">
+                <i class="bi bi-check2 me-1"></i> Salvar alterações
+            </span>
+            <span wire:loading wire:target="salvar">
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                Salvando...
+            </span>
+        </button>
+        <span x-show="!hasChanges" class="text-secondary small" style="display:none;">
+            Nenhuma alteração pendente
+        </span>
+    </div>
+@endif
+
+
+{{-- ============================================================
+     Alpine.js
+     ============================================================ --}}
+@once
+@push('scripts')
+<script>
+function escritorioForm() {
+    return {
+        hasChanges: false,
+        saved: false,
+        logoPreview: null,
+        logoDarkPreview: null,
+        cepLoading: false,
+        cepOk: false,
+        cepError: false,
+
+        onSaved() {
+            this.hasChanges = false;
+            this.logoPreview = null;
+            this.logoDarkPreview = null;
+            this.saved = true;
+            setTimeout(() => this.saved = false, 4000);
+        },
+
+        onLogoSelected(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (type === 'dark') {
+                    this.logoDarkPreview = e.target.result;
+                } else {
+                    this.logoPreview = e.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+            this.hasChanges = true;
+        },
+
+        // ----------------------------------------------------------------
+        // Máscara CNPJ: 12.345.678/0001-90
+        // ----------------------------------------------------------------
+        maskCnpj(value) {
+            value = value.replace(/\D/g, '').slice(0, 14);
+            if (value.length <=  2) return value;
+            if (value.length <=  5) return `${value.slice(0,2)}.${value.slice(2)}`;
+            if (value.length <=  8) return `${value.slice(0,2)}.${value.slice(2,5)}.${value.slice(5)}`;
+            if (value.length <= 12) return `${value.slice(0,2)}.${value.slice(2,5)}.${value.slice(5,8)}/${value.slice(8)}`;
+            return `${value.slice(0,2)}.${value.slice(2,5)}.${value.slice(5,8)}/${value.slice(8,12)}-${value.slice(12)}`;
+        },
+
+        // ----------------------------------------------------------------
+        // Máscara telefone BR
+        // ----------------------------------------------------------------
+        maskPhone(value) {
+            value = value.replace(/\D/g, '').slice(0, 11);
+            if (value.length === 0)  return '';
+            if (value.length <=  2)  return `(${value}`;
+            if (value.length <=  6)  return `(${value.slice(0,2)}) ${value.slice(2)}`;
+            if (value.length <= 10)  return `(${value.slice(0,2)}) ${value.slice(2,6)}-${value.slice(6)}`;
+            return `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7)}`;
+        },
+
+        // ----------------------------------------------------------------
+        // Máscara CEP: 99999-999
+        // ----------------------------------------------------------------
+        maskCep(value) {
+            value = value.replace(/\D/g, '').slice(0, 8);
+            if (value.length > 5) return `${value.slice(0,5)}-${value.slice(5)}`;
+            return value;
+        },
+
+        // ----------------------------------------------------------------
+        // ViaCEP: busca endereço quando CEP tiver 8 dígitos
+        // ----------------------------------------------------------------
+        maybeFetchCep() {
+            const digits = this.$wire.zipCode.replace(/\D/g, '');
+            if (digits.length !== 8) {
+                this.cepOk = false;
+                this.cepError = false;
+                return;
+            }
+            this.fetchCep(digits);
+        },
+
+        async fetchCep(digits) {
+            this.cepLoading = true;
+            this.cepOk     = false;
+            this.cepError  = false;
+
+            try {
+                const res  = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+                const data = await res.json();
+
+                if (data.erro) {
+                    this.cepError = true;
+                    return;
+                }
+
+                // Preenche campos via Livewire
+                await this.$wire.set('street',       data.logradouro || '');
+                await this.$wire.set('neighborhood', data.bairro     || '');
+                await this.$wire.set('city',         data.localidade || '');
+                await this.$wire.set('state',        data.uf         || '');
+
+                this.cepOk      = true;
+                this.hasChanges = true;
+
+                // Foca no campo número após preenchimento automático
+                this.$nextTick(() => this.$refs.streetNumber?.focus());
+
+            } catch (_) {
+                this.cepError = true;
+            } finally {
+                this.cepLoading = false;
+            }
+        },
+    };
+}
+</script>
+@endpush
+@endonce
+
+{{-- Estilos dos chips de área e logo upload --}}
+@once
+@push('styles')
+<style>
+/* Chips de área de atuação */
+.area-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--jusai-border, #d7dce5);
+    background: transparent;
+    color: var(--jusai-muted, #6b7280);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 150ms ease;
+    line-height: 1.4;
+}
+
+.area-chip:hover:not(:disabled) {
+    border-color: var(--jusai-action, #2563eb);
+    color: var(--jusai-action, #2563eb);
+    background: rgba(37,99,235,0.05);
+}
+
+.area-chip.active {
+    background: rgba(37,99,235,0.1);
+    border-color: var(--jusai-action, #2563eb);
+    color: var(--jusai-action, #2563eb);
+    font-weight: 600;
+}
+
+.area-chip:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+/* Dark mode — chips */
+[data-theme="dark"] .area-chip {
+    border-color: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.5);
+}
+
+[data-theme="dark"] .area-chip:hover:not(:disabled) {
+    border-color: #60a5fa;
+    color: #60a5fa;
+    background: rgba(96,165,250,0.08);
+}
+
+[data-theme="dark"] .area-chip.active {
+    background: rgba(96,165,250,0.12);
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+/* Dark mode — logo upload area */
+[data-theme="dark"] .logo-upload-area {
+    border-color: rgba(255,255,255,0.12) !important;
+}
+</style>
+@endpush
+@endonce
+
+</div>
