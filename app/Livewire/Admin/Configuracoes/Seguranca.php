@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Configuracoes;
 
 use App\Models\ActivityLog;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -384,7 +385,7 @@ class Seguranca extends Component
             'user_id'         => Auth::id(),
             'event'           => 'security.password_policy_updated',
             'description'     => 'Política de senha do escritório atualizada.',
-            'subject_type'    => \App\Models\Organization::class,
+            'subject_type'    => Organization::class,
             'subject_id'      => (string) $org->id,
             'ip_address'      => request()->ip(),
         ]);

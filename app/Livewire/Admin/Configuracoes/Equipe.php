@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Configuracoes;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
@@ -156,27 +157,37 @@ class Equipe extends Component
         // Senha temporária: letras + números, sem símbolos (12 chars)
         $this->tempPassword = Str::password(12, letters: true, numbers: true, symbols: false, spaces: false);
 
-        $user = User::create([
-            'name'            => trim($this->inviteName),
-            'email'           => strtolower(trim($this->inviteEmail)),
-            'password'        => Hash::make($this->tempPassword),
-            'organization_id' => Auth::user()->organization_id,
-            'role'            => 'user',
-            'job_title'       => $this->inviteJobTitle ?: null,
-            'is_active'       => true,
-        ]);
+        $plain    = $this->tempPassword;
+        $orgId    = Auth::user()->organization_id;
+        $actorId  = Auth::id();
+        $roleName = $this->inviteRole;
+        $roleLabel = $this->roles[$roleName] ?? $roleName;
 
-        $user->assignRole($this->inviteRole);
+        $user = DB::transaction(function () use ($plain, $orgId, $actorId, $roleName, $roleLabel) {
+            $user = User::create([
+                'name'            => trim($this->inviteName),
+                'email'           => strtolower(trim($this->inviteEmail)),
+                'password'        => Hash::make($plain),
+                'organization_id' => $orgId,
+                'role'            => 'user',
+                'job_title'       => $this->inviteJobTitle ?: null,
+                'is_active'       => true,
+            ]);
 
-        ActivityLog::create([
-            'organization_id' => Auth::user()->organization_id,
-            'user_id'         => Auth::id(),
-            'event'           => 'team.invited',
-            'description'     => 'Membro adicionado: ' . $user->email . ' (' . ($this->roles[$this->inviteRole] ?? $this->inviteRole) . ')',
-            'subject_type'    => User::class,
-            'subject_id'      => (string) $user->id,
-            'ip_address'      => request()->ip(),
-        ]);
+            $user->assignRole($roleName);
+
+            ActivityLog::create([
+                'organization_id' => $orgId,
+                'user_id'         => $actorId,
+                'event'           => 'team.invited',
+                'description'     => 'Membro adicionado: ' . $user->email . ' (' . $roleLabel . ')',
+                'subject_type'    => User::class,
+                'subject_id'      => (string) $user->id,
+                'ip_address'      => request()->ip(),
+            ]);
+
+            return $user;
+        });
 
         unset($this->users, $this->stats);
 
