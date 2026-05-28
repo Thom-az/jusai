@@ -353,7 +353,7 @@
 
 </div>
 
-@push('styles')
+@assets
 <style>
 /* ─── Plan color variants ──────────────────────────────────────────────────── */
 
@@ -618,4 +618,4 @@
     color: rgba(255,255,255,0.3);
 }
 </style>
-@endpush
+@endassets

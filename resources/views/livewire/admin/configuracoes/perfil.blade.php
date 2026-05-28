@@ -1,11 +1,123 @@
 <div>
 
 {{-- ============================================================
+     Alpine.js — funções utilitárias (TOPO: registrado antes dos x-data)
+     ============================================================ --}}
+@script
+<script>
+Alpine.data('perfilForm', (original) => ({
+        original: { ...original },
+        preview: null,
+        avatarChanged: false,
+        saved: false,
+
+        init() {
+            window.addEventListener('pageshow', (e) => { if (e.persisted) this.saved = false; });
+        },
+
+        get isDirty() {
+            return (this.$wire.name      ?? '') !== (this.original.name      ?? '')
+                || (this.$wire.email     ?? '') !== (this.original.email     ?? '')
+                || (this.$wire.phone     ?? '') !== (this.original.phone     ?? '')
+                || (this.$wire.oabNumber ?? '') !== (this.original.oabNumber ?? '')
+                || (this.$wire.oabUf     ?? '') !== (this.original.oabUf     ?? '')
+                || (this.$wire.jobTitle  ?? '') !== (this.original.jobTitle  ?? '');
+        },
+
+        markDirty() {},
+
+        onSaved() {
+            this.original = {
+                name:      this.$wire.name      ?? '',
+                email:     this.$wire.email     ?? '',
+                phone:     this.$wire.phone     ?? '',
+                oabNumber: this.$wire.oabNumber ?? '',
+                oabUf:     this.$wire.oabUf     ?? '',
+                jobTitle:  this.$wire.jobTitle  ?? '',
+            };
+            this.avatarChanged = false;
+            this.preview = null;
+            this.saved = true;
+            setTimeout(() => this.saved = false, 4000);
+        },
+
+        onAvatarSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            this.avatarChanged = true;
+            const reader = new FileReader();
+            reader.onload = (e) => { this.preview = e.target.result; };
+            reader.readAsDataURL(file);
+        },
+
+        maskPhone(value) {
+            value = value.replace(/\D/g, '').slice(0, 11);
+            if (value.length === 0) return '';
+            if (value.length <= 2)  return `(${value}`;
+            if (value.length <= 6)  return `(${value.slice(0,2)}) ${value.slice(2)}`;
+            if (value.length <= 10) return `(${value.slice(0,2)}) ${value.slice(2,6)}-${value.slice(6)}`;
+            return `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7)}`;
+        },
+
+        maskOabNumber(value) {
+            value = value.replace(/\D/g, '').slice(0, 6);
+            if (value.length <= 3) return value;
+            return `${value.slice(0,3)}.${value.slice(3)}`;
+        },
+}));
+
+Alpine.data('senhaForm', () => ({
+        newPassword: '',
+        showCurrent: false,
+        showNew: false,
+        showConfirm: false,
+        saved: false,
+
+        init() {
+            window.addEventListener('pageshow', (e) => { if (e.persisted) this.saved = false; });
+        },
+        strength: { score: 0, label: '', color: '#d7dce5', hint: '' },
+        req: { length: false, upper: false, number: false, symbol: false },
+
+        updateStrength() {
+            const p = this.newPassword;
+            this.req.length  = p.length >= 8;
+            this.req.upper   = /[A-Z]/.test(p);
+            this.req.number  = /[0-9]/.test(p);
+            this.req.symbol  = /[^A-Za-z0-9]/.test(p);
+
+            const score = [this.req.length, this.req.upper, this.req.number, this.req.symbol]
+                .filter(Boolean).length;
+
+            const map = {
+                0: { label: '',       color: '#d7dce5', hint: '' },
+                1: { label: 'Fraca',  color: '#b91c1c', hint: 'Adicione maiúsculas, números e símbolos' },
+                2: { label: 'Média',  color: '#d97706', hint: 'Quase lá — adicione mais um critério' },
+                3: { label: 'Boa',    color: '#2563eb', hint: 'Adicione um símbolo para torná-la forte' },
+                4: { label: 'Forte',  color: '#0f766e', hint: 'Excelente! Todos os critérios atendidos' },
+            };
+
+            this.strength = { score, ...map[score] };
+        },
+
+        onPasswordSaved() {
+            this.saved = true;
+            this.newPassword = '';
+            this.strength = { score: 0, label: '', color: '#d7dce5', hint: '' };
+            this.req = { length: false, upper: false, number: false, symbol: false };
+            setTimeout(() => this.saved = false, 4000);
+        },
+}));
+</script>
+@endscript
+
+
+{{-- ============================================================
      SEÇÃO: Foto e Informações Pessoais
      ============================================================ --}}
 <div
     class="settings-card"
-    x-data="perfilForm(@js($original), @js($name), @js($email), @js($phone), @js($oabNumber), @js($oabUf), @js($jobTitle))"
+    x-data="perfilForm(@js($original))"
     @profile-saved.window="onSaved()"
 >
     {{-- Banner de sucesso --}}
@@ -141,7 +253,7 @@
                 type="tel"
                 id="perfilTelefone"
                 wire:model="phone"
-                @input="phone = maskPhone($event.target.value); $event.target.value = phone; markDirty()"
+                @input="let _v = maskPhone($event.target.value); $event.target.value = _v; markDirty()"
                 class="form-control rounded-3 @error('phone') is-invalid @enderror"
                 placeholder="(11) 91234-5678"
                 maxlength="15"
@@ -182,7 +294,7 @@
                     type="text"
                     id="perfilOab"
                     wire:model="oabNumber"
-                    @input="oabNumber = maskOabNumber($event.target.value); $event.target.value = oabNumber; markDirty()"
+                    @input="let _v = maskOabNumber($event.target.value); $event.target.value = _v; markDirty()"
                     class="form-control rounded-start-3 @error('oabNumber') is-invalid @enderror"
                     placeholder="123.456"
                     maxlength="7"
@@ -401,140 +513,8 @@
 </div>{{-- /settings-card senha --}}
 
 
-{{-- ============================================================
-     Alpine.js — funções utilitárias
-     ============================================================ --}}
-@once
-@push('scripts')
-<script>
-/**
- * Formulário de perfil — dirty detection + máscaras.
- */
-function perfilForm(original, name, email, phone, oabNumber, oabUf, jobTitle) {
-    return {
-        original,
-        name,
-        email,
-        phone,
-        oabNumber,
-        oabUf,
-        jobTitle,
-        preview: null,
-        avatarChanged: false,
-        saved: false,
-
-        get isDirty() {
-            return this.name      !== this.original.name
-                || this.email     !== this.original.email
-                || this.phone     !== this.original.phone
-                || this.oabNumber !== this.original.oabNumber
-                || this.oabUf     !== this.original.oabUf
-                || this.jobTitle  !== this.original.jobTitle;
-        },
-
-        markDirty() {
-            // Usado como fallback nos @input que atualizam variáveis locais
-            // O getter isDirty já detecta automaticamente
-        },
-
-        onSaved() {
-            this.original = {
-                name:      this.name,
-                email:     this.email,
-                phone:     this.phone,
-                oabNumber: this.oabNumber,
-                oabUf:     this.oabUf,
-                jobTitle:  this.jobTitle,
-            };
-            this.avatarChanged = false;
-            this.preview = null;
-            this.saved = true;
-            setTimeout(() => this.saved = false, 4000);
-        },
-
-        onAvatarSelected(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            this.avatarChanged = true;
-            const reader = new FileReader();
-            reader.onload = (e) => { this.preview = e.target.result; };
-            reader.readAsDataURL(file);
-        },
-
-        /**
-         * Máscara de telefone brasileiro: (11) 91234-5678 ou (11) 1234-5678
-         */
-        maskPhone(value) {
-            value = value.replace(/\D/g, '').slice(0, 11);
-            if (value.length === 0) return '';
-            if (value.length <= 2)  return `(${value}`;
-            if (value.length <= 6)  return `(${value.slice(0,2)}) ${value.slice(2)}`;
-            if (value.length <= 10) return `(${value.slice(0,2)}) ${value.slice(2,6)}-${value.slice(6)}`;
-            return `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7)}`;
-        },
-
-        /**
-         * Máscara numérica da OAB: 123.456
-         * A UF fica em select separado.
-         */
-        maskOabNumber(value) {
-            value = value.replace(/\D/g, '').slice(0, 6);
-            if (value.length <= 3) return value;
-            return `${value.slice(0,3)}.${value.slice(3)}`;
-        },
-    };
-}
-
-/**
- * Formulário de senha — força e visibilidade.
- */
-function senhaForm() {
-    return {
-        newPassword: '',
-        showCurrent: false,
-        showNew: false,
-        showConfirm: false,
-        saved: false,
-        strength: { score: 0, label: '', color: '#d7dce5', hint: '' },
-        req: { length: false, upper: false, number: false, symbol: false },
-
-        updateStrength() {
-            const p = this.newPassword;
-            this.req.length  = p.length >= 8;
-            this.req.upper   = /[A-Z]/.test(p);
-            this.req.number  = /[0-9]/.test(p);
-            this.req.symbol  = /[^A-Za-z0-9]/.test(p);
-
-            const score = [this.req.length, this.req.upper, this.req.number, this.req.symbol]
-                .filter(Boolean).length;
-
-            const map = {
-                0: { label: '',       color: '#d7dce5', hint: '' },
-                1: { label: 'Fraca',  color: '#b91c1c', hint: 'Adicione maiúsculas, números e símbolos' },
-                2: { label: 'Média',  color: '#d97706', hint: 'Quase lá — adicione mais um critério' },
-                3: { label: 'Boa',    color: '#2563eb', hint: 'Adicione um símbolo para torná-la forte' },
-                4: { label: 'Forte',  color: '#0f766e', hint: 'Excelente! Todos os critérios atendidos' },
-            };
-
-            this.strength = { score, ...map[score] };
-        },
-
-        onPasswordSaved() {
-            this.saved = true;
-            this.newPassword = '';
-            this.strength = { score: 0, label: '', color: '#d7dce5', hint: '' };
-            this.req = { length: false, upper: false, number: false, symbol: false };
-            setTimeout(() => this.saved = false, 4000);
-        },
-    };
-}
-</script>
-@endpush
-@endonce
-
 {{-- Estilos específicos da seção Perfil --}}
-@once
-@push('styles')
+@assets
 <style>
 /* Overlay do avatar ao hover */
 .avatar-upload-wrap:hover .avatar-upload-overlay,
@@ -580,7 +560,6 @@ function senhaForm() {
     border-color: rgba(255,255,255,0.07) !important;
 }
 </style>
-@endpush
-@endonce
+@endassets
 
 </div>

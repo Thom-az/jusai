@@ -145,7 +145,7 @@
                 type="text"
                 id="orgCnpj"
                 wire:model="document"
-                @input="document = maskCnpj($event.target.value); $event.target.value = document"
+                @input="let _v = maskCnpj($event.target.value); $event.target.value = _v"
                 class="form-control rounded-3 @error('document') is-invalid @enderror"
                 placeholder="12.345.678/0001-90"
                 maxlength="18"
@@ -161,7 +161,7 @@
                 type="tel"
                 id="orgTelefone"
                 wire:model="phone"
-                @input="phone = maskPhone($event.target.value); $event.target.value = phone"
+                @input="let _v = maskPhone($event.target.value); $event.target.value = _v"
                 class="form-control rounded-3 @error('phone') is-invalid @enderror"
                 placeholder="(11) 3456-7890"
                 maxlength="15"
@@ -203,7 +203,7 @@
                     type="text"
                     id="orgCep"
                     wire:model="zipCode"
-                    @input="zipCode = maskCep($event.target.value); $event.target.value = zipCode; maybeFetchCep()"
+                    @input="let _v = maskCep($event.target.value); $event.target.value = _v; maybeFetchCep(_v)"
                     class="form-control rounded-start-3 @error('zipCode') is-invalid @enderror"
                     placeholder="00000-000"
                     maxlength="9"
@@ -353,11 +353,9 @@
 {{-- ============================================================
      Alpine.js
      ============================================================ --}}
-@once
-@push('scripts')
+@script
 <script>
-function escritorioForm() {
-    return {
+Alpine.data('escritorioForm', () => ({
         hasChanges: false,
         saved: false,
         logoPreview: null,
@@ -425,8 +423,8 @@ function escritorioForm() {
         // ----------------------------------------------------------------
         // ViaCEP: busca endereço quando CEP tiver 8 dígitos
         // ----------------------------------------------------------------
-        maybeFetchCep() {
-            const digits = this.$wire.zipCode.replace(/\D/g, '');
+        maybeFetchCep(maskedValue) {
+            const digits = (maskedValue ?? this.$wire?.zipCode ?? '').replace(/\D/g, '');
             if (digits.length !== 8) {
                 this.cepOk = false;
                 this.cepError = false;
@@ -467,15 +465,12 @@ function escritorioForm() {
                 this.cepLoading = false;
             }
         },
-    };
-}
+}));
 </script>
-@endpush
-@endonce
+@endscript
 
 {{-- Estilos dos chips de área e logo upload --}}
-@once
-@push('styles')
+@assets
 <style>
 /* Chips de área de atuação */
 .area-chip {
@@ -534,7 +529,6 @@ function escritorioForm() {
     border-color: rgba(255,255,255,0.12) !important;
 }
 </style>
-@endpush
-@endonce
+@endassets
 
 </div>

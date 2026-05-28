@@ -1,15 +1,23 @@
+@script
+<script>
+Alpine.data('segurancaForm', () => ({
+    toast: { show: false, message: '', type: 'success' },
+
+    showToast(message, type) {
+        this.toast = { show: true, message, type: type || 'success' };
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.toast.show = false, 4000);
+    },
+
+    copyText(text) {
+        navigator.clipboard?.writeText(text);
+    },
+}));
+</script>
+@endscript
+
 <div
-    x-data="{
-        toast: { show: false, message: '', type: 'success' },
-        showToast(message, type) {
-            this.toast = { show: true, message, type: type || 'success' };
-            clearTimeout(this._t);
-            this._t = setTimeout(() => this.toast.show = false, 4000);
-        },
-        copyText(text) {
-            navigator.clipboard?.writeText(text);
-        }
-    }"
+    x-data="segurancaForm()"
     x-on:show-security-toast.window="showToast($event.detail.message, $event.detail.type)"
 >
 
@@ -567,7 +575,7 @@
         </div>
 
         {{-- Excluir conta --}}
-        <div class="lgpd-row" x-data="{ open: false }">
+        <div class="lgpd-row">
             <div class="flex-grow-1">
                 <div class="fw-semibold small text-danger">Excluir minha conta</div>
                 <div class="text-secondary" style="font-size:.78rem;">
@@ -579,7 +587,7 @@
             <button
                 type="button"
                 class="btn btn-danger rounded-pill btn-sm flex-shrink-0"
-                @click="open = !open"
+                wire:click="$set('deleteConfirm', true)"
             >
                 <i class="bi bi-person-x me-1"></i>Excluir conta
             </button>
@@ -634,7 +642,7 @@
 
 </div>{{-- /x-data --}}
 
-@push('styles')
+@assets
 <style>
 /* ── Security badges ────────────────────────────────────────────────────── */
 .sec-badge {
@@ -817,4 +825,4 @@
     flex-wrap: wrap;
 }
 </style>
-@endpush
+@endassets
