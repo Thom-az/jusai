@@ -32,7 +32,22 @@
     width: 216px;
     flex-shrink: 0;
     position: sticky;
-    top: 1.5rem;
+    /* topbar-wrap sticks at --jusai-shell-gap (1.25rem); topbar min-height is 88px; add content-main padding + gap */
+    top: calc(var(--jusai-shell-gap, 1.25rem) + 88px + var(--jusai-shell-gap, 1.25rem) + 0.75rem);
+}
+
+/* Skeleton placeholder shown while lazy Livewire components load */
+.settings-skeleton-card {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid var(--jusai-border, #d7dce5);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+[data-theme="dark"] .settings-skeleton-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.07);
 }
 
 .settings-sidebar-header {

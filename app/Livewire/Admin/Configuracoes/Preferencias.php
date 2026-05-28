@@ -172,6 +172,25 @@ class Preferencias extends Component
 
     // ─── Render ─────────────────────────────────────────────────────────────────
 
+    public function placeholder(): string
+    {
+        return <<<'HTML'
+        <div>
+            <div class="settings-skeleton-card placeholder-glow mb-3">
+                <div class="placeholder col-5 rounded-3 mb-3" style="height:1.1rem"></div>
+                <div class="placeholder col-12 rounded-3 mb-2" style="height:.9rem"></div>
+                <div class="placeholder col-8 rounded-3 mb-2" style="height:.9rem"></div>
+                <div class="placeholder col-6 rounded-3" style="height:.9rem"></div>
+            </div>
+            <div class="settings-skeleton-card placeholder-glow">
+                <div class="placeholder col-4 rounded-3 mb-3" style="height:1.1rem"></div>
+                <div class="placeholder col-12 rounded-3 mb-2" style="height:.9rem"></div>
+                <div class="placeholder col-7 rounded-3" style="height:.9rem"></div>
+            </div>
+        </div>
+        HTML;
+    }
+
     public function render()
     {
         return view('livewire.admin.configuracoes.preferencias');
