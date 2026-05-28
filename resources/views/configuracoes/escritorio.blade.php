@@ -9,7 +9,7 @@
 @section('content')
     <div class="settings-shell">
 
-        @include('configuracoes._sidebar')
+        <x-settings-sidebar :current="$current" />
 
         <div class="settings-content">
 
@@ -18,7 +18,7 @@
                 <p class="text-secondary mb-0 small">Razão social, CNPJ, endereço, logotipo e áreas de atuação.</p>
             </div>
 
-            <livewire:admin.configuracoes.escritorio />
+            <livewire:admin.configuracoes.escritorio lazy />
 
         </div>
     </div>

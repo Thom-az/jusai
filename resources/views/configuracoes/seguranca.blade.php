@@ -9,7 +9,7 @@
 @section('content')
     <div class="settings-shell">
 
-        @include('configuracoes._sidebar')
+        <x-settings-sidebar :current="$current" />
 
         <div class="settings-content">
 

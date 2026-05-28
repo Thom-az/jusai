@@ -8,31 +8,31 @@ class SettingsController extends Controller
 {
     public function perfil(): View
     {
-        return view('configuracoes.perfil');
+        return view('configuracoes.perfil', ['current' => 'perfil']);
     }
 
     public function escritorio(): View
     {
-        return view('configuracoes.escritorio');
+        return view('configuracoes.escritorio', ['current' => 'escritorio']);
     }
 
     public function equipe(): View
     {
-        return view('configuracoes.equipe');
+        return view('configuracoes.equipe', ['current' => 'equipe']);
     }
 
     public function preferencias(): View
     {
-        return view('configuracoes.preferencias');
+        return view('configuracoes.preferencias', ['current' => 'preferencias']);
     }
 
     public function seguranca(): View
     {
-        return view('configuracoes.seguranca');
+        return view('configuracoes.seguranca', ['current' => 'seguranca']);
     }
 
     public function plano(): View
     {
-        return view('configuracoes.plano');
+        return view('configuracoes.plano', ['current' => 'plano']);
     }
 }

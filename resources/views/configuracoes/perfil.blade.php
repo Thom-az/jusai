@@ -9,20 +9,16 @@
 @section('content')
     <div class="settings-shell">
 
-        {{-- Sidebar secundária de navegação --}}
-        @include('configuracoes._sidebar')
+        <x-settings-sidebar :current="$current" />
 
-        {{-- Área de conteúdo --}}
         <div class="settings-content">
 
-            {{-- Cabeçalho da seção --}}
             <div class="settings-section-header">
                 <h2 class="fw-semibold mb-1" style="font-size: 1.2rem;">Perfil</h2>
                 <p class="text-secondary mb-0 small">Suas informações pessoais, foto, número da OAB e senha.</p>
             </div>
 
-            {{-- Componente Livewire da seção --}}
-            <livewire:admin.configuracoes.perfil />
+            <livewire:admin.configuracoes.perfil lazy />
 
         </div>
     </div>
