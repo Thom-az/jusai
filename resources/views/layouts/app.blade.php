@@ -51,65 +51,47 @@
             </div>
         </div>
 
-        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-            <div id="appToast" class="toast border-0 shadow-lg" role="status" aria-live="polite" aria-atomic="true">
-                <div class="toast-header">
-                    <i class="bi bi-info-circle text-primary me-2"></i>
-                    <strong class="me-auto">{{ config('jusai.brand.name') }}</strong>
-                    <small>Agora</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
+        {{-- Toast global — Bootstrap nativo, canto superior direito --}}
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090">
+            <div id="globalToast"
+                 class="toast border-0 shadow"
+                 role="alert" aria-live="assertive" aria-atomic="true"
+                 data-bs-delay="4500" data-bs-autohide="true">
+                <div id="globalToastInner" class="d-flex align-items-center gap-2 p-3 rounded">
+                    <i id="globalToastIcon" class="bi flex-shrink-0 fs-6"></i>
+                    <span id="globalToastMessage" class="small fw-semibold flex-grow-1"></span>
+                    <button type="button" class="btn-close btn-close-sm flex-shrink-0 ms-1"
+                            data-bs-dismiss="toast" aria-label="Fechar"></button>
                 </div>
-                <div class="toast-body" id="appToastBody">
-                    Este recurso será entregue na próxima etapa.
-                </div>
-            </div>
-        </div>
-
-        {{-- Toast global — canto superior direito --}}
-        <div
-            x-data="{
-                show: false, message: '', type: 'success', _t: null,
-                display(msg, t) {
-                    this.message = msg; this.type = t || 'success'; this.show = true;
-                    clearTimeout(this._t);
-                    this._t = setTimeout(() => this.show = false, 4500);
-                }
-            }"
-            x-on:app:toast.window="display($event.detail.message, $event.detail.type)"
-            class="position-fixed"
-            style="top: 1.25rem; right: 1.25rem; z-index: 1090; pointer-events: none;"
-        >
-            <div
-                x-show="show"
-                x-cloak
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 translate-x-4"
-                x-transition:enter-end="opacity-100 translate-x-0"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                :class="{
-                    'd-flex': show,
-                    'app-toast--success': type === 'success',
-                    'app-toast--warning': type === 'warning',
-                    'app-toast--danger':  type === 'danger',
-                }"
-                class="app-toast"
-                style="display:none; pointer-events: auto;"
-                role="alert"
-            >
-                <i class="bi flex-shrink-0" :class="{
-                    'bi-check-circle-fill': type === 'success',
-                    'bi-exclamation-triangle-fill': type === 'warning',
-                    'bi-x-circle-fill': type === 'danger',
-                }"></i>
-                <span x-text="message" class="small fw-semibold flex-grow-1"></span>
-                <button type="button" class="btn-close btn-close-sm ms-1 flex-shrink-0"
-                        @click="show = false; clearTimeout(_t)" aria-label="Fechar"></button>
             </div>
         </div>
 
         @stack('scripts')
         @livewireScripts
+        <script>
+            (function () {
+                const typeMap = {
+                    success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', icon: 'bi-check-circle-fill' },
+                    warning: { bg: 'bg-warning-subtle', text: 'text-warning-emphasis', icon: 'bi-exclamation-triangle-fill' },
+                    danger:  { bg: 'bg-danger-subtle',  text: 'text-danger-emphasis',  icon: 'bi-x-circle-fill' },
+                };
+
+                window.addEventListener('app:toast', (e) => {
+                    const { message, type = 'success' } = e.detail;
+                    const c = typeMap[type] || typeMap.success;
+
+                    document.getElementById('globalToastMessage').textContent = message;
+                    document.getElementById('globalToastIcon').className = `bi flex-shrink-0 fs-6 ${c.icon}`;
+
+                    const inner = document.getElementById('globalToastInner');
+                    inner.className = `d-flex align-items-center gap-2 p-3 rounded ${c.bg} ${c.text}`;
+
+                    bootstrap.Toast.getOrCreateInstance(
+                        document.getElementById('globalToast'),
+                        { delay: 4500 }
+                    ).show();
+                });
+            }());
+        </script>
     </body>
 </html>
