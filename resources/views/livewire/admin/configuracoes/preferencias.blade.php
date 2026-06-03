@@ -1,32 +1,4 @@
-@script
-<script>
-Alpine.data('preferenciasForm', () => ({
-    savedBanner: false,
-
-    applyTheme(pref) {
-        let theme;
-        if (pref === 'system') {
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        } else {
-            theme = pref;
-        }
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('jusai.theme', theme);
-
-        const icon = document.getElementById('themeToggleIcon');
-        const btn  = document.getElementById('themeToggle');
-        if (icon) icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
-        if (btn)  btn.setAttribute('aria-label', theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro');
-    },
-}));
-</script>
-@endscript
-
-<div
-    x-data="preferenciasForm()"
-    x-on:apply-theme-preference.window="applyTheme($event.detail.theme)"
-    x-on:preferencias-saved.window="savedBanner = true; setTimeout(() => savedBanner = false, 3500)"
->
+<div>
 
     {{-- =====================================================================
          Banner de sucesso

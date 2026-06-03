@@ -1,25 +1,4 @@
-@script
-<script>
-Alpine.data('segurancaForm', () => ({
-    toast: { show: false, message: '', type: 'success' },
-
-    showToast(message, type) {
-        this.toast = { show: true, message, type: type || 'success' };
-        clearTimeout(this._t);
-        this._t = setTimeout(() => this.toast.show = false, 4000);
-    },
-
-    copyText(text) {
-        navigator.clipboard?.writeText(text);
-    },
-}));
-</script>
-@endscript
-
-<div
-    x-data="segurancaForm()"
-    x-on:show-security-toast.window="showToast($event.detail.message, $event.detail.type)"
->
+<div>
 
     {{-- Toast ----------------------------------------------------------------- --}}
     <div

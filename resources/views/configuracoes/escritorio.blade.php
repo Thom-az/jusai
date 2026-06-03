@@ -2,6 +2,10 @@
 
 @section('title', 'Configurações — Escritório')
 
+@push('scripts')
+    @vite(['resources/js/modules/configuracoes-alpine.js'])
+@endpush
+
 @push('styles')
     @vite(['resources/css/modules/configuracoes.css'])
 @endpush
@@ -11,7 +15,11 @@
 
         <x-settings-sidebar :current="$current" />
 
-        <div class="settings-content">
+        <div class="settings-content"
+             x-data="escritorioForm()"
+             @input.capture="hasChanges = true"
+             @change.capture="hasChanges = true"
+             @escritorio-saved.window="onSaved()">
 
             <div class="settings-section-header">
                 <h2 class="fw-semibold mb-1" style="font-size: 1.2rem;">Dados do escritório</h2>

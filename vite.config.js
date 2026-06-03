@@ -32,6 +32,9 @@ export default defineConfig({
                 'resources/js/modules/revisor-show.js',
                 'resources/js/modules/chamados-index.js',
 
+                // JS — configuracoes Alpine components (global registration)
+                'resources/js/modules/configuracoes-alpine.js',
+
                 // JS — admin modules
                 'resources/js/modules/admin/dashboard.js',
                 'resources/js/modules/admin/organizations.js',

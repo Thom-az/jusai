@@ -1,128 +1,14 @@
 <div>
 
 {{-- ============================================================
-     Alpine.js — funções utilitárias (TOPO: registrado antes dos x-data)
-     ============================================================ --}}
-@script
-<script>
-Alpine.data('perfilForm', (original) => ({
-        original: { ...original },
-        preview: null,
-        avatarChanged: false,
-        saved: false,
-
-        init() {
-            window.addEventListener('pageshow', (e) => { if (e.persisted) this.saved = false; });
-        },
-
-        get isDirty() {
-            return (this.$wire.name      ?? '') !== (this.original.name      ?? '')
-                || (this.$wire.email     ?? '') !== (this.original.email     ?? '')
-                || (this.$wire.phone     ?? '') !== (this.original.phone     ?? '')
-                || (this.$wire.oabNumber ?? '') !== (this.original.oabNumber ?? '')
-                || (this.$wire.oabUf     ?? '') !== (this.original.oabUf     ?? '')
-                || (this.$wire.jobTitle  ?? '') !== (this.original.jobTitle  ?? '');
-        },
-
-        markDirty() {},
-
-        onSaved() {
-            this.original = {
-                name:      this.$wire.name      ?? '',
-                email:     this.$wire.email     ?? '',
-                phone:     this.$wire.phone     ?? '',
-                oabNumber: this.$wire.oabNumber ?? '',
-                oabUf:     this.$wire.oabUf     ?? '',
-                jobTitle:  this.$wire.jobTitle  ?? '',
-            };
-            this.avatarChanged = false;
-            this.preview = null;
-            this.saved = true;
-            setTimeout(() => this.saved = false, 4000);
-        },
-
-        onAvatarSelected(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            this.avatarChanged = true;
-            const reader = new FileReader();
-            reader.onload = (e) => { this.preview = e.target.result; };
-            reader.readAsDataURL(file);
-        },
-
-        maskPhone(value) {
-            value = value.replace(/\D/g, '').slice(0, 11);
-            if (value.length === 0) return '';
-            if (value.length <= 2)  return `(${value}`;
-            if (value.length <= 6)  return `(${value.slice(0,2)}) ${value.slice(2)}`;
-            if (value.length <= 10) return `(${value.slice(0,2)}) ${value.slice(2,6)}-${value.slice(6)}`;
-            return `(${value.slice(0,2)}) ${value.slice(2,7)}-${value.slice(7)}`;
-        },
-
-        maskOabNumber(value) {
-            value = value.replace(/\D/g, '').slice(0, 6);
-            if (value.length <= 3) return value;
-            return `${value.slice(0,3)}.${value.slice(3)}`;
-        },
-}));
-
-Alpine.data('senhaForm', () => ({
-        newPassword: '',
-        showCurrent: false,
-        showNew: false,
-        showConfirm: false,
-        saved: false,
-
-        init() {
-            window.addEventListener('pageshow', (e) => { if (e.persisted) this.saved = false; });
-        },
-        strength: { score: 0, label: '', color: '#d7dce5', hint: '' },
-        req: { length: false, upper: false, number: false, symbol: false },
-
-        updateStrength() {
-            const p = this.newPassword;
-            this.req.length  = p.length >= 8;
-            this.req.upper   = /[A-Z]/.test(p);
-            this.req.number  = /[0-9]/.test(p);
-            this.req.symbol  = /[^A-Za-z0-9]/.test(p);
-
-            const score = [this.req.length, this.req.upper, this.req.number, this.req.symbol]
-                .filter(Boolean).length;
-
-            const map = {
-                0: { label: '',       color: '#d7dce5', hint: '' },
-                1: { label: 'Fraca',  color: '#b91c1c', hint: 'Adicione maiúsculas, números e símbolos' },
-                2: { label: 'Média',  color: '#d97706', hint: 'Quase lá — adicione mais um critério' },
-                3: { label: 'Boa',    color: '#2563eb', hint: 'Adicione um símbolo para torná-la forte' },
-                4: { label: 'Forte',  color: '#0f766e', hint: 'Excelente! Todos os critérios atendidos' },
-            };
-
-            this.strength = { score, ...map[score] };
-        },
-
-        onPasswordSaved() {
-            this.saved = true;
-            this.newPassword = '';
-            this.strength = { score: 0, label: '', color: '#d7dce5', hint: '' };
-            this.req = { length: false, upper: false, number: false, symbol: false };
-            setTimeout(() => this.saved = false, 4000);
-        },
-}));
-</script>
-@endscript
-
-
-{{-- ============================================================
      SEÇÃO: Foto e Informações Pessoais
+     — sem x-data: scope herdado de perfilPageState() no wrapper
      ============================================================ --}}
-<div
-    class="settings-card"
-    x-data="perfilForm(@js($original))"
-    @profile-saved.window="onSaved()"
->
+<div class="settings-card">
+
     {{-- Banner de sucesso --}}
     <div
-        x-show="saved"
+        x-show="perfilSaved"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 -translate-y-1"
         x-transition:enter-end="opacity-100 translate-y-0"
@@ -148,12 +34,11 @@ Alpine.data('senhaForm', () => ({
             title="Clique para alterar a foto"
             style="cursor: pointer;"
         >
-            {{-- Imagem atual ou preview --}}
             <div class="avatar-profile" style="width:80px;height:80px;font-size:1.6rem;border-radius:50%;overflow:hidden;flex-shrink:0;">
-                <template x-if="preview">
-                    <img :src="preview" alt="Preview" style="width:80px;height:80px;object-fit:cover;border-radius:50%;">
+                <template x-if="perfilPreview">
+                    <img :src="perfilPreview" alt="Preview" style="width:80px;height:80px;object-fit:cover;border-radius:50%;">
                 </template>
-                <template x-if="!preview">
+                <template x-if="!perfilPreview">
                     @if(auth()->user()->avatar)
                         <img src="{{ asset('storage/' . auth()->user()->avatar) }}"
                              alt="{{ auth()->user()->name }}"
@@ -166,7 +51,6 @@ Alpine.data('senhaForm', () => ({
                 </template>
             </div>
 
-            {{-- Overlay "Alterar foto" --}}
             <div class="avatar-upload-overlay position-absolute inset-0 d-flex align-items-center justify-content-center rounded-circle"
                  style="top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);border-radius:50%;opacity:0;transition:opacity 150ms ease;">
                 <i class="bi bi-camera-fill text-white" style="font-size:1.2rem;"></i>
@@ -183,7 +67,6 @@ Alpine.data('senhaForm', () => ({
             </button>
         </div>
 
-        {{-- Input file oculto --}}
         <input
             type="file"
             x-ref="avatarInput"
@@ -194,16 +77,13 @@ Alpine.data('senhaForm', () => ({
         >
     </div>
 
-    {{-- Erros de avatar --}}
     @error('avatarUpload')
         <div class="text-danger small mb-3">{{ $message }}</div>
     @enderror
 
     <hr class="my-4" style="border-color: var(--jusai-border);">
 
-    {{-- CAMPOS DO FORMULÁRIO --}}
-
-    {{-- Nome completo --}}
+    {{-- Nome --}}
     <div class="mb-3">
         <label class="form-label fw-medium" for="perfilNome">
             Nome completo <span class="text-danger">*</span>
@@ -320,13 +200,13 @@ Alpine.data('senhaForm', () => ({
         </div>
     </div>
 
-    {{-- BOTÃO SALVAR --}}
+    {{-- Botão salvar --}}
     <div class="d-flex align-items-center gap-3">
         <button
             type="button"
             wire:click="salvarPerfil"
             wire:loading.attr="disabled"
-            :disabled="!isDirty && !avatarChanged"
+            :disabled="!perfilDirty && !perfilAvatarChanged"
             class="btn btn-primary rounded-pill px-4"
         >
             <span wire:loading.remove wire:target="salvarPerfil">
@@ -339,7 +219,7 @@ Alpine.data('senhaForm', () => ({
         </button>
 
         <span
-            x-show="!isDirty && !avatarChanged"
+            x-show="!perfilDirty && !perfilAvatarChanged"
             class="text-secondary small"
             style="display:none;"
         >
@@ -352,20 +232,18 @@ Alpine.data('senhaForm', () => ({
 
 {{-- ============================================================
      SEÇÃO: Alterar Senha
+     — sem x-data: scope herdado de perfilPageState() no wrapper
      ============================================================ --}}
-<div
-    class="settings-card"
-    x-data="senhaForm()"
-    @password-saved.window="onPasswordSaved()"
->
+<div class="settings-card">
+
     <div class="settings-card-title">Alterar senha</div>
     <div class="settings-card-description">
         Escolha uma senha forte com ao menos 8 caracteres, letra maiúscula, número e símbolo.
     </div>
 
-    {{-- Banner de sucesso da senha --}}
+    {{-- Banner de sucesso --}}
     <div
-        x-show="saved"
+        x-show="senhaSaved"
         x-transition
         class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
         style="background: rgba(15, 118, 110, 0.1); color: #0f766e;"
@@ -375,6 +253,7 @@ Alpine.data('senhaForm', () => ({
         <span>Senha alterada com sucesso.</span>
     </div>
 
+    <form @submit.prevent>
     {{-- Senha atual --}}
     <div class="mb-3" style="max-width: 400px;">
         <label class="form-label fw-medium" for="senhaAtual">Senha atual</label>
@@ -496,7 +375,7 @@ Alpine.data('senhaForm', () => ({
 
     {{-- Botão salvar senha --}}
     <button
-        type="button"
+        type="submit"
         wire:click="salvarSenha"
         wire:loading.attr="disabled"
         class="btn btn-primary rounded-pill px-4"
@@ -509,6 +388,7 @@ Alpine.data('senhaForm', () => ({
             Salvando...
         </span>
     </button>
+    </form>
 
 </div>{{-- /settings-card senha --}}
 
@@ -516,32 +396,25 @@ Alpine.data('senhaForm', () => ({
 {{-- Estilos específicos da seção Perfil --}}
 @assets
 <style>
-/* Overlay do avatar ao hover */
 .avatar-upload-wrap:hover .avatar-upload-overlay,
 .avatar-upload-wrap:focus .avatar-upload-overlay {
     opacity: 1 !important;
 }
-
-/* Dark mode — ajuste de badge de requisitos */
 [data-theme="dark"] .text-bg-light {
     background: rgba(255,255,255,0.08) !important;
     color: rgba(255,255,255,0.55) !important;
 }
-
 [data-theme="dark"] .input-group-text {
     background: rgba(255,255,255,0.04);
     border-color: rgba(255,255,255,0.12);
     color: rgba(255,255,255,0.55);
 }
-
-/* Força de senha — garante visibilidade no dark mode */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
     background: rgba(255,255,255,0.04);
     border-color: rgba(255,255,255,0.12);
     color: rgba(255,255,255,0.88);
 }
-
 [data-theme="dark"] .form-control::placeholder { color: rgba(255,255,255,0.28); }
 [data-theme="dark"] .form-control:focus,
 [data-theme="dark"] .form-select:focus {
@@ -550,12 +423,10 @@ Alpine.data('senhaForm', () => ({
     box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
     color: rgba(255,255,255,0.92);
 }
-
 [data-theme="dark"] .alert-success {
     background: rgba(15,118,110,0.12) !important;
     color: #34d399 !important;
 }
-
 [data-theme="dark"] hr {
     border-color: rgba(255,255,255,0.07) !important;
 }

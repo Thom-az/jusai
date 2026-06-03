@@ -1,30 +1,4 @@
-@script
-<script>
-Alpine.data('equipeForm', () => ({
-    toast: { show: false, message: '', type: 'success' },
-
-    showInviteModal() {
-        const el = this.$refs.modalConvite;
-        if (el && typeof bootstrap !== 'undefined') {
-            bootstrap.Modal.getOrCreateInstance(el).show();
-        }
-    },
-
-    showToast(message, type) {
-        this.toast = { show: true, message, type: type || 'success' };
-        clearTimeout(this._toastTimer);
-        this._toastTimer = setTimeout(() => this.toast.show = false, 4000);
-    },
-}));
-</script>
-@endscript
-
-<div
-    x-data="equipeForm()"
-    x-on:open-invite-modal.window="showInviteModal()"
-    x-on:close-user-drawer.window="$dispatch('close-drawer', { id: 'drawerUsuario' })"
-    x-on:show-team-toast.window="showToast($event.detail.message, $event.detail.type)"
->
+<div>
 
     {{-- =====================================================================
          Toast de notificação (sticky, topo da seção)
