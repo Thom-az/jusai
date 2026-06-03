@@ -108,6 +108,48 @@
                             </div>
                         </div>
                     @endif
+
+                    {{-- Feedback --}}
+                    <div class="mt-3 p-3 border rounded" x-data="{ open: {{ $review->feedback_rating ? 'false' : 'true' }} }">
+                        <div class="d-flex align-items-center gap-2 cursor-pointer" @click="open = !open" role="button">
+                            <i class="bi bi-hand-thumbs-up text-secondary"></i>
+                            <span class="small fw-medium">
+                                @if ($review->feedback_rating)
+                                    Feedback enviado — {{ $review->feedback_rating }}/5 estrelas
+                                @else
+                                    Avaliar esta análise
+                                @endif
+                            </span>
+                            <i class="bi ms-auto small text-secondary" :class="open ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                        <div x-show="open" x-collapse class="mt-3">
+                            <form method="POST" action="{{ route('review.feedback', $review) }}">
+                                @csrf
+                                <div class="mb-2">
+                                    <label class="form-label small fw-medium">Qualidade da análise</label>
+                                    <div class="d-flex gap-2">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="feedback_rating"
+                                                       id="rating{{ $i }}" value="{{ $i }}"
+                                                       {{ $review->feedback_rating == $i ? 'checked' : '' }}>
+                                                <label class="form-check-label small" for="rating{{ $i }}">
+                                                    {{ $i }}★
+                                                </label>
+                                            </div>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea name="feedback_comment" class="form-control form-control-sm" rows="2"
+                                              placeholder="Comentário opcional (o que poderia melhorar?)">{{ $review->feedback_comment }}</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    Enviar feedback
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-4">

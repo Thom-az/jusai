@@ -105,4 +105,18 @@ class AiReviewController extends Controller
 
         return redirect()->route('review.show', $review)->with('success', 'Revisão confirmada.');
     }
+
+    public function feedback(\Illuminate\Http\Request $request, string $id): RedirectResponse
+    {
+        $review = $this->scopedQuery(AiReview::class)->findOrFail($id);
+
+        $data = $request->validate([
+            'feedback_rating'  => ['required', 'integer', 'min:1', 'max:5'],
+            'feedback_comment' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $review->update($data);
+
+        return redirect()->route('review.show', $review)->with('success', 'Feedback enviado. Obrigado!');
+    }
 }

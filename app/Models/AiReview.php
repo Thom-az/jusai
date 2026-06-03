@@ -25,6 +25,8 @@ class AiReview extends Model
         'requires_human_review',
         'reviewed_by',
         'reviewed_at',
+        'feedback_rating',
+        'feedback_comment',
         'created_by',
     ];
 
@@ -33,8 +35,9 @@ class AiReview extends Model
         return [
             'requires_human_review' => 'boolean',
             'reviewed_at' => 'datetime',
-            'tokens_used' => 'integer',
+            'tokens_used'     => 'integer',
             'confidence_score' => 'decimal:2',
+            'feedback_rating'  => 'integer',
         ];
     }
 
