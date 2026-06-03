@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use App\Services\AnthropicService;
 use App\Services\SupabaseStorageService;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,16 +22,21 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         $this->app->singleton(AnthropicService::class, fn () => new AnthropicService(
-            apiKey:      config('services.anthropic.key'),
+            apiKey:      config('services.anthropic.key', ''),
             temperature: (float) config('jusai.ai.temperature'),
             modelFast:   config('jusai.ai.model_fast'),
             modelStrong: config('jusai.ai.model_strong'),
+            provider:    config('jusai.ai.provider', 'mock'),
         ));
     }
 
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        RateLimiter::for('ai', function (Request $request) {
+            return Limit::perHour(30)->by($request->user()?->id ?: $request->ip());
+        });
 
         View::composer([
             'layouts.app',

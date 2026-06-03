@@ -13,49 +13,93 @@ class AnthropicService
     private const MAX_TOKENS = 4096;
     private const PDF_TEXT_LIMIT = 30000;
 
-    private const SYSTEM_BASE = 'Você é um assistente jurídico especializado no ordenamento jurídico brasileiro. Opera como copiloto de escritório de advocacia. Respostas objetivas, fundamentadas. Sempre indique que o resultado deve ser validado por profissional habilitado. Idioma: português do Brasil. Nunca invente leis, artigos ou jurisprudências.';
-
     public function __construct(
         private readonly string $apiKey,
         private readonly float  $temperature,
         private readonly string $modelFast,
         private readonly string $modelStrong,
+        private readonly string $provider = 'mock',
     ) {}
 
     public function resumoCaso(string $documentText, string $caseTitle, string $caseArea): array
     {
-        $system = self::SYSTEM_BASE . ' Produza um resumo executivo em 4 seções: 1) Síntese do caso, 2) Partes envolvidas, 3) Objeto da disputa/operação, 4) Pontos de atenção prioritários.';
+        if ($this->isMock()) {
+            return $this->mockResponse('resumo_caso');
+        }
 
-        $user = "Caso: {$caseTitle}\nÁrea: {$caseArea}\n\nDocumento:\n{$documentText}";
+        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.resumo_caso');
+        $user   = "Caso: {$caseTitle}\nÁrea: {$caseArea}\n\nDocumento:\n{$documentText}";
 
         return $this->callAnthropic($this->modelFast, $system, $user);
     }
 
     public function analiseDocumento(string $documentText, string $caseTitle): array
     {
-        $system = self::SYSTEM_BASE . ' Analise o documento e produza: 1) Cláusulas-chave, 2) Riscos identificados com classificação (alto/médio/baixo), 3) Prazos relevantes, 4) Recomendações práticas.';
+        if ($this->isMock()) {
+            return $this->mockResponse('analise_documento');
+        }
 
-        $user = "Caso: {$caseTitle}\n\nDocumento:\n{$documentText}";
+        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.analise_documento');
+        $user   = "Caso: {$caseTitle}\n\nDocumento:\n{$documentText}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
     }
 
     public function revisaoMinuta(string $draftContent, string $draftTitle, string $caseContext): array
     {
-        $system = self::SYSTEM_BASE . ' Revise a minuta e identifique: 1) Inconsistências jurídicas, 2) Ambiguidades que geram risco, 3) Ausências relevantes, 4) Sugestões de melhoria com trechos citados do original.';
+        if ($this->isMock()) {
+            return $this->mockResponse('revisao_minuta');
+        }
 
-        $user = "Minuta: {$draftTitle}\nContexto do caso: {$caseContext}\n\nConteúdo da minuta:\n{$draftContent}";
+        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.revisao_minuta');
+        $user   = "Minuta: {$draftTitle}\nContexto do caso: {$caseContext}\n\nConteúdo da minuta:\n{$draftContent}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
     }
 
     public function pesquisaJuridica(string $question, string $docsContext, string $caseTitle): array
     {
-        $system = self::SYSTEM_BASE . ' Com base nos documentos do caso, fundamente a resposta em legislação, doutrina e jurisprudência do STF/STJ. Cite artigos de lei e números de decisões apenas se presentes nos documentos fornecidos.';
+        if ($this->isMock()) {
+            return $this->mockResponse('pesquisa_juridica');
+        }
 
-        $user = "Caso: {$caseTitle}\nPergunta: {$question}\n\nDocumentos do caso:\n{$docsContext}";
+        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.pesquisa_juridica');
+        $user   = "Caso: {$caseTitle}\nPergunta: {$question}\n\nDocumentos do caso:\n{$docsContext}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
+    }
+
+    public function rascunhoMinuta(string $instructions, string $type, string $caseTitle, string $caseArea = ''): array
+    {
+        if ($this->isMock()) {
+            return $this->mockResponse('rascunho_minuta');
+        }
+
+        $typeLabel = $this->draftTypeLabel($type);
+        $system    = $this->systemBase() . "\n\n" . config('ai_prompts.system.rascunho_minuta');
+        $user      = "Tipo de documento: {$typeLabel}\nCaso vinculado: {$caseTitle}" .
+                     ($caseArea ? "\nÁrea jurídica: {$caseArea}" : '') .
+                     "\n\nInstruções para geração:\n{$instructions}";
+
+        return $this->callAnthropic($this->modelStrong, $system, $user);
+    }
+
+    /**
+     * @param  array<int, array{role: string, content: string}>  $messages
+     */
+    public function chat(array $messages, string $caseContext = ''): array
+    {
+        if ($this->isMock()) {
+            return $this->mockResponse('chat');
+        }
+
+        $systemSuffix = $caseContext
+            ? "\n\nContexto do caso:\n{$caseContext}"
+            : '';
+
+        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.chat') . $systemSuffix;
+
+        return $this->callAnthropic($this->modelFast, $system, '', $messages);
     }
 
     public function extractPdfText(string $binary): string
@@ -80,8 +124,49 @@ class AnthropicService
         return mb_substr($text, 0, self::PDF_TEXT_LIMIT);
     }
 
-    private function callAnthropic(string $model, string $system, string $user): array
+    private function isMock(): bool
     {
+        return $this->provider !== 'anthropic';
+    }
+
+    private function systemBase(): string
+    {
+        return config('ai_prompts.system.base');
+    }
+
+    private function mockResponse(string $type): array
+    {
+        return [
+            'content'       => config("ai_prompts.mock.{$type}", "[Mock] Resposta não encontrada para o tipo: {$type}"),
+            'model'         => 'mock-legal-copilot',
+            'input_tokens'  => 0,
+            'output_tokens' => 0,
+            'total_tokens'  => 0,
+        ];
+    }
+
+    private function draftTypeLabel(string $type): string
+    {
+        return match ($type) {
+            'peticao_inicial'          => 'Petição Inicial',
+            'contestacao'              => 'Contestação',
+            'recurso'                  => 'Recurso',
+            'notificacao_extrajudicial' => 'Notificação Extrajudicial',
+            'contrato'                 => 'Contrato',
+            'parecer'                  => 'Parecer Jurídico',
+            default                    => 'Documento Jurídico',
+        };
+    }
+
+    /**
+     * @param  array<int, array{role: string, content: string}>  $messages
+     */
+    private function callAnthropic(string $model, string $system, string $user, array $messages = []): array
+    {
+        if (empty($messages)) {
+            $messages = [['role' => 'user', 'content' => $user]];
+        }
+
         $response = Http::withHeaders([
             'x-api-key'         => $this->apiKey,
             'anthropic-version' => self::API_VERSION,
@@ -91,9 +176,7 @@ class AnthropicService
             'max_tokens'  => self::MAX_TOKENS,
             'temperature' => $this->temperature,
             'system'      => $system,
-            'messages'    => [
-                ['role' => 'user', 'content' => $user],
-            ],
+            'messages'    => $messages,
         ]);
 
         if ($response->failed()) {
