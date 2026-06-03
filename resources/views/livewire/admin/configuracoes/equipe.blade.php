@@ -1,34 +1,5 @@
 <div>
 
-    {{-- =====================================================================
-         Toast de notificação (sticky, topo da seção)
-         ===================================================================== --}}
-    <div
-        x-show="toast.show"
-        x-cloak
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 translate-y-2"
-        :class="{
-            'alert-success border-success-subtle': toast.type === 'success',
-            'alert-warning border-warning-subtle': toast.type === 'warning',
-            'alert-danger  border-danger-subtle':  toast.type === 'danger',
-        }"
-        class="alert d-flex align-items-center gap-2 rounded-3 shadow-sm mb-3"
-        role="alert"
-        style="position: sticky; top: 1rem; z-index: 100;"
-    >
-        <i class="bi fs-6" :class="{
-            'bi-check-circle-fill text-success': toast.type === 'success',
-            'bi-exclamation-triangle-fill text-warning': toast.type === 'warning',
-            'bi-x-circle-fill text-danger': toast.type === 'danger',
-        }"></i>
-        <span x-text="toast.message" class="flex-grow-1 small fw-semibold"></span>
-        <button type="button" class="btn-close btn-close-sm" @click="toast.show = false" aria-label="Fechar"></button>
-    </div>
 
     {{-- =====================================================================
          Estatísticas

@@ -2,6 +2,10 @@
 
 @section('title', 'Configurações — Plano')
 
+@push('scripts')
+    @vite(['resources/js/modules/configuracoes-alpine.js'])
+@endpush
+
 @push('styles')
     @vite(['resources/css/modules/configuracoes.css'])
 @endpush

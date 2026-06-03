@@ -19,11 +19,11 @@
              x-data="escritorioForm()"
              @input.capture="hasChanges = true"
              @change.capture="hasChanges = true"
-             @escritorio-saved.window="onSaved()">
+             x-on:escritorio-saved.window="onSaved()">
 
             <div class="settings-section-header">
-                <h2 class="fw-semibold mb-1" style="font-size: 1.2rem;">Dados do escritório</h2>
-                <p class="text-secondary mb-0 small">Razão social, CNPJ, endereço, logotipo e áreas de atuação.</p>
+                <h2 class="mb-1">Dados do escritório</h2>
+                <p class="text-secondary small">Razão social, CNPJ, endereço, logotipo e áreas de atuação.</p>
             </div>
 
             <livewire:admin.configuracoes.escritorio lazy />

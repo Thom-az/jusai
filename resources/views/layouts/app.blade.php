@@ -65,6 +65,50 @@
             </div>
         </div>
 
+        {{-- Toast global — canto superior direito --}}
+        <div
+            x-data="{
+                show: false, message: '', type: 'success', _t: null,
+                display(msg, t) {
+                    this.message = msg; this.type = t || 'success'; this.show = true;
+                    clearTimeout(this._t);
+                    this._t = setTimeout(() => this.show = false, 4500);
+                }
+            }"
+            x-on:app:toast.window="display($event.detail.message, $event.detail.type)"
+            class="position-fixed"
+            style="top: 1.25rem; right: 1.25rem; z-index: 1090; pointer-events: none;"
+        >
+            <div
+                x-show="show"
+                x-cloak
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 translate-x-4"
+                x-transition:enter-end="opacity-100 translate-x-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                :class="{
+                    'd-flex': show,
+                    'app-toast--success': type === 'success',
+                    'app-toast--warning': type === 'warning',
+                    'app-toast--danger':  type === 'danger',
+                }"
+                class="app-toast"
+                style="display:none; pointer-events: auto;"
+                role="alert"
+            >
+                <i class="bi flex-shrink-0" :class="{
+                    'bi-check-circle-fill': type === 'success',
+                    'bi-exclamation-triangle-fill': type === 'warning',
+                    'bi-x-circle-fill': type === 'danger',
+                }"></i>
+                <span x-text="message" class="small fw-semibold flex-grow-1"></span>
+                <button type="button" class="btn-close btn-close-sm ms-1 flex-shrink-0"
+                        @click="show = false; clearTimeout(_t)" aria-label="Fechar"></button>
+            </div>
+        </div>
+
         @stack('scripts')
         @livewireScripts
     </body>

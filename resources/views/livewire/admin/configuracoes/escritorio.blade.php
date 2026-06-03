@@ -4,24 +4,12 @@
      Banner view-only (sem manage-firm)
      ============================================================ --}}
 @unless($canEdit)
-    <div class="alert d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
-         style="background: rgba(37,99,235,0.07); color: var(--jusai-action);">
+    <div class="alert settings-viewonly-banner d-flex align-items-center gap-2 mb-4 rounded-3 border-0">
         <i class="bi bi-eye" aria-hidden="true"></i>
         <span>Você está em modo de visualização. Fale com o administrador do escritório para editar estes dados.</span>
     </div>
 @endunless
 
-{{-- Banner de sucesso --}}
-<div
-    x-show="saved"
-    x-transition
-    class="alert d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
-    style="background: rgba(15,118,110,0.1); color: #0f766e;"
-    role="alert"
->
-    <i class="bi bi-check-circle-fill"></i>
-    <span>Dados do escritório atualizados com sucesso.</span>
-</div>
 
 @error('geral')
     <div class="alert alert-danger rounded-3 border-0 mb-4">{{ $message }}</div>

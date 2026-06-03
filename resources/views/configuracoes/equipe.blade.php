@@ -22,8 +22,8 @@
              x-on:show-team-toast.window="showToast($event.detail.message, $event.detail.type)">
 
             <div class="settings-section-header">
-                <h2 class="fw-semibold mb-1" style="font-size: 1.2rem;">Equipe</h2>
-                <p class="text-secondary mb-0 small">Convide usuários, gerencie perfis de acesso e acompanhe atividades.</p>
+                <h2 class="mb-1">Equipe</h2>
+                <p class="text-secondary small">Convide usuários, gerencie perfis de acesso e acompanhe atividades.</p>
             </div>
 
             <livewire:admin.configuracoes.equipe lazy />

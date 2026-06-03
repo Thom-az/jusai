@@ -138,6 +138,44 @@
     border-bottom: 1px solid var(--jusai-border, #d7dce5);
 }
 
+.settings-section-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.settings-section-header p {
+    margin-bottom: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   4b. BANNERS / TOASTS DE FEEDBACK
+   ----------------------------------------------------------------------------- */
+
+/* Banner sticky (equipe, segurança, preferências) */
+.settings-alert-sticky {
+    position: sticky;
+    top: 1rem;
+    z-index: 100;
+}
+
+/* Banner de sucesso (fundo verde suave) */
+.settings-saved-banner {
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+}
+
+[data-theme="dark"] .settings-saved-banner {
+    background: rgba(15, 118, 110, 0.14);
+    color: #34d399;
+}
+
+/* Banner de modo leitura (fundo azul suave) */
+.settings-viewonly-banner {
+    background: rgba(37, 99, 235, 0.07);
+    color: var(--jusai-action, #2563eb);
+}
+
 /* -----------------------------------------------------------------------------
    5. CARDS DE CONFIGURAÇÃO (reaproveitados pelas seções)
    ----------------------------------------------------------------------------- */

@@ -6,23 +6,6 @@
      ============================================================ --}}
 <div class="settings-card">
 
-    {{-- Banner de sucesso --}}
-    <div
-        x-show="perfilSaved"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 -translate-y-1"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
-        style="background: rgba(15, 118, 110, 0.1); color: #0f766e;"
-        role="alert"
-    >
-        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
-        <span>Perfil atualizado com sucesso.</span>
-    </div>
-
     {{-- AVATAR --}}
     <div class="d-flex align-items-center gap-4 mb-4">
         <div
@@ -239,18 +222,6 @@
     <div class="settings-card-title">Alterar senha</div>
     <div class="settings-card-description">
         Escolha uma senha forte com ao menos 8 caracteres, letra maiúscula, número e símbolo.
-    </div>
-
-    {{-- Banner de sucesso --}}
-    <div
-        x-show="senhaSaved"
-        x-transition
-        class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3 border-0"
-        style="background: rgba(15, 118, 110, 0.1); color: #0f766e;"
-        role="alert"
-    >
-        <i class="bi bi-check-circle-fill"></i>
-        <span>Senha alterada com sucesso.</span>
     </div>
 
     <form @submit.prevent>

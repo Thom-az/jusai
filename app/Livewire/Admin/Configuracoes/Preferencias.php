@@ -27,9 +27,6 @@ class Preferencias extends Component
     /** @var array<string, array{email: bool, browser: bool}> */
     public array $notifEvents = [];
 
-    // ─── Feedback de salvo ─────────────────────────────────────────────────────
-    public bool $saved = false;
-
     // ─── Fusos horários disponíveis ────────────────────────────────────────────
     public array $timezones = [
         'Brasil' => [
@@ -166,7 +163,6 @@ class Preferencias extends Component
             ]);
         }
 
-        $this->saved = true;
         $this->dispatch('preferencias-saved');
     }
 

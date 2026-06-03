@@ -2324,3 +2324,55 @@ html[data-page-loading='pending'] body:is([data-shell-context='app'], [data-shel
         -140% 0;
     animation: routeSkeletonTable 1.25s linear infinite;
 }
+
+
+/* =============================================================================
+   TOAST GLOBAL — canto superior direito, Alpine-managed
+   ============================================================================= */
+
+.app-toast {
+    min-width: 280px;
+    max-width: 380px;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid transparent;
+    gap: 0.625rem;
+    align-items: center;
+}
+
+.app-toast--success {
+    background: rgba(5, 150, 105, 0.1);
+    border-color: rgba(5, 150, 105, 0.2);
+    color: #065f46;
+}
+
+.app-toast--warning {
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.2);
+    color: #92400e;
+}
+
+.app-toast--danger {
+    background: rgba(185, 28, 28, 0.1);
+    border-color: rgba(185, 28, 28, 0.2);
+    color: #7f1d1d;
+}
+
+[data-theme="dark"] .app-toast--success {
+    background: rgba(5, 150, 105, 0.18);
+    border-color: rgba(5, 150, 105, 0.3);
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .app-toast--warning {
+    background: rgba(217, 119, 6, 0.18);
+    border-color: rgba(217, 119, 6, 0.3);
+    color: #fcd34d;
+}
+
+[data-theme="dark"] .app-toast--danger {
+    background: rgba(185, 28, 28, 0.18);
+    border-color: rgba(185, 28, 28, 0.3);
+    color: #fca5a5;
+}

@@ -1,25 +1,5 @@
 <div>
 
-    {{-- =====================================================================
-         Banner de sucesso
-         ===================================================================== --}}
-    <div
-        x-show="savedBanner"
-        x-cloak
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="alert alert-success border-success-subtle d-flex align-items-center gap-2 rounded-3 shadow-sm mb-3"
-        role="alert"
-        style="position: sticky; top: 1rem; z-index: 100;"
-    >
-        <i class="bi bi-check-circle-fill text-success fs-6"></i>
-        <span class="small fw-semibold flex-grow-1">Preferências salvas com sucesso.</span>
-        <button type="button" class="btn-close btn-close-sm" @click="savedBanner = false"></button>
-    </div>
 
     {{-- =====================================================================
          Card 1 — Aparência
@@ -350,13 +330,6 @@
             </span>
         </button>
 
-        @if($saved)
-            <span class="text-success small d-inline-flex align-items-center gap-1"
-                  x-data x-init="setTimeout(() => $el.remove(), 4000)">
-                <i class="bi bi-check-circle-fill"></i>
-                Salvo com sucesso!
-            </span>
-        @endif
     </div>
 
 </div>

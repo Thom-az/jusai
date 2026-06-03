@@ -191,7 +191,6 @@ document.addEventListener('alpine:init', () => {
 
     Alpine.data('escritorioForm', () => ({
         hasChanges: false,
-        saved: false,
         logoPreview: null,
         logoDarkPreview: null,
         cepLoading: false,
@@ -199,11 +198,12 @@ document.addEventListener('alpine:init', () => {
         cepError: false,
 
         onSaved() {
-            this.hasChanges     = false;
-            this.logoPreview    = null;
+            this.hasChanges      = false;
+            this.logoPreview     = null;
             this.logoDarkPreview = null;
-            this.saved          = true;
-            setTimeout(() => this.saved = false, 4000);
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: { message: 'Dados do escritório atualizados com sucesso.', type: 'success' }
+            }));
         },
 
         onLogoSelected(event, type) {
@@ -274,8 +274,6 @@ document.addEventListener('alpine:init', () => {
     // ─── Equipe ──────────────────────────────────────────────────────────────
 
     Alpine.data('equipeForm', () => ({
-        toast: { show: false, message: '', type: 'success' },
-
         showInviteModal() {
             const el = this.$refs.modalConvite;
             if (el && typeof bootstrap !== 'undefined') {
@@ -284,17 +282,15 @@ document.addEventListener('alpine:init', () => {
         },
 
         showToast(message, type) {
-            this.toast = { show: true, message, type: type || 'success' };
-            clearTimeout(this._toastTimer);
-            this._toastTimer = setTimeout(() => this.toast.show = false, 4000);
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: { message, type: type || 'success' }
+            }));
         },
     }));
 
     // ─── Preferências ────────────────────────────────────────────────────────
 
     Alpine.data('preferenciasForm', () => ({
-        savedBanner: false,
-
         applyTheme(pref) {
             const theme = pref === 'system'
                 ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -311,12 +307,10 @@ document.addEventListener('alpine:init', () => {
     // ─── Segurança ───────────────────────────────────────────────────────────
 
     Alpine.data('segurancaForm', () => ({
-        toast: { show: false, message: '', type: 'success' },
-
         showToast(message, type) {
-            this.toast = { show: true, message, type: type || 'success' };
-            clearTimeout(this._t);
-            this._t = setTimeout(() => this.toast.show = false, 4000);
+            window.dispatchEvent(new CustomEvent('app:toast', {
+                detail: { message, type: type || 'success' }
+            }));
         },
 
         copyText(text) {
