@@ -35,7 +35,7 @@ return [
                     ['label' => 'Dashboard', 'icon' => 'bi-grid', 'route' => 'dashboard', 'pattern' => 'dashboard'],
                     ['label' => 'Casos', 'icon' => 'bi-briefcase', 'route' => 'cases.index', 'pattern' => 'casos*'],
                     ['label' => 'Documentos', 'icon' => 'bi-file-earmark-text', 'route' => 'documents.index', 'pattern' => 'documentos*'],
-                    ['label' => 'Minutas', 'icon' => 'bi-journal-richtext', 'route' => 'drafts.index', 'pattern' => 'minutas*', 'coming_soon' => true],
+                    ['label' => 'Minutas', 'icon' => 'bi-journal-richtext', 'route' => 'drafts.index', 'pattern' => 'minutas*'],
                     ['label' => 'Revisor Jurídico', 'icon' => 'bi-shield-check', 'route' => 'review.index', 'pattern' => 'revisor*'],
                 ],
             ],

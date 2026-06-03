@@ -30,6 +30,7 @@ export default defineConfig({
                 'resources/js/modules/documentos-create.js',
                 'resources/js/modules/revisor-index.js',
                 'resources/js/modules/revisor-show.js',
+                'resources/js/modules/minuta-show.js',
                 'resources/js/modules/chamados-index.js',
 
                 // JS — configuracoes Alpine components (global registration)

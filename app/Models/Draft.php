@@ -21,6 +21,7 @@ class Draft extends Model
         'legal_case_id',
         'title',
         'type',
+        'instructions',
         'content',
         'status',
         'version',
