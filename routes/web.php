@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AiReviewController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DraftController;
@@ -36,21 +37,27 @@ Route::middleware(['auth', 'org.access'])->group(function () {
         'destroy' => 'documents.destroy',
     ]);
 
-    Route::resource('minutas', DraftController::class)->names([
-        'index'   => 'drafts.index',
-        'create'  => 'drafts.create',
-        'store'   => 'drafts.store',
-        'show'    => 'drafts.show',
-        'edit'    => 'drafts.edit',
-        'update'  => 'drafts.update',
-        'destroy' => 'drafts.destroy',
-    ]);
+    Route::resource('minutas', DraftController::class)
+        ->names([
+            'index'   => 'drafts.index',
+            'create'  => 'drafts.create',
+            'store'   => 'drafts.store',
+            'show'    => 'drafts.show',
+            'edit'    => 'drafts.edit',
+            'update'  => 'drafts.update',
+            'destroy' => 'drafts.destroy',
+        ])
+        ->middleware(['store' => 'throttle:ai', 'update' => 'throttle:ai']);
+    Route::get('/minutas/{minuta}/status', [DraftController::class, 'status'])->name('drafts.status');
+
+    Route::get('/casos/{caso}/chat', [ChatController::class, 'show'])->name('cases.chat');
 
     Route::get('/revisor', [AiReviewController::class, 'index'])->name('review.index');
-    Route::post('/revisor', [AiReviewController::class, 'store'])->name('review.store');
+    Route::post('/revisor', [AiReviewController::class, 'store'])->middleware('throttle:ai')->name('review.store');
     Route::get('/revisor/{aiReview}', [AiReviewController::class, 'show'])->name('review.show');
     Route::get('/revisor/{aiReview}/status', [AiReviewController::class, 'status'])->name('review.status');
     Route::post('/revisor/{aiReview}/approve', [AiReviewController::class, 'approve'])->name('review.approve');
+    Route::post('/revisor/{aiReview}/feedback', [AiReviewController::class, 'feedback'])->name('review.feedback');
 
     Route::get('/chamados', [SupportTicketController::class, 'index'])->name('tickets.index');
     Route::post('/chamados', [SupportTicketController::class, 'store'])->name('tickets.store');
