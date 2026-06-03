@@ -55,7 +55,7 @@
                         @php $active = $isActive(str_replace('settings.', '', $item['route'])); @endphp
                         <a
                             href="{{ route($item['route']) }}"
-                            wire:navigate
+                            wire:navigate.hover
                             class="settings-nav-link {{ $active ? 'active' : '' }}"
                             @if($active) aria-current="page" @endif
                         >
