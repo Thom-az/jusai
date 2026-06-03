@@ -18,6 +18,11 @@ class ProcessAiReview implements ShouldQueue
 
     public function __construct(public readonly AiReview $aiReview) {}
 
+    public function backoff(): array
+    {
+        return [30, 60, 120];
+    }
+
     public function handle(AnthropicService $anthropic, SupabaseStorageService $storage): void
     {
         $review = $this->aiReview->fresh(['legalCase', 'document', 'draft']);
