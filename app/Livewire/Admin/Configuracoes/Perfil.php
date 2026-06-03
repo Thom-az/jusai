@@ -105,6 +105,9 @@ class Perfil extends Component
     {
         $user = Auth::user();
 
+        // Remove máscara do campo OAB antes de validar (Alpine exibe "123.456", backend espera "123456")
+        $this->oabNumber = preg_replace('/\D/', '', $this->oabNumber ?? '');
+
         $this->validate([
             'name'        => ['required', 'string', 'max:255'],
             'email'       => ['required', 'email:rfc', 'max:255', "unique:users,email,{$user->id}"],
