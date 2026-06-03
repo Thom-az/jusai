@@ -68,30 +68,5 @@
 
         @stack('scripts')
         @livewireScripts
-        <script>
-            (function () {
-                const typeMap = {
-                    success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', icon: 'bi-check-circle-fill' },
-                    warning: { bg: 'bg-warning-subtle', text: 'text-warning-emphasis', icon: 'bi-exclamation-triangle-fill' },
-                    danger:  { bg: 'bg-danger-subtle',  text: 'text-danger-emphasis',  icon: 'bi-x-circle-fill' },
-                };
-
-                window.addEventListener('app:toast', (e) => {
-                    const { message, type = 'success' } = e.detail;
-                    const c = typeMap[type] || typeMap.success;
-
-                    document.getElementById('globalToastMessage').textContent = message;
-                    document.getElementById('globalToastIcon').className = `bi flex-shrink-0 fs-6 ${c.icon}`;
-
-                    const inner = document.getElementById('globalToastInner');
-                    inner.className = `d-flex align-items-center gap-2 p-3 rounded ${c.bg} ${c.text}`;
-
-                    bootstrap.Toast.getOrCreateInstance(
-                        document.getElementById('globalToast'),
-                        { delay: 4500 }
-                    ).show();
-                });
-            }());
-        </script>
     </body>
 </html>

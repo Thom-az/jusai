@@ -1,6 +1,29 @@
 import 'bootstrap';
 import { Tooltip, Toast } from 'bootstrap';
 
+// ─── Global toast — escuta app:toast de qualquer página ──────────────────────
+;(function () {
+    const typeMap = {
+        success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', icon: 'bi-check-circle-fill' },
+        warning: { bg: 'bg-warning-subtle', text: 'text-warning-emphasis', icon: 'bi-exclamation-triangle-fill' },
+        danger:  { bg: 'bg-danger-subtle',  text: 'text-danger-emphasis',  icon: 'bi-x-circle-fill' },
+    };
+
+    window.addEventListener('app:toast', (e) => {
+        const { message, type = 'success' } = e.detail;
+        const c = typeMap[type] || typeMap.success;
+        const toastEl = document.getElementById('globalToast');
+        if (!toastEl) return;
+
+        document.getElementById('globalToastMessage').textContent = message;
+        document.getElementById('globalToastIcon').className = `bi flex-shrink-0 fs-6 ${c.icon}`;
+        document.getElementById('globalToastInner').className =
+            `d-flex align-items-center gap-2 p-3 rounded ${c.bg} ${c.text}`;
+
+        Toast.getOrCreateInstance(toastEl, { delay: 4500 }).show();
+    });
+}());
+
 const sk = {
     text:    (w = '60%', mb = 2) => `<div class="skeleton skeleton-text mb-${mb}" style="width:${w}"></div>`,
     heading: (w = '40%')         => `<div class="skeleton skeleton-heading mb-2" style="width:${w}"></div>`,
@@ -290,6 +313,20 @@ function getSkeletonForUrl(href) {
             <div class="surface-card p-4">${listRows()}</div>`);
     }
 
+    // /configuracoes/* — apenas o conteúdo (sidebar é preservado pelo click handler)
+    if (p.startsWith('/configuracoes')) {
+        return `
+            <div class="settings-section-header placeholder-glow">
+                ${sk.text('9rem', 1)}${sk.text('15rem')}
+            </div>
+            <div class="settings-skeleton-card placeholder-glow mb-3">
+                ${sk.input()}${sk.input()}${sk.input()}${sk.btn('8rem')}
+            </div>
+            <div class="settings-skeleton-card placeholder-glow">
+                ${sk.input()}${sk.input()}${sk.btn('8rem')}
+            </div>`;
+    }
+
     // fallback
     return wrap(`
         ${pageHeader()}
@@ -414,12 +451,15 @@ const clearPendingNavigation = () => {
 
         const cm = document.querySelector('.content-main');
         if (cm) {
-            cm.style.transition = 'opacity 0.06s ease';
-            cm.style.opacity = '0';
+            // Para configurações, preserva o sidebar e só anima o .settings-content
+            const settingsContent = cm.querySelector('.settings-content');
+            const target = settingsContent ?? cm;
+            target.style.transition = 'opacity 0.06s ease';
+            target.style.opacity = '0';
             setTimeout(() => {
-                cm.innerHTML = getSkeletonForUrl(anchor.href);
-                cm.style.transition = '';
-                cm.style.opacity = '1';
+                target.innerHTML = getSkeletonForUrl(anchor.href);
+                target.style.transition = '';
+                target.style.opacity = '1';
             }, 60);
         }
     }, { capture: true });
