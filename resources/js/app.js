@@ -169,6 +169,19 @@ function getSkeletonForUrl(href) {
             <div class="surface-card p-4">${listRows()}</div>`);
     }
 
+    // /casos/{id}/chat
+    if (/^\/casos\/[^/]+\/chat$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            <div class="row g-4">
+                <div class="col-lg-8"><div class="surface-card p-4">${sk.block('22rem', '100%', '.5rem')}</div></div>
+                <div class="col-lg-4">
+                    <div class="surface-card p-4 mb-3">${sk.heading('10rem')}${[0,1,2,3].map(() => `<div class="d-flex justify-content-between mb-2">${sk.text('40%',0)}${sk.text('35%',0)}</div>`).join('')}</div>
+                    <div class="surface-card p-4">${sk.heading('8rem')}${[0,1,2,3,4].map(() => sk.text('80%')).join('')}</div>
+                </div>
+            </div>`);
+    }
+
     // /revisor/{id} (show) — 2-column result + details
     if (/^\/revisor\/[^/]+$/.test(p)) {
         return wrap(`
@@ -214,15 +227,44 @@ function getSkeletonForUrl(href) {
             </div>`);
     }
 
-    // /minutas
+    // /minutas/create — antes do wildcard
+    if (p === '/minutas/create') {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            <div class="row g-4">
+                <div class="col-lg-8">${formSurface(4)}</div>
+                <div class="col-lg-4"><div class="surface-card p-4">${sk.heading('10rem')}${[0,1,2,3].map(() => sk.text('80%')).join('')}</div></div>
+            </div>`);
+    }
+
+    // /minutas/{id}/edit
+    if (/^\/minutas\/[^/]+\/edit$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center gap-3 mb-4">${sk.btn('6rem')}${sk.heading('14rem')}</div>
+            <div class="row g-4">
+                <div class="col-lg-8">${formSurface(2)}${sk.block('14rem')}</div>
+                <div class="col-lg-4">${formSurface(2)}</div>
+            </div>`);
+    }
+
+    // /minutas/{id} (show)
+    if (/^\/minutas\/[^/]+$/.test(p)) {
+        return wrap(`
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">${sk.btn('6rem')}<div>${sk.heading('16rem')}${sk.text('12rem')}</div></div>
+                ${sk.badge('6rem')}
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-8"><div class="surface-card p-4">${sk.heading('10rem')}${[0,1,2,3,4,5,6].map(() => sk.text('100%')).join('')}</div></div>
+                <div class="col-lg-4"><div class="surface-card p-4">${sk.heading('8rem')}${[0,1,2,3].map(() => `<div class="d-flex justify-content-between mb-2">${sk.text('40%',0)}${sk.text('35%',0)}</div>`).join('')}</div></div>
+            </div>`);
+    }
+
+    // /minutas (list)
     if (p === '/minutas') {
         return wrap(`
             ${pageHeader('9rem')}
-            <div class="surface-card p-5 text-center">
-                <div class="d-flex justify-content-center mb-3">${sk.circle('5rem')}</div>
-                ${sk.heading('14rem')}
-                <div class="d-flex justify-content-center">${sk.text('18rem')}</div>
-            </div>`);
+            <div class="surface-card p-0"><div class="p-4">${listRows()}</div></div>`);
     }
 
     // /chamados — header + badge strip + command bar + list
