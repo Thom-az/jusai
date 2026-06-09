@@ -31,8 +31,14 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
+                <button type="button"
+                        class="btn btn-primary rounded-pill px-3"
+                        data-preview-doc-id="{{ $document->id }}"
+                        data-preview-title="{{ $document->title }}">
+                    <i class="bi bi-eye me-1"></i>Visualizar
+                </button>
                 @if ($downloadUrl)
-                    <a href="{{ $downloadUrl }}" target="_blank" class="btn btn-primary rounded-pill px-3">
+                    <a href="{{ $downloadUrl }}" target="_blank" class="btn btn-outline-secondary rounded-pill px-3">
                         <i class="bi bi-download me-1"></i>Baixar
                     </a>
                 @endif
@@ -69,10 +75,11 @@
                         </div>
                     </div>
                 @elseif ($document->status === 'processing')
-                    <div class="surface-card p-4 mb-4 text-center">
+                    <div class="surface-card p-4 mb-4 text-center" id="docProcessingCard"
+                         data-reload-url="{{ url()->current() }}">
                         <div class="spinner-border text-primary mb-3" role="status"></div>
                         <div class="fw-semibold">Processando análise de IA...</div>
-                        <div class="text-secondary small">O resumo será gerado em breve.</div>
+                        <div class="text-secondary small">O resumo será gerado em breve. Esta página será atualizada automaticamente.</div>
                     </div>
                 @endif
 
@@ -140,3 +147,9 @@
         </div>
     </div>
 @endsection
+
+@if ($document->status === 'processing')
+@push('scripts')
+    @vite(['resources/js/modules/documento-show.js'])
+@endpush
+@endif

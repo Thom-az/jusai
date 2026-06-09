@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\LegalCase;
 use App\Services\SupabaseStorageService;
 use App\Traits\OrganizationScoped;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -86,8 +87,7 @@ class DocumentController extends Controller
         ]);
 
         if ($caseId && str_contains($mimeType, 'pdf')) {
-            $legalCase = LegalCase::find($caseId);
-            $aiReview  = AiReview::create([
+            $aiReview = AiReview::create([
                 'organization_id'       => $orgId,
                 'legal_case_id'         => $caseId,
                 'document_id'           => $document->id,
@@ -106,6 +106,38 @@ class DocumentController extends Controller
         return redirect()->route('documents.show', $document)->with('success', 'Documento enviado. A análise de IA será processada em breve.');
     }
 
+    public function edit(string $id): View
+    {
+        $document = $this->scopedQuery(Document::class)->with('legalCase')->findOrFail($id);
+
+        $cases = $this->scopedQuery(LegalCase::class)
+            ->whereNotIn('status', ['encerrado', 'arquivado'])
+            ->orderBy('title')
+            ->get();
+
+        return view('documentos.edit', compact('document', 'cases'));
+    }
+
+    public function update(Request $request, string $id): RedirectResponse
+    {
+        $document = $this->scopedQuery(Document::class)->findOrFail($id);
+
+        $data = $request->validate([
+            'title'         => ['required', 'string', 'max:255'],
+            'legal_case_id' => ['nullable', 'uuid'],
+        ]);
+
+        if ($data['legal_case_id']) {
+            $this->scopedQuery(LegalCase::class)->findOrFail($data['legal_case_id']);
+        }
+
+        $document->update($data);
+
+        $this->logActivity('documento_atualizado', "Documento \"{$document->title}\" atualizado.", Document::class, $document->id);
+
+        return redirect()->route('documents.show', $document)->with('success', 'Documento atualizado.');
+    }
+
     public function show(string $id): View
     {
         $document    = $this->scopedQuery(Document::class)->with(['legalCase', 'aiReviews'])->findOrFail($id);
@@ -118,6 +150,24 @@ class DocumentController extends Controller
         }
 
         return view('documentos.show', compact('document', 'downloadUrl'));
+    }
+
+    public function previewUrl(string $id): JsonResponse
+    {
+        $document = $this->scopedQuery(Document::class)->findOrFail($id);
+
+        try {
+            $url = $this->storage->getSignedUrl('case-documents', $document->storage_path, 1800);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'Não foi possível gerar a URL de visualização.'], 422);
+        }
+
+        return response()->json([
+            'url'      => $url,
+            'mime'     => $document->mime_type,
+            'filename' => $document->original_filename,
+            'title'    => $document->title,
+        ]);
     }
 
     public function destroy(string $id): RedirectResponse

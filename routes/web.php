@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AiReviewController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\AiPromptController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
@@ -49,6 +50,7 @@ Route::middleware(['auth', 'org.access'])->group(function () {
         ])
         ->middleware(['store' => 'throttle:ai', 'update' => 'throttle:ai']);
     Route::get('/minutas/{minuta}/status', [DraftController::class, 'status'])->name('drafts.status');
+    Route::get('/documentos/{documento}/preview-url', [\App\Http\Controllers\DocumentController::class, 'previewUrl'])->name('documents.preview-url');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/casos/{caso}/chat', [ChatController::class, 'show'])->name('cases.chat');
@@ -108,6 +110,10 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
     Route::get('/chamados', [Admin\SupportController::class, 'index'])->name('support.index');
     Route::get('/leads', [Admin\LeadController::class, 'index'])->name('leads.index');
     Route::get('/leads/comparativo', [Admin\LeadController::class, 'comparison'])->name('leads.comparison');
+
+    Route::get('/prompts', [AiPromptController::class, 'index'])->name('prompts.index');
+    Route::patch('/prompts/{key}', [AiPromptController::class, 'update'])->name('prompts.update')->where('key', '.+');
+    Route::post('/prompts/{key}/reset', [AiPromptController::class, 'reset'])->name('prompts.reset')->where('key', '.+');
 });
 
 require __DIR__.'/auth.php';

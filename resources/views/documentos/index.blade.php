@@ -135,6 +135,7 @@
                     @forelse ($documents as $doc)
                         @php
                             $docData = htmlspecialchars(json_encode([
+                                'id'       => $doc->id,
                                 'title'    => $doc->title,
                                 'filename' => $doc->original_filename,
                                 'size'     => number_format($doc->file_size / 1024, 0) . ' KB',
@@ -238,8 +239,14 @@
             </template>
         </div>
         <x-slot name="footer">
+            <button type="button"
+                    class="btn btn-outline-primary rounded-pill px-4"
+                    :data-preview-doc-id="activeDoc?.id"
+                    :data-preview-title="activeDoc?.title">
+                <i class="bi bi-eye me-2"></i>Visualizar arquivo
+            </button>
             <a href="#" :href="activeDoc?.url ?? '#'" wire:navigate class="btn btn-primary rounded-pill px-4">
-                <i class="bi bi-box-arrow-up-right me-2"></i>Abrir documento completo
+                <i class="bi bi-box-arrow-up-right me-2"></i>Ver detalhes
             </a>
         </x-slot>
     </x-drawer>

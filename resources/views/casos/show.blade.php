@@ -103,6 +103,12 @@
                                     };
                                 @endphp
                                 <span class="badge {{ $statusClass }}">{{ ucfirst($doc->status) }}</span>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-secondary rounded-pill"
+                                        data-preview-doc-id="{{ $doc->id }}"
+                                        data-preview-title="{{ $doc->title }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                                 <a href="{{ route('documents.show', $doc) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill">Ver</a>
                             </div>
                         </div>

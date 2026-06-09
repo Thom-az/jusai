@@ -24,6 +24,7 @@ export default defineConfig({
                 'resources/css/modules/admin/finance.css',
                 'resources/css/modules/admin/support.css',
                 'resources/css/modules/admin/leads.css',
+                'resources/css/modules/admin/prompts.css',
 
                 // JS — client modules
                 'resources/js/modules/casos-show.js',
@@ -32,13 +33,18 @@ export default defineConfig({
                 'resources/js/modules/revisor-show.js',
                 'resources/js/modules/minuta-show.js',
                 'resources/js/modules/chamados-index.js',
+                'resources/js/modules/documento-show.js',
 
                 // JS — configuracoes Alpine components (global registration)
                 'resources/js/modules/configuracoes-alpine.js',
 
+                // JS — client modules (file preview global)
+                'resources/js/modules/file-preview.js',
+
                 // JS — admin modules
                 'resources/js/modules/admin/dashboard.js',
                 'resources/js/modules/admin/organizations.js',
+                'resources/js/modules/admin/prompts.js',
             ],
             refresh: true,
         }),

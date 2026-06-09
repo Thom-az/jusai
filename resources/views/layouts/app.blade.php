@@ -66,6 +66,35 @@
             </div>
         </div>
 
+        {{-- Modal global de visualização de arquivos --}}
+        <div class="modal fade" id="modalFilePreview" tabindex="-1" aria-label="Visualizar arquivo" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header py-3">
+                        <div class="min-width-0 flex-grow-1">
+                            <h6 class="modal-title fw-semibold mb-0 text-truncate" id="previewFileTitle">Carregando…</h6>
+                            <div class="text-secondary small text-truncate mt-1" id="previewFileSubtitle"></div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 ms-3 flex-shrink-0">
+                            <a href="#" id="previewDownloadBtn" download
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3" target="_blank">
+                                <i class="bi bi-download me-1"></i>Baixar
+                            </a>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body p-3">
+                        <div id="previewSpinner" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <div class="text-secondary small mt-3">Carregando arquivo…</div>
+                        </div>
+                        <div id="previewBody" class="d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @vite(['resources/js/modules/file-preview.js'])
         @stack('scripts')
         @livewireScripts
     </body>
