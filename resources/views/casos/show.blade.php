@@ -33,7 +33,10 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('cases.edit', $case) }}" wire:navigate class="btn btn-outline-primary rounded-pill px-3">
+                <a href="{{ route('cases.chat', $case) }}" wire:navigate class="btn btn-primary rounded-pill px-3">
+                    <i class="bi bi-chat-dots me-1"></i>Assistente IA
+                </a>
+                <a href="{{ route('cases.edit', $case) }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
                     <i class="bi bi-pencil me-1"></i>Editar
                 </a>
                 <form method="POST" action="{{ route('cases.destroy', $case) }}" onsubmit="return confirm('Excluir este caso permanentemente?')">
