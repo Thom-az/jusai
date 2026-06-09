@@ -22,7 +22,12 @@ class DraftController extends Controller
             ->orderByDesc('updated_at')
             ->paginate(20);
 
-        return view('minutas.index', compact('drafts'));
+        $cases = $this->scopedQuery(LegalCase::class)
+            ->whereNotIn('status', ['encerrado', 'arquivado'])
+            ->orderBy('title')
+            ->get();
+
+        return view('minutas.index', compact('drafts', 'cases'));
     }
 
     public function create(): View

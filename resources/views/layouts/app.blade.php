@@ -94,6 +94,26 @@
             </div>
         </div>
 
+        {{-- Modal global de confirmação de exclusão --}}
+        <div class="modal fade" id="modalConfirmDelete" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <h6 class="modal-title fw-semibold" id="confirmDeleteTitle">Confirmar exclusão</h6>
+                    </div>
+                    <div class="modal-body pt-2 pb-3">
+                        <p class="text-secondary small mb-0" id="confirmDeleteMessage">Esta ação é irreversível e não poderá ser desfeita.</p>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" id="confirmDeleteBtn">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @vite(['resources/js/modules/file-preview.js'])
         @stack('scripts')
         @livewireScripts

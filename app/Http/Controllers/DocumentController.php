@@ -152,6 +152,16 @@ class DocumentController extends Controller
         return view('documentos.show', compact('document', 'downloadUrl'));
     }
 
+    public function status(string $id): JsonResponse
+    {
+        $document = $this->scopedQuery(Document::class)->findOrFail($id);
+
+        return response()->json([
+            'ready'  => $document->status !== 'processing',
+            'status' => $document->status,
+        ]);
+    }
+
     public function previewUrl(string $id): JsonResponse
     {
         $document = $this->scopedQuery(Document::class)->findOrFail($id);

@@ -739,4 +739,28 @@ function initShell() {
     });
 }
 
+// Global confirm-delete interceptor — intercepts forms with data-confirm-delete on submit button
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-confirm-delete]');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const form = btn.closest('form');
+    if (!form) return;
+    const msg = btn.dataset.confirmDelete || 'Esta ação é irreversível e não poderá ser desfeita.';
+    const titleText = btn.dataset.confirmTitle || 'Confirmar exclusão';
+    const titleEl = document.getElementById('confirmDeleteTitle');
+    const msgEl = document.getElementById('confirmDeleteMessage');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    if (titleEl) titleEl.textContent = titleText;
+    if (msgEl) msgEl.textContent = msg;
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalConfirmDelete'));
+    modal.show();
+    if (confirmBtn._deleteHandler) {
+        confirmBtn.removeEventListener('click', confirmBtn._deleteHandler);
+    }
+    confirmBtn._deleteHandler = () => { modal.hide(); form.submit(); };
+    confirmBtn.addEventListener('click', confirmBtn._deleteHandler, { once: true });
+}, true);
+
 document.addEventListener('DOMContentLoaded', initShell);

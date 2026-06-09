@@ -50,6 +50,7 @@ Route::middleware(['auth', 'org.access'])->group(function () {
         ])
         ->middleware(['store' => 'throttle:ai', 'update' => 'throttle:ai']);
     Route::get('/minutas/{minuta}/status', [DraftController::class, 'status'])->name('drafts.status');
+    Route::get('/documentos/{documento}/status', [\App\Http\Controllers\DocumentController::class, 'status'])->name('documents.status');
     Route::get('/documentos/{documento}/preview-url', [\App\Http\Controllers\DocumentController::class, 'previewUrl'])->name('documents.preview-url');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

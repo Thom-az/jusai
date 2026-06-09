@@ -1,16 +1,27 @@
 /**
  * documento-show.js
- * Reloads the page every 5s while the document is still processing.
+ * Polls the document status endpoint until processing is complete,
+ * then reloads once. Works on full load and wire:navigate transitions.
  */
 function initDocumentoPolling() {
     const card = document.getElementById('docProcessingCard');
     if (!card) return;
 
-    const intervalId = setInterval(() => {
-        location.reload();
-    }, 5000);
+    const statusUrl = card.dataset.statusUrl;
+    if (!statusUrl) return;
 
-    // Clean up if navigating away before reload fires
+    const intervalId = setInterval(() => {
+        fetch(statusUrl)
+            .then(r => r.json())
+            .then(d => {
+                if (d.ready) {
+                    clearInterval(intervalId);
+                    location.reload();
+                }
+            })
+            .catch(() => {});
+    }, 3000);
+
     document.addEventListener('livewire:navigate', () => clearInterval(intervalId), { once: true });
 }
 

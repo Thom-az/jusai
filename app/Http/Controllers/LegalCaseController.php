@@ -80,7 +80,17 @@ class LegalCaseController extends Controller
             ->with(['documents', 'aiReviews.creator', 'assignedUser', 'creator'])
             ->findOrFail($id);
 
-        return view('casos.show', compact('case'));
+        $lawyers = User::where('organization_id', $this->orgId())
+            ->whereIn('role', ['org_admin', 'lawyer'])
+            ->orderBy('name')
+            ->get();
+
+        $cases = $this->scopedQuery(LegalCase::class)
+            ->whereNotIn('status', ['encerrado', 'arquivado'])
+            ->orderBy('title')
+            ->get();
+
+        return view('casos.show', compact('case', 'lawyers', 'cases'));
     }
 
     public function edit(string $id): View

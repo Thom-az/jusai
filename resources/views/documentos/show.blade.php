@@ -42,9 +42,12 @@
                         <i class="bi bi-download me-1"></i>Baixar
                     </a>
                 @endif
-                <form method="POST" action="{{ route('documents.destroy', $document) }}" onsubmit="return confirm('Excluir este documento permanentemente?')">
+                <form method="POST" action="{{ route('documents.destroy', $document) }}">
                     @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger rounded-pill px-3">
+                    <button type="submit"
+                            class="btn btn-outline-danger rounded-pill px-3"
+                            data-confirm-delete="Excluir o documento &quot;{{ $document->title }}&quot; permanentemente?"
+                            data-confirm-title="Excluir documento">
                         <i class="bi bi-trash me-1"></i>Excluir
                     </button>
                 </form>
@@ -76,7 +79,7 @@
                     </div>
                 @elseif ($document->status === 'processing')
                     <div class="surface-card p-4 mb-4 text-center" id="docProcessingCard"
-                         data-reload-url="{{ url()->current() }}">
+                         data-status-url="{{ route('documents.status', $document) }}">
                         <div class="spinner-border text-primary mb-3" role="status"></div>
                         <div class="fw-semibold">Processando análise de IA...</div>
                         <div class="text-secondary small">O resumo será gerado em breve. Esta página será atualizada automaticamente.</div>

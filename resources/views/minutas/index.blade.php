@@ -13,9 +13,12 @@
                 <h2 class="fw-semibold mb-1">Minutas</h2>
                 <p class="text-secondary mb-0 small">Rascunhos jurídicos gerados com IA.</p>
             </div>
-            <a href="{{ route('drafts.create') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
+            <button type="button"
+                    class="btn btn-primary rounded-pill px-4"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalNovaMinuta">
                 <i class="bi bi-journal-plus me-2"></i>Nova minuta
-            </a>
+            </button>
         </div>
 
         @if (session('success'))
@@ -34,9 +37,12 @@
                     size="lg"
                 />
                 <div class="text-center mt-4">
-                    <a href="{{ route('drafts.create') }}" wire:navigate class="btn btn-primary rounded-pill px-4">
+                    <button type="button"
+                            class="btn btn-primary rounded-pill px-4"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalNovaMinuta">
                         <i class="bi bi-journal-plus me-2"></i>Criar primeira minuta
-                    </a>
+                    </button>
                 </div>
             </div>
         @else
@@ -124,3 +130,78 @@
         @endif
     </div>
 @endsection
+
+{{-- Modal: Nova minuta --}}
+<x-modal id="modalNovaMinuta" title="Nova minuta" size="lg">
+    <form method="POST" action="{{ route('drafts.store') }}" id="formNovaMinuta">
+        @csrf
+
+        <div class="mb-3">
+            <label for="nm_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+            <input type="text" id="nm_title" name="title"
+                   class="form-control @error('title') is-invalid @enderror"
+                   placeholder="Ex: Petição Inicial — Cobrança de Honorários"
+                   value="{{ old('title') }}">
+            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label for="nm_type" class="form-label fw-semibold">Tipo de documento <span class="text-danger">*</span></label>
+                <select id="nm_type" name="type" class="form-select @error('type') is-invalid @enderror">
+                    <option value="">Selecione o tipo…</option>
+                    <option value="peticao_inicial"           @selected(old('type') === 'peticao_inicial')>Petição Inicial</option>
+                    <option value="contestacao"               @selected(old('type') === 'contestacao')>Contestação</option>
+                    <option value="recurso"                   @selected(old('type') === 'recurso')>Recurso</option>
+                    <option value="notificacao_extrajudicial" @selected(old('type') === 'notificacao_extrajudicial')>Notificação Extrajudicial</option>
+                    <option value="contrato"                  @selected(old('type') === 'contrato')>Contrato</option>
+                    <option value="parecer"                   @selected(old('type') === 'parecer')>Parecer Jurídico</option>
+                    <option value="outros"                    @selected(old('type') === 'outros')>Outros</option>
+                </select>
+                @error('type')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-6">
+                <label for="nm_case" class="form-label fw-semibold">Caso vinculado</label>
+                <select id="nm_case" name="legal_case_id" class="form-select @error('legal_case_id') is-invalid @enderror">
+                    <option value="">Nenhum caso específico</option>
+                    @foreach ($cases as $case)
+                        <option value="{{ $case->id }}" @selected(old('legal_case_id') === $case->id)>{{ $case->title }}</option>
+                    @endforeach
+                </select>
+                @error('legal_case_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="nm_instructions" class="form-label fw-semibold">Instruções para a IA <span class="text-danger">*</span></label>
+            <textarea id="nm_instructions" name="instructions"
+                      class="form-control @error('instructions') is-invalid @enderror"
+                      rows="6"
+                      placeholder="Descreva o documento que precisa. Quanto mais detalhes você fornecer, melhor será o resultado.
+
+Ex. petição de cobrança: informe as partes, o valor devido, a origem da dívida e o pedido.
+Ex. contrato: informe as partes, o objeto, duração, valor e forma de pagamento.">{{ old('instructions') }}</textarea>
+            <div class="form-text">Mínimo de 10 caracteres. Seja específico para melhores resultados.</div>
+            @error('instructions')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <x-ai-disclaimer class="mb-0" />
+    </form>
+    <x-slot name="footer">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="formNovaMinuta" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-cpu me-2"></i>Gerar minuta com IA
+        </button>
+    </x-slot>
+</x-modal>
+
+@if ($errors->hasAny(['title', 'type', 'instructions', 'legal_case_id']))
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const el = document.getElementById('modalNovaMinuta');
+                if (el) new bootstrap.Modal(el).show();
+            });
+        </script>
+    @endpush
+@endif

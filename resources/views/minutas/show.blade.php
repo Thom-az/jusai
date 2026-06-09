@@ -113,11 +113,13 @@
                         <a href="{{ route('drafts.edit', $draft) }}" wire:navigate class="btn btn-primary rounded-pill px-4 py-2">
                             <i class="bi bi-pencil me-2"></i>Editar minuta
                         </a>
-                        <form method="POST" action="{{ route('drafts.destroy', $draft) }}"
-                              onsubmit="return confirm('Excluir esta minuta definitivamente?')">
+                        <form method="POST" action="{{ route('drafts.destroy', $draft) }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger rounded-pill px-4 py-2">
+                            <button type="submit"
+                                    class="btn btn-outline-danger rounded-pill px-4 py-2"
+                                    data-confirm-delete="Excluir a minuta &quot;{{ $draft->title }}&quot; definitivamente?"
+                                    data-confirm-title="Excluir minuta">
                                 <i class="bi bi-trash me-2"></i>Excluir
                             </button>
                         </form>

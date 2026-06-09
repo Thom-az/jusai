@@ -36,12 +36,18 @@
                 <a href="{{ route('cases.chat', $case) }}" wire:navigate class="btn btn-primary rounded-pill px-3">
                     <i class="bi bi-chat-dots me-1"></i>Assistente IA
                 </a>
-                <a href="{{ route('cases.edit', $case) }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
+                <button type="button"
+                        class="btn btn-outline-secondary rounded-pill px-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditCaso">
                     <i class="bi bi-pencil me-1"></i>Editar
-                </a>
-                <form method="POST" action="{{ route('cases.destroy', $case) }}" onsubmit="return confirm('Excluir este caso permanentemente?')">
+                </button>
+                <form method="POST" action="{{ route('cases.destroy', $case) }}" id="formDeleteCaso">
                     @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger rounded-pill px-3">
+                    <button type="submit"
+                            class="btn btn-outline-danger rounded-pill px-3"
+                            data-confirm-delete="Excluir o caso &quot;{{ $case->title }}&quot; permanentemente? Documentos e análises associados serão removidos."
+                            data-confirm-title="Excluir caso">
                         <i class="bi bi-trash me-1"></i>Excluir
                     </button>
                 </form>
@@ -79,9 +85,12 @@
             <div class="tab-pane fade show active" id="documentos">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-semibold mb-0">Documentos do caso</h5>
-                    <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" wire:navigate class="btn btn-primary rounded-pill">
+                    <button type="button"
+                            class="btn btn-primary rounded-pill"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEnviarDocCaso">
                         <i class="bi bi-cloud-arrow-up me-2"></i>Enviar documento
-                    </a>
+                    </button>
                 </div>
                 @forelse ($case->documents as $doc)
                     <div class="surface-card p-3 mb-3">
@@ -117,7 +126,12 @@
                     <div class="surface-card p-4 text-center text-secondary">
                         <i class="bi bi-file-earmark fs-2 d-block mb-2"></i>
                         Nenhum documento enviado.
-                        <a href="{{ route('documents.create', ['case_id' => $case->id]) }}" wire:navigate class="d-block mt-1">Enviar primeiro documento</a>
+                        <button type="button"
+                                class="d-block mt-1 btn btn-link btn-sm p-0 text-decoration-none"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalEnviarDocCaso">
+                            Enviar primeiro documento
+                        </button>
                     </div>
                 @endforelse
             </div>
@@ -212,6 +226,170 @@
         </div>
     </div>
 @endsection
+
+{{-- Modal: Editar caso --}}
+<x-modal id="modalEditCaso" title="Editar caso" size="lg">
+    <form method="POST" action="{{ route('cases.update', $case) }}" id="formEditCaso">
+        @csrf @method('PATCH')
+
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <label for="edit_title" class="form-label fw-semibold">Título do caso <span class="text-danger">*</span></label>
+                <input type="text" id="edit_title" name="title"
+                       class="form-control @error('title') is-invalid @enderror"
+                       value="{{ old('title', $case->title) }}">
+                @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-6">
+                <label for="edit_area" class="form-label fw-semibold">Área jurídica</label>
+                <select id="edit_area" name="area" class="form-select @error('area') is-invalid @enderror">
+                    @foreach (['civil' => 'Civil', 'criminal' => 'Criminal', 'trabalhista' => 'Trabalhista', 'tributario' => 'Tributário', 'empresarial' => 'Empresarial', 'familia' => 'Família', 'imobiliario' => 'Imobiliário', 'previdenciario' => 'Previdenciário', 'administrativo' => 'Administrativo', 'outro' => 'Outro'] as $val => $label)
+                        <option value="{{ $val }}" @selected(old('area', $case->area) === $val)>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('area')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-6">
+                <label for="edit_status" class="form-label fw-semibold">Status</label>
+                <select id="edit_status" name="status" class="form-select @error('status') is-invalid @enderror">
+                    @foreach (['triagem' => 'Triagem', 'em_andamento' => 'Em andamento', 'aguardando_cliente' => 'Aguardando cliente', 'aguardando_prazo' => 'Aguardando prazo', 'em_recurso' => 'Em recurso', 'encerrado' => 'Encerrado', 'arquivado' => 'Arquivado'] as $val => $label)
+                        <option value="{{ $val }}" @selected(old('status', $case->status) === $val)>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-6">
+                <label for="edit_risk" class="form-label fw-semibold">Nível de risco</label>
+                <select id="edit_risk" name="risk_level" class="form-select @error('risk_level') is-invalid @enderror">
+                    <option value="">Não definido</option>
+                    @foreach (['baixo' => 'Baixo', 'medio' => 'Médio', 'alto' => 'Alto', 'critico' => 'Crítico'] as $val => $label)
+                        <option value="{{ $val }}" @selected(old('risk_level', $case->risk_level) === $val)>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('risk_level')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-6">
+                <label for="edit_opened_at" class="form-label fw-semibold">Data de abertura</label>
+                <input type="date" id="edit_opened_at" name="opened_at"
+                       class="form-control @error('opened_at') is-invalid @enderror"
+                       value="{{ old('opened_at', $case->opened_at?->format('Y-m-d')) }}">
+                @error('opened_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-12">
+                <label for="edit_assigned" class="form-label fw-semibold">Responsável</label>
+                <select id="edit_assigned" name="assigned_to" class="form-select @error('assigned_to') is-invalid @enderror">
+                    <option value="">Não atribuído</option>
+                    @foreach ($lawyers as $lawyer)
+                        <option value="{{ $lawyer->id }}" @selected(old('assigned_to', $case->assigned_to) == $lawyer->id)>{{ $lawyer->name }}</option>
+                    @endforeach
+                </select>
+                @error('assigned_to')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+        </div>
+
+        <div class="mb-3 pt-3" style="border-top:1px solid rgba(215,220,229,0.5)">
+            <div class="text-secondary small text-uppercase fw-semibold mb-2">Dados do cliente</div>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label for="edit_client_name" class="form-label fw-semibold">Nome <span class="text-danger">*</span></label>
+                    <input type="text" id="edit_client_name" name="client_name"
+                           class="form-control @error('client_name') is-invalid @enderror"
+                           value="{{ old('client_name', $case->client_name) }}">
+                    @error('client_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="col-sm-6">
+                    <label for="edit_client_email" class="form-label fw-semibold">E-mail</label>
+                    <input type="email" id="edit_client_email" name="client_email"
+                           class="form-control @error('client_email') is-invalid @enderror"
+                           value="{{ old('client_email', $case->client_email) }}">
+                    @error('client_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="col-sm-6">
+                    <label for="edit_client_phone" class="form-label fw-semibold">Telefone</label>
+                    <input type="text" id="edit_client_phone" name="client_phone"
+                           class="form-control @error('client_phone') is-invalid @enderror"
+                           value="{{ old('client_phone', $case->client_phone) }}">
+                    @error('client_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 pt-3" style="border-top:1px solid rgba(215,220,229,0.5)">
+            <label for="edit_description" class="form-label fw-semibold">Descrição</label>
+            <textarea id="edit_description" name="description"
+                      class="form-control @error('description') is-invalid @enderror"
+                      rows="3">{{ old('description', $case->description) }}</textarea>
+            @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-0">
+            <label for="edit_notes" class="form-label fw-semibold">Notas internas</label>
+            <textarea id="edit_notes" name="internal_notes"
+                      class="form-control @error('internal_notes') is-invalid @enderror"
+                      rows="2"
+                      placeholder="Estratégia, observações confidenciais...">{{ old('internal_notes', $case->internal_notes) }}</textarea>
+            @error('internal_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+    </form>
+    <x-slot name="footer">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="formEditCaso" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-check-circle me-2"></i>Salvar alterações
+        </button>
+    </x-slot>
+</x-modal>
+
+{{-- Modal: Enviar documento no caso --}}
+<x-modal id="modalEnviarDocCaso" title="Enviar documento" size="md">
+    <form method="POST"
+          action="{{ route('documents.store') }}"
+          enctype="multipart/form-data"
+          id="formEnviarDocCaso">
+        @csrf
+
+        <input type="hidden" name="legal_case_id" value="{{ $case->id }}">
+
+        <div class="mb-3">
+            <label for="dc_file" class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
+            <input type="file" id="dc_file" name="file"
+                   class="form-control @error('file') is-invalid @enderror"
+                   accept=".pdf,.docx,.doc,.txt">
+            <div class="form-text">PDF, DOCX, DOC, TXT — máx. 20 MB</div>
+            @error('file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="dc_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+            <input type="text" id="dc_title" name="title"
+                   class="form-control @error('title') is-invalid @enderror"
+                   placeholder="Nome descritivo do documento"
+                   value="{{ old('title') }}">
+            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="alert alert-info d-flex align-items-start gap-2 py-2 mb-0">
+            <i class="bi bi-cpu flex-shrink-0 mt-1"></i>
+            <div class="small">PDFs enviados a este caso serão analisados automaticamente pela IA.</div>
+        </div>
+    </form>
+    <x-slot name="footer">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" form="formEnviarDocCaso" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-cloud-arrow-up me-2"></i>Enviar
+        </button>
+    </x-slot>
+</x-modal>
+
+@if ($errors->hasAny(['title', 'area', 'status', 'risk_level', 'opened_at', 'assigned_to', 'client_name', 'client_email', 'client_phone', 'description', 'internal_notes']))
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const el = document.getElementById('modalEditCaso');
+                if (el) new bootstrap.Modal(el).show();
+            });
+        </script>
+    @endpush
+@endif
 
 @push('scripts')
     @vite(['resources/js/modules/casos-show.js'])
