@@ -236,9 +236,11 @@
             <div class="col-12">
                 <label for="edit_title" class="form-label fw-semibold">Título do caso <span class="text-danger">*</span></label>
                 <input type="text" id="edit_title" name="title"
-                       class="form-control @error('title') is-invalid @enderror"
+                       class="form-control @if($errors->has('title') && !$errors->has('file')) is-invalid @endif"
                        value="{{ old('title', $case->title) }}">
-                @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                @if($errors->has('title') && !$errors->has('file'))
+                    <div class="invalid-feedback">{{ $errors->first('title') }}</div>
+                @endif
             </div>
             <div class="col-sm-6">
                 <label for="edit_area" class="form-label fw-semibold">Área jurídica</label>
@@ -361,10 +363,12 @@
         <div class="mb-3">
             <label for="dc_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
             <input type="text" id="dc_title" name="title"
-                   class="form-control @error('title') is-invalid @enderror"
+                   class="form-control @if($errors->has('title') && $errors->has('file')) is-invalid @endif"
                    placeholder="Nome descritivo do documento"
                    value="{{ old('title') }}">
-            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            @if($errors->has('title') && $errors->has('file'))
+                <div class="invalid-feedback">{{ $errors->first('title') }}</div>
+            @endif
         </div>
 
         <div class="alert alert-info d-flex align-items-start gap-2 py-2 mb-0">
@@ -380,11 +384,25 @@
     </x-slot>
 </x-modal>
 
-@if ($errors->hasAny(['title', 'area', 'status', 'risk_level', 'opened_at', 'assigned_to', 'client_name', 'client_email', 'client_phone', 'description', 'internal_notes']))
+{{-- Reabre modal de edição apenas para campos exclusivos do formulário de edição de caso
+     (file = upload de documento; area/internal_notes não existem no formulário de upload) --}}
+@if (!$errors->has('file') && $errors->hasAny(['area', 'status', 'risk_level', 'opened_at', 'assigned_to', 'client_name', 'client_email', 'client_phone', 'description', 'internal_notes']))
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const el = document.getElementById('modalEditCaso');
+                if (el) new bootstrap.Modal(el).show();
+            });
+        </script>
+    @endpush
+@endif
+
+{{-- Reabre modal de upload se o envio de documento falhou --}}
+@if ($errors->has('file'))
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const el = document.getElementById('modalEnviarDocCaso');
                 if (el) new bootstrap.Modal(el).show();
             });
         </script>
