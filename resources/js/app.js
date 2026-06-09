@@ -169,6 +169,16 @@ function getSkeletonForUrl(href) {
             <div class="surface-card p-4">${listRows()}</div>`);
     }
 
+    // /chat (index)
+    if (p === '/chat') {
+        return wrap(`
+            ${pageHeader('0')}
+            <div class="row g-4">
+                <div class="col-lg-4"><div class="surface-card p-4">${sk.heading('8rem')}${[0,1,2,3].map(() => sk.block('2.5rem', '100%', '.75rem') + '<div class="mb-2"></div>').join('')}</div></div>
+                <div class="col-lg-8"><div class="surface-card p-0"><div class="px-4 py-3 border-bottom">${sk.text('8rem', 0)}</div><div class="p-4">${listRows([70, 65, 72, 58, 68])}</div></div></div>
+            </div>`);
+    }
+
     // /casos/{id}/chat
     if (/^\/casos\/[^/]+\/chat$/.test(p)) {
         return wrap(`

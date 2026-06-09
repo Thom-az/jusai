@@ -50,6 +50,7 @@ Route::middleware(['auth', 'org.access'])->group(function () {
         ->middleware(['store' => 'throttle:ai', 'update' => 'throttle:ai']);
     Route::get('/minutas/{minuta}/status', [DraftController::class, 'status'])->name('drafts.status');
 
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/casos/{caso}/chat', [ChatController::class, 'show'])->name('cases.chat');
 
     Route::get('/revisor', [AiReviewController::class, 'index'])->name('review.index');

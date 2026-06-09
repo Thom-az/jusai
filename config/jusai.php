@@ -36,6 +36,7 @@ return [
                     ['label' => 'Casos', 'icon' => 'bi-briefcase', 'route' => 'cases.index', 'pattern' => 'casos*'],
                     ['label' => 'Documentos', 'icon' => 'bi-file-earmark-text', 'route' => 'documents.index', 'pattern' => 'documentos*'],
                     ['label' => 'Minutas', 'icon' => 'bi-journal-richtext', 'route' => 'drafts.index', 'pattern' => 'minutas*'],
+                    ['label' => 'Assistente IA', 'icon' => 'bi-chat-dots', 'route' => 'chat.index', 'pattern' => 'chat*'],
                     ['label' => 'Revisor Jurídico', 'icon' => 'bi-shield-check', 'route' => 'review.index', 'pattern' => 'revisor*'],
                 ],
             ],
