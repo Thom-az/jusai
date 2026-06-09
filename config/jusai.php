@@ -65,6 +65,12 @@ return [
                     ['label' => 'Leads', 'icon' => 'bi-person-lines-fill', 'route' => 'admin.leads.index', 'pattern' => 'admin/leads*'],
                 ],
             ],
+            [
+                'label' => 'Inteligência Artificial',
+                'items' => [
+                    ['label' => 'Prompts de IA', 'icon' => 'bi-braces', 'route' => 'admin.prompts.index', 'pattern' => 'admin/prompts*'],
+                ],
+            ],
         ],
     ],
 ];

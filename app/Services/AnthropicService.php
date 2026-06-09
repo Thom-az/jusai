@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\AiPrompt;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Smalot\PdfParser\Parser;
@@ -27,7 +29,7 @@ class AnthropicService
             return $this->mockResponse('resumo_caso');
         }
 
-        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.resumo_caso');
+        $system = $this->systemBase() . "\n\n" . $this->prompt('system.resumo_caso');
         $user   = "Caso: {$caseTitle}\nÁrea: {$caseArea}\n\nDocumento:\n{$documentText}";
 
         return $this->callAnthropic($this->modelFast, $system, $user);
@@ -39,7 +41,7 @@ class AnthropicService
             return $this->mockResponse('analise_documento');
         }
 
-        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.analise_documento');
+        $system = $this->systemBase() . "\n\n" . $this->prompt('system.analise_documento');
         $user   = "Caso: {$caseTitle}\n\nDocumento:\n{$documentText}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
@@ -51,7 +53,7 @@ class AnthropicService
             return $this->mockResponse('revisao_minuta');
         }
 
-        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.revisao_minuta');
+        $system = $this->systemBase() . "\n\n" . $this->prompt('system.revisao_minuta');
         $user   = "Minuta: {$draftTitle}\nContexto do caso: {$caseContext}\n\nConteúdo da minuta:\n{$draftContent}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
@@ -63,7 +65,7 @@ class AnthropicService
             return $this->mockResponse('pesquisa_juridica');
         }
 
-        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.pesquisa_juridica');
+        $system = $this->systemBase() . "\n\n" . $this->prompt('system.pesquisa_juridica');
         $user   = "Caso: {$caseTitle}\nPergunta: {$question}\n\nDocumentos do caso:\n{$docsContext}";
 
         return $this->callAnthropic($this->modelStrong, $system, $user);
@@ -76,7 +78,7 @@ class AnthropicService
         }
 
         $typeLabel = $this->draftTypeLabel($type);
-        $system    = $this->systemBase() . "\n\n" . config('ai_prompts.system.rascunho_minuta');
+        $system    = $this->systemBase() . "\n\n" . $this->prompt('system.rascunho_minuta');
         $user      = "Tipo de documento: {$typeLabel}\nCaso vinculado: {$caseTitle}" .
                      ($caseArea ? "\nÁrea jurídica: {$caseArea}" : '') .
                      "\n\nInstruções para geração:\n{$instructions}";
@@ -97,7 +99,7 @@ class AnthropicService
             ? "\n\nContexto do caso:\n{$caseContext}"
             : '';
 
-        $system = $this->systemBase() . "\n\n" . config('ai_prompts.system.chat') . $systemSuffix;
+        $system = $this->systemBase() . "\n\n" . $this->prompt('system.chat') . $systemSuffix;
 
         return $this->callAnthropic($this->modelFast, $system, '', $messages);
     }
@@ -131,13 +133,21 @@ class AnthropicService
 
     private function systemBase(): string
     {
-        return config('ai_prompts.system.base');
+        return $this->prompt('system.base');
+    }
+
+    private function prompt(string $key): string
+    {
+        return Cache::remember("ai_prompt.{$key}", 600, function () use ($key) {
+            $row = AiPrompt::where('key', $key)->where('is_active', true)->first();
+            return $row ? $row->content : config("ai_prompts.{$key}", '');
+        });
     }
 
     private function mockResponse(string $type): array
     {
         return [
-            'content'       => config("ai_prompts.mock.{$type}", "[Mock] Resposta não encontrada para o tipo: {$type}"),
+            'content'       => $this->prompt("mock.{$type}") ?: "[Mock] Resposta não encontrada para o tipo: {$type}",
             'model'         => 'mock-legal-copilot',
             'input_tokens'  => 0,
             'output_tokens' => 0,
