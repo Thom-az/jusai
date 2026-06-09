@@ -1,9 +1,9 @@
 /**
  * minuta-show.js
  * Polls the draft status endpoint until generation is complete.
- * Reads the URL from data-status-url on #processingCard.
+ * Works both on full page load and on wire:navigate transitions.
  */
-document.addEventListener('DOMContentLoaded', () => {
+function initMinutaPolling() {
     const card = document.getElementById('processingCard');
     if (!card) return;
 
@@ -23,4 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Network error — keep retrying silently
             });
     }, 3000);
-});
+}
+
+document.addEventListener('DOMContentLoaded', initMinutaPolling);
+document.addEventListener('livewire:navigated', initMinutaPolling);

@@ -1,9 +1,9 @@
 /**
  * revisor-show.js
  * Polls the AI review status endpoint until the result is ready.
- * Reads the URL from the data-status-url attribute on #processingCard.
+ * Works both on full page load and on wire:navigate transitions.
  */
-document.addEventListener('DOMContentLoaded', () => {
+function initRevisorPolling() {
     const card = document.getElementById('processingCard');
     if (!card) return;
 
@@ -23,4 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Network error — keep retrying silently
             });
     }, 3000);
-});
+}
+
+document.addEventListener('DOMContentLoaded', initRevisorPolling);
+document.addEventListener('livewire:navigated', initRevisorPolling);

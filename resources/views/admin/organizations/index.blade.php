@@ -32,6 +32,7 @@
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Status</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Usuários</th>
                             <th class="py-3 text-secondary small text-uppercase fw-semibold" style="font-size:0.72rem;letter-spacing:.05em;">Criado em</th>
+                            <th class="py-3 pe-4"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,7 +44,7 @@
                                             <i class="bi bi-building"></i>
                                         </div>
                                         <div>
-                                            <div class="fw-semibold small">{{ $org->name }}</div>
+                                            <a href="{{ route('admin.organizations.show', $org) }}" class="fw-semibold small text-decoration-none">{{ $org->name }}</a>
                                             <div class="text-secondary" style="font-size:0.78rem;">{{ $org->email }}</div>
                                         </div>
                                     </div>
@@ -60,10 +61,13 @@
                                     <span class="fw-semibold small">{{ $org->users_count ?? 0 }}</span>
                                 </td>
                                 <td class="py-3 text-secondary small">{{ $org->created_at->format('d/m/Y') }}</td>
+                                <td class="py-3 pe-4">
+                                    <a href="{{ route('admin.organizations.show', $org) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Ver</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-secondary py-5">
+                                <td colspan="6" class="text-center text-secondary py-5">
                                     <i class="bi bi-building fs-2 d-block mb-2 opacity-50"></i>
                                     Nenhuma organização cadastrada.
                                 </td>

@@ -99,7 +99,7 @@ class DashboardController extends Controller
                     'title'       => 'Nova Minuta',
                     'description' => 'Abrir o fluxo de geração de rascunho jurídico.',
                     'icon'        => 'bi-magic',
-                    'route'       => route('drafts.index'),
+                    'route'       => route('drafts.create'),
                 ],
                 [
                     'title'       => 'Revisar Peça',
