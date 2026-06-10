@@ -1,77 +1,112 @@
-# JusAI
+# JusAI — Copiloto Jurídico com IA
 
-Base inicial do projeto em Laravel com Docker para a aplicação e Supabase como banco principal.
+SaaS multi-tenant para escritórios de advocacia brasileiros. Centraliza gestão de casos, documentos e minutas com análise jurídica assistida por IA (Anthropic Claude).
+
+## Funcionalidades
+
+| Módulo | Descrição |
+|--------|-----------|
+| **Casos** | Abertura, acompanhamento e histórico de processos jurídicos |
+| **Documentos** | Upload de PDF/DOCX com extração e análise automática via IA |
+| **Minutas** | Geração de rascunhos (petição inicial, contestação, recurso, contrato, etc.) |
+| **Revisor IA** | Análise de documentos e minutas: resumo, riscos, inconsistências, recomendações |
+| **Chat Jurídico** | Assistente conversacional com contexto do caso |
+| **Painel Admin** | Gestão de organizações, financeiro, leads e prompts de IA |
+| **Configurações** | Perfil, segurança (2FA), preferências, equipe e faturamento |
 
 ## Stack
 
-- Laravel 13
-- PHP 8.5 no runtime do Sail
-- Supabase Postgres como banco principal
-- Vite para assets
-- Bootstrap 5.3
-- Bootstrap Icons
+**Backend**
+- PHP 8.3 + Laravel 13
+- Livewire 4 (UI reativa sem SPA)
+- Spatie Permission (RBAC)
+- Google 2FA (TOTP)
+- Queue jobs com backoff exponencial
 
-## Estrutura criada
+**Frontend**
+- Tailwind CSS + Bootstrap 5
+- Alpine.js
+- Vite
 
-- `compose.yaml`: sobe apenas a aplicação Laravel/Vite em Docker
-- `.env.example`: modelo de ambiente local com Supabase e integrações futuras
-- `vendor/bin/sail.bat`: ponto de entrada para subir e operar o ambiente no Windows
+**Infra / Dados**
+- PostgreSQL via Supabase (multi-tenant com `organization_id` em todas as tabelas)
+- Supabase Storage (arquivos de casos e minutas)
+- Queue database-backed (suporte a Redis/SQS)
 
-## Como subir o projeto
+**IA**
+- Anthropic Claude (`claude-haiku-4-5-20251001` para tarefas rápidas, `claude-sonnet-4-6` para análises complexas)
+- Prompts jurídicos brasileiros (CF/88, CPC/2015, CC/2002, CDC, CLT, OAB)
+- Modo mock para desenvolvimento sem consumir API
 
-### Windows PowerShell
+## Arquitetura de IA
 
-```powershell
-copy .env.example .env
-notepad .env
-vendor\bin\sail.bat up -d
-vendor\bin\sail.bat artisan migrate
-vendor\bin\sail.bat npm install
-vendor\bin\sail.bat npm run dev
-```
+O `AnthropicService` encapsula todas as chamadas à API Anthropic com:
+- Prompts configuráveis em runtime via tabela `ai_prompts` (com fallback para `config/ai_prompts.php`)
+- Temperature 0.2 para consistência jurídica
+- Flag obrigatória de revisão humana em todo conteúdo gerado
+- Extração de texto de PDF/DOCX antes do envio
 
-### Linux / macOS
+As análises são processadas de forma assíncrona via jobs (`ProcessAiReview`, `ProcessMinutaDraft`) com 3 retentativas e backoff de 30/60/120s.
+
+## Rodando localmente
+
+**Pré-requisitos:** PHP 8.3, Composer, Node 20+, PostgreSQL (ou Docker)
 
 ```bash
+# Dependências
+composer install
+npm install
+
+# Configuração
 cp .env.example .env
-nano .env
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev
+php artisan key:generate
+
+# Edite o .env com suas credenciais de banco e API keys
+
+# Banco
+php artisan migrate
+
+# Assets
+npm run build
+
+# Servidor
+php artisan serve
+php artisan queue:work  # necessário para processamento de IA
 ```
 
-## Variáveis que você precisa preencher
+**Variáveis obrigatórias no `.env`:**
 
-- `DB_HOST`
-- `DB_PORT`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_JWT_SECRET`
+```env
+DB_CONNECTION=pgsql
+DB_HOST=...
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
 
-## Serviços padrão
+ANTHROPIC_API_KEY=sk-ant-...
+AI_PROVIDER=anthropic   # ou "mock" para desenvolvimento sem API
 
-- Aplicação: `http://localhost`
-- Banco principal: Supabase Postgres externo
-- IA: modo `mock` por padrão
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
 
-## Comandos úteis
+## Estrutura relevante
 
-```powershell
-vendor\bin\sail.bat artisan test
-vendor\bin\sail.bat artisan make:model Nome -mcr
-vendor\bin\sail.bat composer install
-vendor\bin\sail.bat php --version
+```
+app/
+  Services/AnthropicService.php   # cliente Anthropic + extração PDF/DOCX
+  Jobs/ProcessAiReview.php        # análise assíncrona de documentos
+  Jobs/ProcessMinutaDraft.php     # geração assíncrona de minutas
+  Http/Middleware/
+    EnsureOrganizationAccess.php  # isolamento multi-tenant
+  Livewire/CasoChat.php           # chat em tempo real por caso
+config/
+  ai_prompts.php                  # prompts jurídicos padrão
+  jusai.php                       # configurações do produto
 ```
 
 ## Observações
 
-- O projeto está configurado para rodar a aplicação em Docker e usar o Supabase como banco principal.
-- Se o Supabase fornecer uma connection string, você pode preencher `DB_URL`; caso contrário, use `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD`.
-- `DB_SSLMODE=require` já fica preparado para conexões seguras com o Postgres do Supabase.
-- Os testes automatizados usam SQLite em memória para não depender do banco externo.
-- Se o Docker Desktop ainda não estiver instalado ou ativo na máquina, instale e inicie antes de subir os containers.
+- Todo conteúdo gerado pela IA é marcado como `requires_human_review = true` por padrão.
+- Os prompts seguem as diretrizes da OAB e citam exclusivamente fontes presentes nos documentos fornecidos — sem fabricar leis ou jurisprudência.
+- Rate limit de 30 requisições/hora por usuário nos endpoints de IA.
