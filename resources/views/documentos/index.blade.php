@@ -457,7 +457,7 @@
                     <span><i class="bi bi-cloud-arrow-up me-2"></i>Enviar</span>
                 </template>
                 <template x-if="uploading">
-                    <span><span class="spinner-border spinner-border-sm me-2"></span>Enviando {{ progress }}%</span>
+                    <span><span class="spinner-border spinner-border-sm me-2"></span>Enviando <span x-text="progress + '%'"></span></span>
                 </template>
             </button>
         </div>
