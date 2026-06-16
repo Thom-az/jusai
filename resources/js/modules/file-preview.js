@@ -105,5 +105,10 @@ document.getElementById('modalFilePreview')?.addEventListener('hidden.bs.modal',
     document.getElementById('previewFileSubtitle').textContent = '';
 });
 
-document.addEventListener('DOMContentLoaded', initFilePreview);
-document.addEventListener('livewire:navigated', initFilePreview);
+let _filePreviewInitialized = false;
+document.addEventListener('DOMContentLoaded', () => {
+    if (!_filePreviewInitialized) { _filePreviewInitialized = true; initFilePreview(); }
+});
+document.addEventListener('livewire:navigated', () => {
+    if (!_filePreviewInitialized) { _filePreviewInitialized = true; initFilePreview(); }
+});

@@ -189,7 +189,7 @@ class AnthropicService
             ['type' => 'text', 'text' => $system, 'cache_control' => ['type' => 'ephemeral']],
         ];
 
-        $response = Http::withHeaders([
+        $response = Http::timeout(120)->withHeaders([
             'x-api-key'         => $this->apiKey,
             'anthropic-version' => self::API_VERSION,
             'anthropic-beta'    => 'prompt-caching-2024-07-31',

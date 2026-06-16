@@ -54,7 +54,7 @@ class DocumentController extends Controller
         return view('documentos.create', compact('cases', 'selectedCaseId'));
     }
 
-    public function store(StoreDocumentRequest $request): RedirectResponse
+    public function store(StoreDocumentRequest $request): JsonResponse|RedirectResponse
     {
         $file     = $request->file('file');
         $binary   = file_get_contents($file->getRealPath());

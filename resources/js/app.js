@@ -641,7 +641,7 @@ const clearPendingNavigation = () => {
 
     document.addEventListener('livewire:navigated', () => {
         finishLoad();
-        initShell();
+        initShellPage();
 
         // Fade suave para o conteúdo real após o Livewire trocar o DOM.
         const contentMain = document.querySelector('.content-main');
@@ -662,7 +662,8 @@ const clearPendingNavigation = () => {
     });
 }());
 
-function initShell() {
+// Sidebar + theme: persistent layout elements — bind once only
+function initShellPersistent() {
     const sidebarToggleButtons = document.querySelectorAll('[data-sidebar-toggle]');
     const sidebarToggleIcons = document.querySelectorAll('[data-sidebar-toggle-icon]');
     const sidebarStorageKey = 'jusai.sidebar.state';
@@ -733,7 +734,10 @@ function initShell() {
         applyTheme(next);
         localStorage.setItem(themeStorageKey, next);
     });
+}
 
+// Page-specific elements that are re-rendered on Livewire navigation
+function initShellPage() {
     document.querySelectorAll('[data-disabled-action]').forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault();
@@ -777,4 +781,7 @@ document.addEventListener('click', (e) => {
     confirmBtn.addEventListener('click', confirmBtn._deleteHandler, { once: true });
 }, true);
 
-document.addEventListener('DOMContentLoaded', initShell);
+document.addEventListener('DOMContentLoaded', () => {
+    initShellPersistent();
+    initShellPage();
+});
