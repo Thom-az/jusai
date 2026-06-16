@@ -738,6 +738,16 @@ function initShellPersistent() {
 
 // Page-specific elements that are re-rendered on Livewire navigation
 function initShellPage() {
+    // table-responsive overflow:auto clips dropdowns — use Popper strategy:'fixed'
+    // so the menu is positioned relative to the viewport, bypassing any clipping ancestor.
+    document.querySelectorAll('.table-responsive .dropdown-toggle').forEach((toggle) => {
+        if (!bootstrap.Dropdown.getInstance(toggle)) {
+            new bootstrap.Dropdown(toggle, {
+                popperConfig: (base) => ({ ...base, strategy: 'fixed' }),
+            });
+        }
+    });
+
     document.querySelectorAll('[data-disabled-action]').forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault();

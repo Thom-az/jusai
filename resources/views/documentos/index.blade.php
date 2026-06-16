@@ -122,7 +122,7 @@
     {{-- Tabela --}}
     <div class="surface-card p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-4 sort-th {{ $sortBy === 'title' ? 'active' : '' }}">
@@ -134,7 +134,7 @@
                         <th class="sort-th {{ $sortBy === 'created_at' ? 'active' : '' }}">
                             <a href="{{ $sortUrl('created_at') }}" wire:navigate>Enviado <i class="bi {{ $sortIcon('created_at') }}"></i></a>
                         </th>
-                        <th></th>
+                        <th style="width:3.5rem"></th>
                     </tr>
                 </thead>
                 <tbody>

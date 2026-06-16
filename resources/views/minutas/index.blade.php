@@ -57,7 +57,7 @@
                                 <th>Status</th>
                                 <th>Criado por</th>
                                 <th>Data</th>
-                                <th class="pe-4"></th>
+                                <th style="width:3.5rem"></th>
                             </tr>
                         </thead>
                         <tbody>

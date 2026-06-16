@@ -119,7 +119,7 @@
     {{-- Tabela --}}
     <div class="surface-card p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-4" style="width:2.75rem">
@@ -140,7 +140,7 @@
                         <th class="sort-th {{ $sortBy === 'updated_at' ? 'active' : '' }}">
                             <a href="{{ $sortUrl('updated_at') }}" wire:navigate>Atualizado <i class="bi {{ $sortIcon('updated_at') }}"></i></a>
                         </th>
-                        <th></th>
+                        <th style="width:3.5rem"></th>
                     </tr>
                 </thead>
                 <tbody>
