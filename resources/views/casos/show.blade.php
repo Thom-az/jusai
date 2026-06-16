@@ -343,45 +343,164 @@
 
 {{-- Modal: Enviar documento no caso --}}
 <x-modal id="modalEnviarDocCaso" title="Enviar documento" size="md">
-    <form method="POST"
-          action="{{ route('documents.store') }}"
-          enctype="multipart/form-data"
-          id="formEnviarDocCaso">
-        @csrf
+    <div x-data="{
+        file: null,
+        dragging: false,
+        uploading: false,
+        progress: 0,
+        title: '{{ addslashes(old('title', '')) }}',
+        error: null,
+        handleDrop(e) {
+            this.dragging = false;
+            const f = e.dataTransfer.files[0];
+            if (f) this.setFile(f);
+        },
+        setFile(f) {
+            this.file = f;
+            const dt = new DataTransfer();
+            dt.items.add(f);
+            this.$refs.fileInput.files = dt.files;
+            if (!this.title.trim()) {
+                this.title = f.name.replace(/\.[^/.]+$/, '').replace(/[-_.]+/g, ' ').trim();
+            }
+        },
+        formatSize(bytes) {
+            if (!bytes) return '';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        },
+        submit() {
+            if (!this.file || !this.title.trim()) return;
+            const formEl = this.$refs.form;
+            const fd = new FormData(formEl);
+            fd.set('title', this.title);
+            this.uploading = true;
+            this.progress = 0;
+            this.error = null;
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', formEl.action);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) this.progress = Math.round(e.loaded / e.total * 100);
+            });
+            xhr.addEventListener('load', () => {
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    if (xhr.status >= 200 && xhr.status < 300 && data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    if (xhr.status === 422 && data.errors) {
+                        const msgs = Object.values(data.errors).flat();
+                        this.error = msgs[0] || 'Erro de validação.';
+                    } else {
+                        this.error = data.message || 'Erro ao enviar. Tente novamente.';
+                    }
+                } catch (e) {
+                    this.error = 'Erro inesperado. Tente novamente.';
+                }
+                this.uploading = false;
+            });
+            xhr.addEventListener('error', () => {
+                this.uploading = false;
+                this.error = 'Erro de conexão. Tente novamente.';
+            });
+            xhr.send(fd);
+        }
+    }">
+        <form method="POST"
+              action="{{ route('documents.store') }}"
+              enctype="multipart/form-data"
+              x-ref="form">
+            @csrf
+            <input type="hidden" name="legal_case_id" value="{{ $case->id }}">
+            <input type="file" x-ref="fileInput" name="file"
+                   accept=".pdf,.docx,.doc,.txt"
+                   class="d-none"
+                   @change="if ($event.target.files[0]) setFile($event.target.files[0])">
 
-        <input type="hidden" name="legal_case_id" value="{{ $case->id }}">
+            {{-- Dropzone --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
+                <div class="doc-dropzone"
+                     :class="{ 'doc-dropzone--dragging': dragging, 'doc-dropzone--has-file': file }"
+                     @dragover.prevent="dragging = true"
+                     @dragleave.prevent="dragging = false"
+                     @drop.prevent="handleDrop($event)"
+                     @click="$refs.fileInput.click()"
+                     style="cursor:pointer">
+                    <template x-if="!file">
+                        <div class="text-center py-1">
+                            <i class="bi bi-cloud-arrow-up" style="font-size:2rem;opacity:.45"></i>
+                            <div class="fw-semibold mt-2 small">Solte aqui ou <span class="text-primary">clique para escolher</span></div>
+                            <div class="text-secondary" style="font-size:.78rem;margin-top:.3rem">PDF, DOCX, DOC, TXT — máx. 100 MB</div>
+                        </div>
+                    </template>
+                    <template x-if="file">
+                        <div class="text-center py-1">
+                            <i class="bi bi-file-earmark-check text-success" style="font-size:2rem"></i>
+                            <div class="fw-semibold mt-2 small" x-text="file.name" style="word-break:break-all"></div>
+                            <div class="text-secondary" style="font-size:.78rem;margin-top:.3rem" x-text="formatSize(file.size)"></div>
+                            <button type="button"
+                                    class="btn btn-sm btn-link text-danger p-0 mt-1"
+                                    style="font-size:.78rem"
+                                    @click.stop="file = null; $refs.fileInput.value = ''">Remover</button>
+                        </div>
+                    </template>
+                </div>
+                @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+            </div>
 
-        <div class="mb-3">
-            <label for="dc_file" class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
-            <input type="file" id="dc_file" name="file"
-                   class="form-control @error('file') is-invalid @enderror"
-                   accept=".pdf,.docx,.doc,.txt">
-            <div class="form-text">PDF, DOCX, DOC, TXT — máx. 20 MB</div>
-            @error('file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            {{-- Título --}}
+            <div class="mb-3">
+                <label for="dc_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
+                <input type="text" id="dc_title" name="title"
+                       class="form-control @error('title') is-invalid @enderror"
+                       placeholder="Nome descritivo do documento"
+                       x-model="title">
+                @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            {{-- Progresso de upload --}}
+            <div x-show="uploading" x-cloak class="mb-3">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span class="text-secondary">Enviando arquivo...</span>
+                    <span class="fw-semibold" x-text="progress + '%'"></span>
+                </div>
+                <div class="progress" style="height:6px;border-radius:99px">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                         role="progressbar"
+                         :style="'width:' + progress + '%'"></div>
+                </div>
+            </div>
+
+            <div x-show="error" x-cloak class="alert alert-danger py-2 small mb-3" x-text="error"></div>
+
+            <div class="alert alert-info d-flex align-items-start gap-2 py-2 mb-0" x-show="!uploading">
+                <i class="bi bi-cpu flex-shrink-0 mt-1"></i>
+                <div class="small">PDFs enviados a este caso serão analisados automaticamente pela IA.</div>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-end gap-2 mt-3 pt-3" style="border-top:1px solid rgba(215,220,229,0.35)">
+            <button type="button"
+                    class="btn btn-outline-secondary rounded-pill px-4"
+                    data-bs-dismiss="modal"
+                    :disabled="uploading">Cancelar</button>
+            <button type="button"
+                    class="btn btn-primary rounded-pill px-4"
+                    @click="submit()"
+                    :disabled="uploading || !file || !title.trim()">
+                <template x-if="!uploading">
+                    <span><i class="bi bi-cloud-arrow-up me-2"></i>Enviar</span>
+                </template>
+                <template x-if="uploading">
+                    <span><span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...</span>
+                </template>
+            </button>
         </div>
-
-        <div class="mb-3">
-            <label for="dc_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
-            <input type="text" id="dc_title" name="title"
-                   class="form-control @if($errors->has('title') && $errors->has('file')) is-invalid @endif"
-                   placeholder="Nome descritivo do documento"
-                   value="{{ old('title') }}">
-            @if($errors->has('title') && $errors->has('file'))
-                <div class="invalid-feedback">{{ $errors->first('title') }}</div>
-            @endif
-        </div>
-
-        <div class="alert alert-info d-flex align-items-start gap-2 py-2 mb-0">
-            <i class="bi bi-cpu flex-shrink-0 mt-1"></i>
-            <div class="small">PDFs enviados a este caso serão analisados automaticamente pela IA.</div>
-        </div>
-    </form>
-    <x-slot name="footer">
-        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" form="formEnviarDocCaso" class="btn btn-primary rounded-pill px-4">
-            <i class="bi bi-cloud-arrow-up me-2"></i>Enviar
-        </button>
-    </x-slot>
+    </div>
 </x-modal>
 
 {{-- Reabre modal de edição apenas para campos exclusivos do formulário de edição de caso

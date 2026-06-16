@@ -15,7 +15,7 @@ class StoreDocumentRequest extends FormRequest
     {
         return [
             'title'         => ['required', 'string', 'max:255'],
-            'file'          => ['required', 'file', 'mimes:pdf,docx,doc,txt', 'max:20480'],
+            'file'          => ['required', 'file', 'mimes:pdf,docx,doc,txt', 'max:102400'],
             'legal_case_id' => ['nullable', 'uuid', 'exists:legal_cases,id'],
         ];
     }
