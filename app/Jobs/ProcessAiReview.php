@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Models\AiReview;
 use App\Models\Document;
+use App\Models\User;
+use App\Notifications\DocumentAnalysisComplete;
 use App\Services\AnthropicService;
 use App\Services\SupabaseStorageService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -70,6 +72,9 @@ class ProcessAiReview implements ShouldQueue
                 'ai_extracted_at' => now(),
                 'status'          => 'ready',
             ]);
+
+            $uploader = User::find($review->document->uploaded_by);
+            $uploader?->notify(new DocumentAnalysisComplete($review->document, success: true));
         }
     }
 
@@ -84,6 +89,9 @@ class ProcessAiReview implements ShouldQueue
 
         if ($review->document_id && $review->document) {
             $review->document->update(['status' => 'error']);
+
+            $uploader = User::find($review->document->uploaded_by);
+            $uploader?->notify(new DocumentAnalysisComplete($review->document, success: false));
         }
     }
 

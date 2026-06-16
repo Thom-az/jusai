@@ -53,10 +53,39 @@
                 @endif
             @endif
 
-            <button class="btn shell-icon-button position-relative" type="button" data-disabled-action="Central de notificacoes sera conectada na proxima etapa.">
-                <i class="bi bi-bell"></i>
-                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-            </button>
+            <div class="dropdown" id="notifDropdown">
+                <button class="btn shell-icon-button position-relative"
+                        type="button"
+                        id="notifToggle"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                        aria-label="Notificações">
+                    <i class="bi bi-bell"></i>
+                    <span id="notifBadge"
+                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          style="font-size:0.6rem;padding:0.2em 0.4em;display:none;">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0"
+                     id="notifPanel"
+                     style="width:320px;border-radius:1rem;margin-top:0.5rem;overflow:hidden;">
+                    <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                        <span class="fw-semibold small">Notificações</span>
+                        <button type="button"
+                                id="notifMarkAll"
+                                class="btn btn-link btn-sm p-0 text-secondary text-decoration-none"
+                                style="font-size:0.75rem;">
+                            Marcar todas como lidas
+                        </button>
+                    </div>
+                    <div id="notifList" style="max-height:340px;overflow-y:auto;">
+                        <div class="text-center text-secondary small py-4" id="notifEmpty">
+                            <i class="bi bi-bell-slash d-block fs-4 mb-1"></i>
+                            Nenhuma notificação
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <button class="btn shell-icon-button" type="button" id="themeToggle" aria-label="Mudar para tema escuro">
                 <i class="bi bi-moon" id="themeToggleIcon"></i>

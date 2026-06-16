@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DraftController;
 use App\Http\Controllers\LegalCaseController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SupportTicketController;
@@ -88,6 +89,10 @@ Route::middleware(['auth', 'org.access'])->group(function () {
             ->middleware('permission:view-billing')
             ->name('plano');
     });
+
+    Route::get('/notificacoes/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+    Route::post('/notificacoes/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notificacoes/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
