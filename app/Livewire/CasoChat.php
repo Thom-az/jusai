@@ -14,8 +14,7 @@ class CasoChat extends Component
     #[Locked]
     public LegalCase $caso;
 
-    public string $input    = '';
-    public bool   $isTyping = false;
+    public string $input = '';
 
     /** @var \Illuminate\Database\Eloquent\Collection */
     public $messages;
@@ -45,7 +44,6 @@ class CasoChat extends Component
         ]);
 
         $this->messages = $this->conversation->messages()->get();
-        $this->isTyping = true;
 
         $messagesForApi = $this->messages->map(fn ($m) => [
             'role'    => $m->role,
@@ -70,7 +68,6 @@ class CasoChat extends Component
             ]);
         }
 
-        $this->isTyping = false;
         $this->messages = $this->conversation->messages()->get();
     }
 

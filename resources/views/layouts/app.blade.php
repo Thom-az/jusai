@@ -117,5 +117,33 @@
         @vite(['resources/js/modules/file-preview.js'])
         @stack('scripts')
         @livewireScripts
+
+        {{-- Toast automático para mensagens flash de sessão --}}
+        @if (session('success') || session('error') || session('warning'))
+        <script>
+            (function () {
+                @if (session('success'))
+                    const _msg = @json(session('success'));
+                    const _type = 'success';
+                @elseif (session('error'))
+                    const _msg = @json(session('error'));
+                    const _type = 'danger';
+                @elseif (session('warning'))
+                    const _msg = @json(session('warning'));
+                    const _type = 'warning';
+                @endif
+
+                function fireToast() {
+                    window.dispatchEvent(new CustomEvent('app:toast', { detail: { message: _msg, type: _type } }));
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', fireToast, { once: true });
+                } else {
+                    fireToast();
+                }
+            }());
+        </script>
+        @endif
     </body>
 </html>

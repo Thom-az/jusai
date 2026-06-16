@@ -1,3 +1,5 @@
+import { Modal } from 'bootstrap';
+
 /**
  * file-preview.js
  * Global file preview modal.
@@ -13,7 +15,7 @@ function initFilePreview() {
         e.stopPropagation();
 
         const docId = btn.dataset.previewDocId;
-        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalFilePreview'));
+        const modal = Modal.getOrCreateInstance(document.getElementById('modalFilePreview'));
 
         // Reset state
         setPreviewLoading(true);

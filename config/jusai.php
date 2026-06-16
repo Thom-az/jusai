@@ -68,7 +68,8 @@ return [
             [
                 'label' => 'Inteligência Artificial',
                 'items' => [
-                    ['label' => 'Prompts de IA', 'icon' => 'bi-braces', 'route' => 'admin.prompts.index', 'pattern' => 'admin/prompts*'],
+                    ['label' => 'Métricas de IA',  'icon' => 'bi-bar-chart-line', 'route' => 'admin.ia.index',      'pattern' => 'admin/ia*'],
+                    ['label' => 'Prompts de IA',   'icon' => 'bi-braces',         'route' => 'admin.prompts.index',  'pattern' => 'admin/prompts*'],
                 ],
             ],
         ],

@@ -1,4 +1,4 @@
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import { Tooltip, Toast } from 'bootstrap';
 
 // ─── Global toast — escuta app:toast de qualquer página ──────────────────────
@@ -599,11 +599,25 @@ const clearPendingNavigation = () => {
             return;
         }
 
-        if ((form.method || 'get').toLowerCase() === 'get') {
+        const method = (form.method || 'get').toLowerCase();
+
+        if (method === 'get') {
             startOutgoingLoad({
                 href: form.action || window.location.href,
                 method: 'get',
             });
+        } else {
+            showLoader();
+            const btn = form.querySelector('[type="submit"]:not([data-no-loading])');
+            if (btn) {
+                const origHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${btn.textContent.trim()}`;
+                window.addEventListener('pageshow', () => {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }, { once: true });
+            }
         }
     });
 

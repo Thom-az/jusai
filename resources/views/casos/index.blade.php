@@ -41,7 +41,15 @@
          allIds: {{ Js::from($cases->pluck('id')->toArray()) }},
          get selectedCount() { return this.selected.length; },
          get allSelected() { return this.allIds.length > 0 && this.selected.length >= this.allIds.length; },
-         toggleAll(v) { this.selected = v ? this.allIds.map(id => String(id)) : []; }
+         toggleAll(v) { this.selected = v ? this.allIds.map(id => String(id)) : []; },
+         maskPhone(v) {
+             v = v.replace(/\D/g, '').slice(0, 11);
+             if (v.length === 0) return '';
+             if (v.length <= 2)  return `(${v}`;
+             if (v.length <= 6)  return `(${v.slice(0,2)}) ${v.slice(2)}`;
+             if (v.length <= 10) return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
+             return `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+         },
      }">
 
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
@@ -382,6 +390,7 @@
                        class="form-control @error('client_phone') is-invalid @enderror"
                        placeholder="(11) 90000-0000"
                        x-model="novoCasoForm.phone"
+                       @input="let _v = maskPhone($event.target.value); $event.target.value = _v; novoCasoForm.phone = _v"
                        value="{{ old('client_phone') }}">
                 @error('client_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
@@ -403,14 +412,23 @@
                 <dt class="col-4 text-secondary fw-normal mb-2">Cliente</dt>
                 <dd class="col-8 mb-2" x-text="novoCasoForm.client || '—'"></dd>
 
+                <dt class="col-4 text-secondary fw-normal mb-2">E-mail</dt>
+                <dd class="col-8 mb-2" x-text="novoCasoForm.email || '—'"></dd>
+
+                <dt class="col-4 text-secondary fw-normal mb-2">Telefone</dt>
+                <dd class="col-8 mb-2" x-text="novoCasoForm.phone || '—'"></dd>
+
                 <dt class="col-4 text-secondary fw-normal mb-2">Área</dt>
                 <dd class="col-8 mb-2" x-text="novoCasoForm.area || 'Não selecionada'"></dd>
 
                 <dt class="col-4 text-secondary fw-normal mb-2">Status</dt>
                 <dd class="col-8 mb-2" x-text="novoCasoForm.status"></dd>
 
-                <dt class="col-4 text-secondary fw-normal mb-0">Risco</dt>
-                <dd class="col-8 mb-0" x-text="novoCasoForm.risk || 'Não definido'"></dd>
+                <dt class="col-4 text-secondary fw-normal mb-2">Risco</dt>
+                <dd class="col-8 mb-2" x-text="novoCasoForm.risk || 'Não definido'"></dd>
+
+                <dt class="col-4 text-secondary fw-normal mb-0">Abertura</dt>
+                <dd class="col-8 mb-0" x-text="novoCasoForm.opened_at || '—'"></dd>
             </dl>
 
             <x-ai-disclaimer />

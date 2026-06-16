@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 
 trait Auditable
 {
+    // Keyed by spl_object_id so we never store temp state in model attributes.
+    private static array $_auditSnapshots = [];
+
     public static function bootAuditable(): void
     {
         static::created(function (self $model) {
@@ -17,7 +20,7 @@ trait Auditable
             $dirty = array_diff_key($model->getDirty(), array_flip($model->auditExcludedFields()));
 
             if (! empty($dirty)) {
-                $model->_auditSnapshot = [
+                static::$_auditSnapshots[spl_object_id($model)] = [
                     'old' => array_intersect_key($model->getOriginal(), $dirty),
                     'new' => $dirty,
                 ];
@@ -25,15 +28,20 @@ trait Auditable
         });
 
         static::updated(function (self $model) {
-            if (empty($model->_auditSnapshot)) {
+            $key = spl_object_id($model);
+
+            if (empty(static::$_auditSnapshots[$key])) {
                 return;
             }
 
-            $model->recordAudit('updated', $model->_auditSnapshot['old'], $model->_auditSnapshot['new']);
-            unset($model->_auditSnapshot);
+            $snapshot = static::$_auditSnapshots[$key];
+            unset(static::$_auditSnapshots[$key]);
+
+            $model->recordAudit('updated', $snapshot['old'], $snapshot['new']);
         });
 
         static::deleted(function (self $model) {
+            unset(static::$_auditSnapshots[spl_object_id($model)]);
             $model->recordAudit('deleted', $model->auditAttributes(), []);
         });
     }
