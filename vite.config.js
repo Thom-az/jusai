@@ -25,6 +25,7 @@ export default defineConfig({
                 'resources/css/modules/admin/support.css',
                 'resources/css/modules/admin/leads.css',
                 'resources/css/modules/admin/prompts.css',
+                'resources/css/modules/admin/ia.css',
 
                 // JS — client modules
                 'resources/js/modules/casos-show.js',

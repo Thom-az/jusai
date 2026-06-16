@@ -1,0 +1,71 @@
+.ia-metric-card {
+    background: var(--jusai-surface, #fff);
+    border: 1px solid var(--jusai-border, #d7dce5);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    transition: box-shadow .15s;
+}
+
+.ia-metric-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+}
+
+.ia-metric-label {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--jusai-text-secondary, #64748b);
+    font-weight: 600;
+    margin-bottom: .3rem;
+}
+
+.ia-metric-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--jusai-text, #0f172a);
+    line-height: 1.2;
+}
+
+.ia-metric-sub {
+    font-size: .75rem;
+    color: var(--jusai-text-secondary, #64748b);
+    margin-top: .25rem;
+}
+
+.ia-metric-icon {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.ia-metric-icon.icon-blue   { background: rgba(37,99,235,.1);  color: #2563eb; }
+.ia-metric-icon.icon-purple { background: rgba(124,58,237,.1); color: #7c3aed; }
+.ia-metric-icon.icon-green  { background: rgba(22,163,74,.1);  color: #16a34a; }
+.ia-metric-icon.icon-orange { background: rgba(234,88,12,.1);  color: #ea580c; }
+
+.ia-token-row {
+    display: flex;
+    align-items: center;
+    padding: .5rem .75rem;
+    background: rgba(0,0,0,.025);
+    border-radius: .5rem;
+    font-size: .82rem;
+}
+
+[data-theme="dark"] .ia-metric-card {
+    background: var(--jusai-surface-dark, #1e293b);
+    border-color: rgba(255,255,255,.08);
+}
+
+[data-theme="dark"] .ia-metric-value {
+    color: rgba(255,255,255,.9);
+}
+
+[data-theme="dark"] .ia-token-row {
+    background: rgba(255,255,255,.04);
+}

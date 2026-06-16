@@ -115,6 +115,8 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')
     Route::get('/prompts', [AiPromptController::class, 'index'])->name('prompts.index');
     Route::patch('/prompts/{key}', [AiPromptController::class, 'update'])->name('prompts.update')->where('key', '.+');
     Route::post('/prompts/{key}/reset', [AiPromptController::class, 'reset'])->name('prompts.reset')->where('key', '.+');
+
+    Route::get('/ia', [Admin\AiMetricsController::class, 'index'])->name('ia.index');
 });
 
 require __DIR__.'/auth.php';
