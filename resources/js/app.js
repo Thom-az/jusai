@@ -389,7 +389,7 @@ function getSkeletonForUrl(href) {
 }
 
 const PAGE_NAVIGATION_STORAGE_KEY = 'jusai.pending.navigation';
-const PAGE_NAVIGATION_MIN_DURATION = 420;
+const PAGE_NAVIGATION_MIN_DURATION = 250;
 const PAGE_NAVIGATION_MAX_AGE = 15000;
 
 const readPendingNavigation = () => {
@@ -642,6 +642,10 @@ const clearPendingNavigation = () => {
     document.addEventListener('livewire:navigated', () => {
         finishLoad();
         initShellPage();
+        applyTheme(localStorage.getItem(themeStorageKey) || 'light');
+        if (document.getElementById('notifToggle')) {
+            initNotifications();
+        }
 
         // Fade suave para o conteúdo real após o Livewire trocar o DOM.
         const contentMain = document.querySelector('.content-main');
@@ -661,6 +665,17 @@ const clearPendingNavigation = () => {
         });
     });
 }());
+
+// Theme helpers — module-scoped so livewire:navigated can re-apply after DOM morph
+const themeStorageKey = 'jusai.theme';
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('themeToggleIcon');
+    if (icon) icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.setAttribute('aria-label', theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro');
+}
 
 // Sidebar + theme: persistent layout elements — bind once only
 function initShellPersistent() {
@@ -713,56 +728,38 @@ function initShellPersistent() {
         });
     });
 
-    const themeToggle = document.getElementById('themeToggle');
-    const themeToggleIcon = document.getElementById('themeToggleIcon');
-    const themeStorageKey = 'jusai.theme';
-
-    const applyTheme = (theme) => {
-        document.documentElement.setAttribute('data-theme', theme);
-        if (themeToggleIcon) {
-            themeToggleIcon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
-        }
-        if (themeToggle) {
-            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro');
-        }
-    };
-
     applyTheme(localStorage.getItem(themeStorageKey) || 'light');
 
-    themeToggle?.addEventListener('click', () => {
-        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        applyTheme(next);
-        localStorage.setItem(themeStorageKey, next);
+    // Use event delegation so the listener survives Livewire DOM morphing
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#themeToggle')) {
+            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem(themeStorageKey, next);
+        }
+    });
+
+    // table-responsive clips Bootstrap dropdowns (overflow-x:auto coerces overflow-y to auto).
+    // On show: make it overflow:visible so the menu renders outside; restore on hide.
+    document.addEventListener('show.bs.dropdown', (e) => {
+        const tr = e.target.closest('.table-responsive');
+        if (tr) tr.style.overflow = 'visible';
+    }, { capture: true });
+
+    document.addEventListener('hidden.bs.dropdown', (e) => {
+        const tr = e.target.closest('.table-responsive');
+        if (tr) tr.style.overflow = '';
     });
 }
 
 // Page-specific elements that are re-rendered on Livewire navigation
 function initShellPage() {
-    // table-responsive overflow:auto clips dropdowns — use Popper strategy:'fixed'
-    // so the menu is positioned relative to the viewport, bypassing any clipping ancestor.
-    document.querySelectorAll('.table-responsive .dropdown-toggle').forEach((toggle) => {
-        if (!bootstrap.Dropdown.getInstance(toggle)) {
-            new bootstrap.Dropdown(toggle, {
-                popperConfig: (base) => ({ ...base, strategy: 'fixed' }),
-            });
-        }
-    });
 
     document.querySelectorAll('[data-disabled-action]').forEach((element) => {
         element.addEventListener('click', (event) => {
             event.preventDefault();
-
-            const toastElement = document.getElementById('appToast');
-            const toastBody = document.getElementById('appToastBody');
-
-            if (!toastElement || !toastBody) {
-                return;
-            }
-
-            toastBody.textContent = element.getAttribute('data-disabled-action') ?? 'Este recurso sera entregue na proxima etapa.';
-
-            const toast = Toast.getOrCreateInstance(toastElement);
-            toast.show();
+            const message = element.getAttribute('data-disabled-action') || 'Este recurso será entregue na próxima etapa.';
+            window.dispatchEvent(new CustomEvent('app:toast', { detail: { message, type: 'warning' } }));
         });
     });
 }
@@ -791,7 +788,110 @@ document.addEventListener('click', (e) => {
     confirmBtn.addEventListener('click', confirmBtn._deleteHandler, { once: true });
 }, true);
 
+// ─── Notification centre ──────────────────────────────────────────────────────
+const NOTIF_POLL_INTERVAL = 30000;
+const NOTIF_UNREAD_URL    = '/notificacoes/unread';
+const NOTIF_READ_URL      = (id) => `/notificacoes/${id}/read`;
+const NOTIF_READ_ALL_URL  = '/notificacoes/read-all';
+let _notifTimer = null;
+
+function renderNotifications(data) {
+    const badge   = document.getElementById('notifBadge');
+    const list    = document.getElementById('notifList');
+    const empty   = document.getElementById('notifEmpty');
+    const markAll = document.getElementById('notifMarkAll');
+
+    if (!badge || !list) return;
+
+    const count = data.count ?? 0;
+    badge.textContent = count > 9 ? '9+' : String(count);
+    badge.style.display = count > 0 ? '' : 'none';
+
+    const items = data.notifications ?? [];
+
+    if (items.length === 0) {
+        if (empty) empty.style.display = '';
+        list.querySelectorAll('.notif-item').forEach(el => el.remove());
+        return;
+    }
+
+    if (empty) empty.style.display = 'none';
+    list.querySelectorAll('.notif-item').forEach(el => el.remove());
+
+    const iconMap = {
+        document_analysis_complete: { icon: 'bi-file-earmark-check-fill', color: 'text-success' },
+        document_analysis_error:    { icon: 'bi-file-earmark-x-fill',     color: 'text-danger'  },
+    };
+
+    items.forEach(n => {
+        const { icon = 'bi-bell-fill', color = 'text-primary' } = iconMap[n.type] ?? {};
+        const item = document.createElement('div');
+        item.className = 'notif-item d-flex align-items-start gap-3 px-3 py-2 border-bottom';
+        item.style.cssText = 'cursor:pointer;transition:background 0.12s';
+        item.dataset.id = n.id;
+        item.dataset.url = n.url ?? '';
+        item.innerHTML = `
+            <i class="bi ${icon} ${color} flex-shrink-0 mt-1" style="font-size:1.1rem;"></i>
+            <div class="flex-grow-1 min-width-0">
+                <div class="fw-semibold small lh-sm">${n.title}</div>
+                <div class="text-secondary" style="font-size:0.78rem;">${n.message}</div>
+                <div class="text-secondary" style="font-size:0.72rem;margin-top:2px;">${n.created_at}</div>
+            </div>
+            ${n.url ? `<a href="${n.url}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill px-2 flex-shrink-0" style="font-size:0.72rem;white-space:nowrap;" @click.stop>Ver</a>` : ''}
+        `;
+
+        item.addEventListener('click', () => {
+            fetch(NOTIF_READ_URL(n.id), { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content ?? '' } })
+                .catch(() => {});
+            item.remove();
+            if (!list.querySelector('.notif-item')) {
+                if (empty) empty.style.display = '';
+                badge.style.display = 'none';
+            } else {
+                const remaining = list.querySelectorAll('.notif-item').length;
+                badge.textContent = remaining > 9 ? '9+' : String(remaining);
+            }
+            if (n.url) window.location.assign(n.url);
+        });
+
+        list.appendChild(item);
+    });
+}
+
+function fetchNotifications() {
+    fetch(NOTIF_UNREAD_URL)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) renderNotifications(data); })
+        .catch(() => {});
+}
+
+function initNotifications() {
+    if (_notifTimer) clearInterval(_notifTimer);
+
+    const markAll = document.getElementById('notifMarkAll');
+    if (markAll && !markAll._notifBound) {
+        markAll._notifBound = true;
+        markAll.addEventListener('click', () => {
+            fetch(NOTIF_READ_ALL_URL, { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content ?? '' } })
+                .catch(() => {});
+            const badge = document.getElementById('notifBadge');
+            const empty = document.getElementById('notifEmpty');
+            const list  = document.getElementById('notifList');
+            if (badge) badge.style.display = 'none';
+            if (list)  list.querySelectorAll('.notif-item').forEach(el => el.remove());
+            if (empty) empty.style.display = '';
+        });
+    }
+
+    fetchNotifications();
+    _notifTimer = setInterval(fetchNotifications, NOTIF_POLL_INTERVAL);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initShellPersistent();
     initShellPage();
+
+    if (document.getElementById('notifToggle')) {
+        initNotifications();
+    }
 });
