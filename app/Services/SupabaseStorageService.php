@@ -70,6 +70,7 @@ class SupabaseStorageService
 
         $signedUrl = $response->json('signedURL');
 
-        return "{$this->supabaseUrl}{$signedUrl}";
+        // signedURL from Supabase is a relative path like /object/sign/... (no /storage/v1 prefix)
+        return "{$this->supabaseUrl}/storage/v1{$signedUrl}";
     }
 }
