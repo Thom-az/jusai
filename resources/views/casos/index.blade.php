@@ -303,8 +303,6 @@
         </x-slot>
     </x-drawer>
 
-</div>
-
 {{-- Modal de criação de caso (stepper 4 passos) --}}
 <form method="POST" action="{{ route('cases.store') }}" id="formNovoCaso">
     @csrf
@@ -469,6 +467,8 @@
         </x-slot>
     </x-modal-stepper>
 </form>
+
+</div>
 
 @if ($errors->hasAny(['title', 'client_name', 'area', 'status', 'risk_level', 'opened_at', 'description', 'client_email', 'client_phone']))
     @push('scripts')
