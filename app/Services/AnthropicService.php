@@ -12,8 +12,15 @@ class AnthropicService
 {
     private const API_URL = 'https://api.anthropic.com/v1/messages';
     private const API_VERSION = '2023-06-01';
-    private const MAX_TOKENS = 4096;
     private const PDF_TEXT_LIMIT = 30000;
+
+    // Limites por tipo de operação — evita gastar tokens desnecessários
+    private const TOKENS_CHAT     = 1024;
+    private const TOKENS_RESUMO   = 1024;
+    private const TOKENS_ANALISE  = 2048;
+    private const TOKENS_REVISAO  = 2048;
+    private const TOKENS_PESQUISA = 2048;
+    private const TOKENS_RASCUNHO = 4096;
 
     public function __construct(
         private readonly string $apiKey,
@@ -32,7 +39,7 @@ class AnthropicService
         $system = $this->systemBase() . "\n\n" . $this->prompt('system.resumo_caso');
         $user   = "Caso: {$caseTitle}\nÁrea: {$caseArea}\n\nDocumento:\n{$documentText}";
 
-        return $this->callAnthropic($this->modelFast, $system, $user);
+        return $this->callAnthropic($this->modelFast, $system, $user, [], self::TOKENS_RESUMO);
     }
 
     public function analiseDocumento(string $documentText, string $caseTitle): array
@@ -44,7 +51,7 @@ class AnthropicService
         $system = $this->systemBase() . "\n\n" . $this->prompt('system.analise_documento');
         $user   = "Caso: {$caseTitle}\n\nDocumento:\n{$documentText}";
 
-        return $this->callAnthropic($this->modelStrong, $system, $user);
+        return $this->callAnthropic($this->modelStrong, $system, $user, [], self::TOKENS_ANALISE);
     }
 
     public function revisaoMinuta(string $draftContent, string $draftTitle, string $caseContext): array
@@ -56,7 +63,7 @@ class AnthropicService
         $system = $this->systemBase() . "\n\n" . $this->prompt('system.revisao_minuta');
         $user   = "Minuta: {$draftTitle}\nContexto do caso: {$caseContext}\n\nConteúdo da minuta:\n{$draftContent}";
 
-        return $this->callAnthropic($this->modelStrong, $system, $user);
+        return $this->callAnthropic($this->modelStrong, $system, $user, [], self::TOKENS_REVISAO);
     }
 
     public function pesquisaJuridica(string $question, string $docsContext, string $caseTitle): array
@@ -68,7 +75,7 @@ class AnthropicService
         $system = $this->systemBase() . "\n\n" . $this->prompt('system.pesquisa_juridica');
         $user   = "Caso: {$caseTitle}\nPergunta: {$question}\n\nDocumentos do caso:\n{$docsContext}";
 
-        return $this->callAnthropic($this->modelStrong, $system, $user);
+        return $this->callAnthropic($this->modelStrong, $system, $user, [], self::TOKENS_PESQUISA);
     }
 
     public function rascunhoMinuta(string $instructions, string $type, string $caseTitle, string $caseArea = ''): array
@@ -83,7 +90,7 @@ class AnthropicService
                      ($caseArea ? "\nÁrea jurídica: {$caseArea}" : '') .
                      "\n\nInstruções para geração:\n{$instructions}";
 
-        return $this->callAnthropic($this->modelStrong, $system, $user);
+        return $this->callAnthropic($this->modelStrong, $system, $user, [], self::TOKENS_RASCUNHO);
     }
 
     /**
@@ -101,7 +108,7 @@ class AnthropicService
 
         $system = $this->systemBase() . "\n\n" . $this->prompt('system.chat') . $systemSuffix;
 
-        return $this->callAnthropic($this->modelFast, $system, '', $messages);
+        return $this->callAnthropic($this->modelFast, $system, '', $messages, self::TOKENS_CHAT);
     }
 
     public function extractPdfText(string $binary): string
@@ -171,21 +178,27 @@ class AnthropicService
     /**
      * @param  array<int, array{role: string, content: string}>  $messages
      */
-    private function callAnthropic(string $model, string $system, string $user, array $messages = []): array
+    private function callAnthropic(string $model, string $system, string $user, array $messages = [], int $maxTokens = self::TOKENS_ANALISE): array
     {
         if (empty($messages)) {
             $messages = [['role' => 'user', 'content' => $user]];
         }
 
+        // Prompt caching: reduz custo em ~90% nas chamadas repetidas ao mesmo system prompt
+        $systemPayload = [
+            ['type' => 'text', 'text' => $system, 'cache_control' => ['type' => 'ephemeral']],
+        ];
+
         $response = Http::withHeaders([
             'x-api-key'         => $this->apiKey,
             'anthropic-version' => self::API_VERSION,
+            'anthropic-beta'    => 'prompt-caching-2024-07-31',
             'content-type'      => 'application/json',
         ])->post(self::API_URL, [
             'model'       => $model,
-            'max_tokens'  => self::MAX_TOKENS,
+            'max_tokens'  => $maxTokens,
             'temperature' => $this->temperature,
-            'system'      => $system,
+            'system'      => $systemPayload,
             'messages'    => $messages,
         ]);
 

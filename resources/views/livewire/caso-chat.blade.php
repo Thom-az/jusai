@@ -31,18 +31,16 @@
                 @endif
             @endforeach
 
-            @if ($isTyping)
-                <div class="d-flex justify-content-start gap-2">
-                    <div class="flex-shrink-0 rounded-circle bg-primary d-flex align-items-center justify-content-center"
-                         style="width:1.75rem;height:1.75rem;">
-                        <i class="bi bi-cpu text-white" style="font-size:.7rem;"></i>
-                    </div>
-                    <div class="caso-chat__bubble caso-chat__bubble--ai rounded-3 px-3 py-2 small">
-                        <span class="spinner-border spinner-border-sm me-1" style="width:.65rem;height:.65rem;"></span>
-                        Processando…
-                    </div>
+            <div class="d-flex justify-content-start gap-2" wire:loading wire:target="sendMessage">
+                <div class="flex-shrink-0 rounded-circle bg-primary d-flex align-items-center justify-content-center"
+                     style="width:1.75rem;height:1.75rem;">
+                    <i class="bi bi-cpu text-white" style="font-size:.7rem;"></i>
                 </div>
-            @endif
+                <div class="caso-chat__bubble caso-chat__bubble--ai rounded-3 px-3 py-2 small">
+                    <span class="spinner-border spinner-border-sm me-1" style="width:.65rem;height:.65rem;"></span>
+                    Processando…
+                </div>
+            </div>
         @endif
     </div>
 
@@ -53,12 +51,13 @@
                    wire:model="input"
                    class="form-control form-control-sm rounded-pill"
                    placeholder="Faça uma pergunta jurídica sobre este caso…"
-                   @if($isTyping) disabled @endif
+                   wire:loading.attr="disabled" wire:target="sendMessage"
                    autocomplete="off">
             <button type="submit"
                     class="btn btn-primary btn-sm rounded-pill px-3"
-                    @if($isTyping) disabled @endif>
-                <i class="bi bi-send-fill"></i>
+                    wire:loading.attr="disabled" wire:target="sendMessage">
+                <span wire:loading.remove wire:target="sendMessage"><i class="bi bi-send-fill"></i></span>
+                <span wire:loading wire:target="sendMessage"><span class="spinner-border spinner-border-sm" style="width:.65rem;height:.65rem;"></span></span>
             </button>
         </form>
         @error('input')
