@@ -103,7 +103,16 @@ class DocumentController extends Controller
 
         $this->logActivity('documento_enviado', "Documento \"{$document->title}\" enviado.", Document::class, $document->id);
 
-        return redirect()->route('documents.show', $document)->with('success', 'Documento enviado. A análise de IA será processada em breve.');
+        $redirectUrl = $caseId
+            ? route('cases.show', $caseId) . '#documentos'
+            : route('documents.show', $document);
+
+        if ($request->expectsJson()) {
+            session()->flash('success', 'Documento enviado com sucesso.');
+            return response()->json(['redirect' => $redirectUrl]);
+        }
+
+        return redirect($redirectUrl)->with('success', 'Documento enviado com sucesso.');
     }
 
     public function edit(string $id): View
