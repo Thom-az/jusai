@@ -2,6 +2,8 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
+[x-cloak] { display: none !important; }
+
 :root {
     --jusai-navy: #0b1f3a;
     --jusai-gold: #c9a227;

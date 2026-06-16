@@ -108,12 +108,37 @@
                                     <td><span class="badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $draft->status)) }}</span></td>
                                     <td class="small text-secondary">{{ $draft->creator?->name ?? '—' }}</td>
                                     <td class="small text-secondary">{{ $draft->updated_at->format('d/m/Y') }}</td>
-                                    <td class="pe-4">
-                                        <div class="d-flex gap-2 justify-content-end">
-                                            <a href="{{ route('drafts.show', $draft) }}" wire:navigate class="btn btn-sm btn-outline-secondary rounded-pill px-3">Ver</a>
-                                            @if (!$isGenerating)
-                                                <a href="{{ route('drafts.edit', $draft) }}" wire:navigate class="btn btn-sm btn-outline-primary rounded-pill px-3">Editar</a>
-                                            @endif
+                                    <td class="pe-3 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-link text-secondary p-1 lh-1"
+                                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical fs-6"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('drafts.show', $draft) }}" wire:navigate>
+                                                        <i class="bi bi-eye me-2 text-secondary"></i>Ver
+                                                    </a>
+                                                </li>
+                                                @if (!$isGenerating)
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ route('drafts.edit', $draft) }}" wire:navigate>
+                                                        <i class="bi bi-pencil me-2 text-secondary"></i>Editar
+                                                    </a>
+                                                </li>
+                                                @endif
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <form method="POST" action="{{ route('drafts.destroy', $draft) }}">
+                                                        @csrf @method('DELETE')
+                                                        <button class="dropdown-item text-danger" type="submit"
+                                                                data-confirm-delete="Excluir a minuta &quot;{{ addslashes($draft->title) }}&quot; permanentemente?"
+                                                                data-confirm-title="Excluir minuta">
+                                                            <i class="bi bi-trash me-2"></i>Excluir
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </td>
                                 </tr>

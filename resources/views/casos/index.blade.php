@@ -193,9 +193,36 @@
                             </td>
                             <td class="text-secondary small">{{ $case->assignedUser?->name ?? '—' }}</td>
                             <td class="text-secondary small">{{ $case->updated_at->diffForHumans() }}</td>
-                            <td @click.stop>
-                                <a href="{{ route('cases.show', $case) }}" wire:navigate
-                                   class="btn btn-sm btn-outline-primary rounded-pill">Abrir</a>
+                            <td @click.stop class="text-end pe-3">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-secondary p-1 lh-1"
+                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical fs-6"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('cases.show', $case) }}" wire:navigate>
+                                                <i class="bi bi-folder2-open me-2 text-secondary"></i>Abrir
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('cases.edit', $case) }}" wire:navigate>
+                                                <i class="bi bi-pencil me-2 text-secondary"></i>Editar
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ route('cases.destroy', $case) }}">
+                                                @csrf @method('DELETE')
+                                                <button class="dropdown-item text-danger" type="submit"
+                                                        data-confirm-delete="Excluir o caso &quot;{{ addslashes($case->title) }}&quot; permanentemente? Documentos e análises serão removidos."
+                                                        data-confirm-title="Excluir caso">
+                                                    <i class="bi bi-trash me-2"></i>Excluir
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     @empty
