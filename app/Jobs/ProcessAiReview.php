@@ -7,9 +7,11 @@ use App\Models\Document;
 use App\Models\User;
 use App\Notifications\DocumentAnalysisComplete;
 use App\Services\AnthropicService;
+use App\Services\EmbeddingService;
 use App\Services\SupabaseStorageService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
 
 class ProcessAiReview implements ShouldQueue
 {
@@ -75,6 +77,8 @@ class ProcessAiReview implements ShouldQueue
                 'status'          => 'ready',
             ]);
 
+            VectorizeDocument::dispatch($review->document->fresh());
+
             $uploader = User::find($review->document->uploaded_by);
             $uploader?->notify(new DocumentAnalysisComplete($review->document, success: true));
         }
@@ -109,13 +113,48 @@ class ProcessAiReview implements ShouldQueue
 
     private function buildDocsContext(string $caseId, SupabaseStorageService $storage, AnthropicService $anthropic): string
     {
+        return $this->buildDocsContextFromVectors($caseId, $this->aiReview->prompt_used ?? '')
+            ?: $this->buildDocsContextFromFiles($caseId, $storage, $anthropic);
+    }
+
+    private function buildDocsContextFromVectors(string $caseId, string $query): string
+    {
+        if (empty(trim($query))) {
+            return '';
+        }
+
+        $hasChunks = DB::table('document_chunks')->where('legal_case_id', $caseId)->exists();
+        if (! $hasChunks) {
+            return '';
+        }
+
+        try {
+            $vector = app(EmbeddingService::class)->embed($query);
+            $sql    = app(EmbeddingService::class)->toSql($vector);
+
+            $rows = DB::select(
+                'SELECT content FROM document_chunks
+                 WHERE legal_case_id = ?
+                 ORDER BY embedding <=> ?::vector
+                 LIMIT 8',
+                [$caseId, $sql],
+            );
+
+            return implode("\n\n---\n\n", array_map(fn ($r) => $r->content, $rows));
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    private function buildDocsContextFromFiles(string $caseId, SupabaseStorageService $storage, AnthropicService $anthropic): string
+    {
         $documents = \App\Models\Document::where('legal_case_id', $caseId)
             ->where('status', 'ready')
             ->get();
 
-        $parts     = [];
-        $totalLen  = 0;
-        $limit     = 25000;
+        $parts    = [];
+        $totalLen = 0;
+        $limit    = 25000;
 
         foreach ($documents as $doc) {
             if ($totalLen >= $limit) {

@@ -6,6 +6,8 @@ use App\Models\AiConversation;
 use App\Models\AiMessage;
 use App\Models\LegalCase;
 use App\Services\AnthropicService;
+use App\Services\EmbeddingService;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -51,7 +53,7 @@ class CasoChat extends Component
         ])->toArray();
 
         try {
-            $caseContext = $this->buildCaseContext();
+            $caseContext = $this->buildCaseContext($userText);
             $result = app(AnthropicService::class)->chat($messagesForApi, $caseContext);
 
             AiMessage::create([
@@ -99,7 +101,7 @@ class CasoChat extends Component
         ]);
     }
 
-    private function buildCaseContext(): string
+    private function buildCaseContext(string $query = ''): string
     {
         $caso = $this->caso;
 
@@ -114,11 +116,49 @@ class CasoChat extends Component
             $context .= "\nDescrição: " . mb_substr($caso->description, 0, 500);
         }
 
-        $docCount = $caso->documents()->count();
-        if ($docCount > 0) {
-            $context .= "\nDocumentos no caso: {$docCount} arquivo(s)";
+        $docChunks = $this->retrieveRelevantChunks($query);
+        if ($docChunks !== '') {
+            $context .= "\n\nTrechos relevantes dos documentos do caso:\n" . $docChunks;
+        } else {
+            $docCount = $caso->documents()->where('status', 'ready')->count();
+            if ($docCount > 0) {
+                $context .= "\nDocumentos no caso: {$docCount} arquivo(s) (vetorização pendente)";
+            }
         }
 
         return $context;
+    }
+
+    private function retrieveRelevantChunks(string $query): string
+    {
+        if (empty(trim($query))) {
+            return '';
+        }
+
+        $hasChunks = DB::table('document_chunks')
+            ->where('legal_case_id', $this->caso->id)
+            ->exists();
+
+        if (! $hasChunks) {
+            return '';
+        }
+
+        try {
+            $embeddings = app(EmbeddingService::class);
+            $vector     = $embeddings->embed($query);
+            $sql        = $embeddings->toSql($vector);
+
+            $rows = DB::select(
+                'SELECT content FROM document_chunks
+                 WHERE legal_case_id = ?
+                 ORDER BY embedding <=> ?::vector
+                 LIMIT 6',
+                [$this->caso->id, $sql],
+            );
+
+            return implode("\n\n---\n\n", array_map(fn ($r) => $r->content, $rows));
+        } catch (\Throwable) {
+            return '';
+        }
     }
 }

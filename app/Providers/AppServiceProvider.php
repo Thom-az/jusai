@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\AnthropicService;
+use App\Services\EmbeddingService;
 use App\Services\SupabaseStorageService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(SupabaseStorageService::class, fn () => new SupabaseStorageService(
             supabaseUrl:    config('services.supabase.url'),
             serviceRoleKey: config('services.supabase.service_role_key'),
+        ));
+
+        $this->app->singleton(EmbeddingService::class, fn () => new EmbeddingService(
+            apiKey: config('services.openai.key', ''),
         ));
 
         $this->app->singleton(AnthropicService::class, fn () => new AnthropicService(

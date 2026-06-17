@@ -113,14 +113,23 @@ class AnthropicService
 
     public function extractPdfText(string $binary): string
     {
-        $text = $this->extractWithPoppler($binary) ?? $this->extractWithSmalot($binary);
+        $text = $this->extractWithPoppler($binary, allPages: false) ?? $this->extractWithSmalot($binary);
 
         return mb_substr($text, 0, self::PDF_TEXT_LIMIT);
     }
 
+    /**
+     * Extract ALL pages without character limit — for vectorization only.
+     * The caller is responsible for chunking the result.
+     */
+    public function extractFullPdfText(string $binary): string
+    {
+        return $this->extractWithPoppler($binary, allPages: true) ?? $this->extractWithSmalot($binary);
+    }
+
     // Streams through PDF page by page — handles 1000+ page documents without OOM.
-    // Limits to first 100 pages: enough context for any legal summary.
-    private function extractWithPoppler(string $binary): ?string
+    // allPages=false limits to first 100 pages for AI summary prompts.
+    private function extractWithPoppler(string $binary, bool $allPages = false): ?string
     {
         $bin = trim((string) shell_exec('which pdftotext 2>/dev/null || where pdftotext 2>nul'));
         if (empty($bin)) {
@@ -131,8 +140,9 @@ class AnthropicService
         file_put_contents($tmp, $binary);
 
         try {
-            $cmd    = escapeshellarg($bin) . ' -f 1 -l 100 -enc UTF-8 ' . escapeshellarg($tmp) . ' -';
-            $output = shell_exec($cmd);
+            $pageLimit = $allPages ? '' : ' -f 1 -l 100';
+            $cmd       = escapeshellarg($bin) . $pageLimit . ' -enc UTF-8 ' . escapeshellarg($tmp) . ' -';
+            $output    = shell_exec($cmd);
             return $output !== null && strlen($output) > 0 ? $output : null;
         } finally {
             @unlink($tmp);
