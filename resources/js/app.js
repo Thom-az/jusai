@@ -1,5 +1,4 @@
 import * as bootstrap from 'bootstrap';
-import { Tooltip, Toast } from 'bootstrap';
 
 // ─── Global toast — escuta app:toast de qualquer página ──────────────────────
 ;(function () {

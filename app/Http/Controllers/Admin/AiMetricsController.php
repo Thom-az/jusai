@@ -70,22 +70,28 @@ class AiMetricsController extends Controller
             });
 
         // ── Uso por organização (top 10) ──────────────────────────
-        $orgUsage = AiReview::where('status', 'concluido')
-            ->select('organization_id', DB::raw('count(*) as reviews'), DB::raw('sum(tokens_used) as tokens'))
+        $orgUsageRaw = AiReview::where('status', 'concluido')
+            ->select(
+                'organization_id',
+                DB::raw('count(*) as reviews'),
+                DB::raw('sum(tokens_used) as tokens'),
+                DB::raw('max(ai_model_used) as last_model'),
+            )
             ->groupBy('organization_id')
             ->orderByDesc('tokens')
             ->limit(10)
-            ->get()
-            ->map(function ($row) {
-                $row->organization = Organization::find($row->organization_id);
-                $model = AiReview::where('organization_id', $row->organization_id)
-                    ->whereNotNull('ai_model_used')
-                    ->orderByDesc('updated_at')
-                    ->value('ai_model_used') ?? 'default';
-                $rate = self::COST_PER_TOKEN[$model] ?? self::COST_PER_TOKEN['default'];
-                $row->estimated_cost = $row->tokens * $rate;
-                return $row;
-            });
+            ->get();
+
+        $orgIds       = $orgUsageRaw->pluck('organization_id');
+        $organizations = Organization::whereIn('id', $orgIds)->get()->keyBy('id');
+
+        $orgUsage = $orgUsageRaw->map(function ($row) use ($organizations) {
+            $row->organization  = $organizations->get($row->organization_id);
+            $model              = $row->last_model ?? 'default';
+            $rate               = self::COST_PER_TOKEN[$model] ?? self::COST_PER_TOKEN['default'];
+            $row->estimated_cost = $row->tokens * $rate;
+            return $row;
+        });
 
         // ── Análises recentes ─────────────────────────────────────
         $recentReviews = AiReview::with(['legalCase', 'creator', 'organization'])
