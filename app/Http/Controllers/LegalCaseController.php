@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateLegalCaseRequest;
 use App\Models\LegalCase;
 use App\Models\User;
 use App\Traits\OrganizationScoped;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -60,7 +61,7 @@ class LegalCaseController extends Controller
         return view('casos.create', compact('lawyers'));
     }
 
-    public function store(StoreLegalCaseRequest $request): RedirectResponse
+    public function store(StoreLegalCaseRequest $request): RedirectResponse|JsonResponse
     {
         $case = LegalCase::create([
             ...$request->validated(),
@@ -70,6 +71,10 @@ class LegalCaseController extends Controller
         ]);
 
         $this->logActivity('caso_criado', "Caso \"{$case->title}\" criado.", LegalCase::class, $case->id);
+
+        if ($request->expectsJson()) {
+            return response()->json(['redirect' => route('cases.show', $case)]);
+        }
 
         return redirect()->route('cases.show', $case)->with('success', 'Caso criado com sucesso.');
     }

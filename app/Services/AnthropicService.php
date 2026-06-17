@@ -113,11 +113,36 @@ class AnthropicService
 
     public function extractPdfText(string $binary): string
     {
-        $parser = new Parser();
-        $pdf    = $parser->parseContent($binary);
-        $text   = $pdf->getText();
+        $text = $this->extractWithPoppler($binary) ?? $this->extractWithSmalot($binary);
 
         return mb_substr($text, 0, self::PDF_TEXT_LIMIT);
+    }
+
+    // Streams through PDF page by page — handles 1000+ page documents without OOM.
+    // Limits to first 100 pages: enough context for any legal summary.
+    private function extractWithPoppler(string $binary): ?string
+    {
+        $bin = trim((string) shell_exec('which pdftotext 2>/dev/null || where pdftotext 2>nul'));
+        if (empty($bin)) {
+            return null;
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'pdf_');
+        file_put_contents($tmp, $binary);
+
+        try {
+            $cmd    = escapeshellarg($bin) . ' -f 1 -l 100 -enc UTF-8 ' . escapeshellarg($tmp) . ' -';
+            $output = shell_exec($cmd);
+            return $output !== null && strlen($output) > 0 ? $output : null;
+        } finally {
+            @unlink($tmp);
+        }
+    }
+
+    private function extractWithSmalot(string $binary): string
+    {
+        $parser = new Parser();
+        return $parser->parseContent($binary)->getText();
     }
 
     public function extractDocxText(string $binary): string

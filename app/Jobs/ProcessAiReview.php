@@ -27,6 +27,8 @@ class ProcessAiReview implements ShouldQueue
 
     public function handle(AnthropicService $anthropic, SupabaseStorageService $storage): void
     {
+        ini_set('memory_limit', '512M');
+
         $review = $this->aiReview->fresh(['legalCase', 'document', 'draft']);
 
         $documentText = '';
@@ -68,7 +70,7 @@ class ProcessAiReview implements ShouldQueue
 
         if (in_array($review->type, ['analise_documento', 'resumo_caso']) && $review->document) {
             $review->document->update([
-                'ai_summary'      => mb_substr($result['content'], 0, 1000),
+                'ai_summary'      => mb_substr($result['content'], 0, 5000),
                 'ai_extracted_at' => now(),
                 'status'          => 'ready',
             ]);

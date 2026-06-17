@@ -300,6 +300,7 @@
         dragging: false,
         uploading: false,
         progress: 0,
+        processing: false,
         title: '{{ addslashes(old('title', '')) }}',
         error: null,
         init() {
@@ -330,6 +331,7 @@
             const fd = new FormData(formEl);
             fd.set('title', this.title);
             this.uploading = true;
+            this.processing = false;
             this.progress = 0;
             this.error = null;
             const xhr = new XMLHttpRequest();
@@ -337,13 +339,22 @@
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) this.progress = Math.round(e.loaded / e.total * 100);
+                if (e.lengthComputable) {
+                    // Cap at 85% — remaining 15% accounts for server-side Supabase upload
+                    this.progress = Math.min(85, Math.round(e.loaded / e.total * 85));
+                }
+            });
+            xhr.upload.addEventListener('load', () => {
+                // Bytes delivered to server; now waiting for Supabase + DB
+                this.processing = true;
+                this.progress = 85;
             });
             xhr.addEventListener('load', () => {
                 try {
                     const data = JSON.parse(xhr.responseText);
                     if (xhr.status >= 200 && xhr.status < 300 && data.redirect) {
-                        window.location.href = data.redirect;
+                        this.progress = 100;
+                        setTimeout(() => { window.location.href = data.redirect; }, 300);
                         return;
                     }
                     if (xhr.status === 422 && data.errors) {
@@ -355,9 +366,11 @@
                     this.error = 'Erro inesperado. Tente novamente.';
                 }
                 this.uploading = false;
+                this.processing = false;
             });
             xhr.addEventListener('error', () => {
                 this.uploading = false;
+                this.processing = false;
                 this.error = 'Erro de conexão. Tente novamente.';
             });
             xhr.send(fd);
@@ -429,7 +442,7 @@
             {{-- Progresso de upload --}}
             <div x-show="uploading" x-cloak class="mb-3">
                 <div class="d-flex justify-content-between small mb-1">
-                    <span class="text-secondary">Enviando arquivo...</span>
+                    <span class="text-secondary" x-text="processing ? 'Salvando no servidor...' : 'Enviando arquivo...'"></span>
                     <span class="fw-semibold" x-text="progress + '%'"></span>
                 </div>
                 <div class="progress" style="height:6px;border-radius:99px">
@@ -456,8 +469,11 @@
                 <template x-if="!uploading">
                     <span><i class="bi bi-cloud-arrow-up me-2"></i>Enviar</span>
                 </template>
-                <template x-if="uploading">
+                <template x-if="uploading && !processing">
                     <span><span class="spinner-border spinner-border-sm me-2"></span>Enviando <span x-text="progress + '%'"></span></span>
+                </template>
+                <template x-if="processing">
+                    <span><span class="spinner-border spinner-border-sm me-2"></span>Salvando...</span>
                 </template>
             </button>
         </div>

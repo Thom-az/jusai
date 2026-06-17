@@ -75,6 +75,46 @@
     color: #8aa4c0;
 }
 
+/* Rendered Markdown summary */
+.ai-summary-body {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--jusai-text);
+}
+.ai-summary-body h1,
+.ai-summary-body h2 { font-size: 1rem; font-weight: 700; margin: 1.25rem 0 0.4rem; }
+.ai-summary-body h3 { font-size: 0.92rem; font-weight: 700; margin: 1rem 0 0.35rem; }
+.ai-summary-body p  { margin: 0 0 0.6rem; }
+.ai-summary-body ul,
+.ai-summary-body ol { padding-left: 1.25rem; margin: 0 0 0.6rem; }
+.ai-summary-body li { margin-bottom: 0.25rem; }
+.ai-summary-body strong { font-weight: 600; color: var(--jusai-heading); }
+.ai-summary-body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0.75rem 0 1rem;
+}
+.ai-summary-body th,
+.ai-summary-body td {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--jusai-border);
+    text-align: left;
+    vertical-align: top;
+}
+.ai-summary-body th {
+    background: var(--jusai-surface-alt, rgba(37,99,235,0.05));
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--jusai-muted);
+}
+.ai-summary-body hr { border: none; border-top: 1px solid var(--jusai-border); margin: 1rem 0; }
+
+[data-theme="dark"] .ai-summary-body strong { color: #e2eaf5; }
+[data-theme="dark"] .ai-summary-body th { background: rgba(255,255,255,0.04); }
+
 /* Dropzone — modal de envio de documento */
 .doc-dropzone {
     border: 2px dashed rgba(148, 163, 184, 0.5);

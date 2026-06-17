@@ -32,20 +32,20 @@
             </div>
             <div class="d-flex gap-2">
                 <button type="button"
-                        class="btn btn-primary rounded-pill px-3"
+                        class="btn btn-sm btn-primary rounded-pill px-3"
                         data-preview-doc-id="{{ $document->id }}"
                         data-preview-title="{{ $document->title }}">
                     <i class="bi bi-eye me-1"></i>Visualizar
                 </button>
                 @if ($downloadUrl)
-                    <a href="{{ $downloadUrl }}" target="_blank" class="btn btn-outline-secondary rounded-pill px-3">
+                    <a href="{{ $downloadUrl }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
                         <i class="bi bi-download me-1"></i>Baixar
                     </a>
                 @endif
                 <form method="POST" action="{{ route('documents.destroy', $document) }}">
                     @csrf @method('DELETE')
                     <button type="submit"
-                            class="btn btn-outline-danger rounded-pill px-3"
+                            class="btn btn-sm btn-outline-danger rounded-pill px-3"
                             data-confirm-delete="Excluir o documento &quot;{{ $document->title }}&quot; permanentemente?"
                             data-confirm-title="Excluir documento">
                         <i class="bi bi-trash me-1"></i>Excluir
@@ -72,7 +72,9 @@
                                 <span class="badge text-bg-success ms-auto">Processado</span>
                             @endif
                         </div>
-                        <div class="text-secondary" style="white-space: pre-wrap;">{{ $document->ai_summary }}</div>
+                        <div class="ai-summary-body">
+                            {!! \League\CommonMark\CommonMarkConverter::create()->convert($document->ai_summary) !!}
+                        </div>
                         <div class="mt-3 p-2 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
                             <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.review_notice') }}
                         </div>

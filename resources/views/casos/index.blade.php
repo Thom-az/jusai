@@ -42,6 +42,8 @@
          get selectedCount() { return this.selected.length; },
          get allSelected() { return this.allIds.length > 0 && this.selected.length >= this.allIds.length; },
          toggleAll(v) { this.selected = v ? this.allIds.map(id => String(id)) : []; },
+         submitting: false,
+         submitError: null,
          maskPhone(v) {
              v = v.replace(/\D/g, '').slice(0, 11);
              if (v.length === 0) return '';
@@ -49,6 +51,32 @@
              if (v.length <= 6)  return `(${v.slice(0,2)}) ${v.slice(2)}`;
              if (v.length <= 10) return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
              return `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+         },
+         async submitCase() {
+             if (this.submitting) return;
+             this.submitting = true;
+             this.submitError = null;
+             const form = document.getElementById('formNovoCaso');
+             try {
+                 const res = await fetch(form.action, {
+                     method: 'POST',
+                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                     body: new FormData(form),
+                 });
+                 const data = await res.json();
+                 if (res.ok && data.redirect) {
+                     window.location.href = data.redirect;
+                     return;
+                 }
+                 if (data.errors) {
+                     this.submitError = Object.values(data.errors).flat()[0] || 'Erro de validação.';
+                 } else {
+                     this.submitError = data.message || 'Erro ao criar caso.';
+                 }
+             } catch {
+                 this.submitError = 'Erro de conexão. Tente novamente.';
+             }
+             this.submitting = false;
          },
      }">
 
@@ -461,9 +489,20 @@
 
         {{-- Botão de submissão (aparece só no último passo) --}}
         <x-slot name="submit">
-            <button type="submit" form="formNovoCaso" class="btn btn-primary rounded-pill px-4">
-                <i class="bi bi-folder-plus me-2"></i>Criar caso
-            </button>
+            <div>
+                <div x-show="submitError" class="text-danger small mb-2" x-text="submitError"></div>
+                <button type="button"
+                        class="btn btn-primary rounded-pill px-4"
+                        :disabled="submitting"
+                        @click="submitCase()">
+                    <template x-if="!submitting">
+                        <span><i class="bi bi-folder-plus me-2"></i>Criar caso</span>
+                    </template>
+                    <template x-if="submitting">
+                        <span><span class="spinner-border spinner-border-sm me-2"></span>Criando...</span>
+                    </template>
+                </button>
+            </div>
         </x-slot>
     </x-modal-stepper>
 </form>

@@ -2,6 +2,8 @@
  * casos-show.js
  * Tab persistence via URL hash for cases/show view.
  */
+import { Tab } from 'bootstrap';
+
 document.addEventListener('DOMContentLoaded', () => {
     const tabLinks = document.querySelectorAll('[data-bs-toggle="tab"]');
     if (!tabLinks.length) return;
@@ -11,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hash) {
         const tabEl = document.querySelector(`[data-bs-toggle="tab"][href="${hash}"]`);
         if (tabEl) {
-            bootstrap.Tab.getOrCreateInstance(tabEl).show();
+            Tab.getOrCreateInstance(tabEl).show();
         }
     }
 
