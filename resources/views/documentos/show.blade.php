@@ -54,13 +54,6 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <div class="row g-4">
             <div class="col-lg-8">
                 @if ($document->ai_summary)
@@ -126,22 +119,22 @@
                 <div class="surface-card p-4">
                     <h5 class="fw-semibold mb-3">Informações</h5>
                     <dl class="row mb-0">
-                        <dt class="col-5 text-secondary small text-uppercase">Tipo</dt>
+                        <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-file-earmark me-1"></i>Tipo</dt>
                         <dd class="col-7">{{ $document->mime_type }}</dd>
 
-                        <dt class="col-5 text-secondary small text-uppercase">Tamanho</dt>
+                        <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-hdd me-1"></i>Tamanho</dt>
                         <dd class="col-7">{{ number_format($document->file_size / 1024, 0) }} KB</dd>
 
-                        <dt class="col-5 text-secondary small text-uppercase">Enviado</dt>
+                        <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-calendar-check me-1"></i>Enviado</dt>
                         <dd class="col-7">{{ $document->created_at->format('d/m/Y H:i') }}</dd>
 
                         @if ($document->ai_extracted_at)
-                            <dt class="col-5 text-secondary small text-uppercase">Analisado</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-cpu me-1"></i>Analisado</dt>
                             <dd class="col-7">{{ $document->ai_extracted_at->format('d/m/Y H:i') }}</dd>
                         @endif
 
                         @if ($document->legalCase)
-                            <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-folder me-1"></i>Caso</dt>
                             <dd class="col-7">
                                 <a href="{{ route('cases.show', $document->legalCase) }}" wire:navigate class="text-decoration-none small">{{ Str::limit($document->legalCase->title, 30) }}</a>
                             </dd>

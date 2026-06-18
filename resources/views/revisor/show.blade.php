@@ -33,18 +33,6 @@
             <span class="badge {{ $statusClass }} fs-6 px-3 py-2">{{ ucfirst($review->status) }}</span>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-        @if (session('info'))
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                {{ session('info') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
 
         @if ($isProcessing)
             <div class="surface-card p-4 mb-4" id="processingCard" data-status-url="{{ route('review.status', $review) }}">
@@ -100,12 +88,13 @@
                             </button>
                         </form>
                     @else
-                        <div class="alert alert-success d-flex align-items-center gap-2">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <div>
+                        <div class="d-flex align-items-center gap-2 p-3 rounded small"
+                             style="background:rgba(25,135,84,0.08);border:1px solid rgba(25,135,84,0.2)">
+                            <i class="bi bi-check-circle-fill text-success flex-shrink-0"></i>
+                            <span class="text-success-emphasis">
                                 Revisado por <strong>{{ $review->reviewer?->name }}</strong>
                                 em {{ $review->reviewed_at->format('d/m/Y \a\s H:i') }}.
-                            </div>
+                            </span>
                         </div>
                     @endif
 
@@ -156,30 +145,30 @@
                     <div class="surface-card p-4">
                         <h5 class="fw-semibold mb-3">Detalhes</h5>
                         <dl class="row mb-0">
-                            <dt class="col-5 text-secondary small text-uppercase">Tipo</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-cpu me-1"></i>Tipo</dt>
                             <dd class="col-7">{{ ucfirst(str_replace('_', ' ', $review->type)) }}</dd>
 
-                            <dt class="col-5 text-secondary small text-uppercase">Status</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-circle-half me-1"></i>Status</dt>
                             <dd class="col-7"><span class="badge {{ $statusClass }}">{{ ucfirst($review->status) }}</span></dd>
 
                             @if ($review->tokens_used)
-                                <dt class="col-5 text-secondary small text-uppercase">Tokens</dt>
+                                <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-lightning me-1"></i>Tokens</dt>
                                 <dd class="col-7">{{ number_format($review->tokens_used) }}</dd>
                             @endif
 
                             @if ($review->ai_model_used)
-                                <dt class="col-5 text-secondary small text-uppercase">Modelo</dt>
+                                <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-cpu me-1"></i>Modelo</dt>
                                 <dd class="col-7 small">{{ $review->ai_model_used }}</dd>
                             @endif
 
-                            <dt class="col-5 text-secondary small text-uppercase">Criado</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-calendar3 me-1"></i>Criado</dt>
                             <dd class="col-7 small">{{ $review->created_at->format('d/m/Y H:i') }}</dd>
 
-                            <dt class="col-5 text-secondary small text-uppercase">Por</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-person-circle me-1"></i>Por</dt>
                             <dd class="col-7 small">{{ $review->creator?->name ?? 'Sistema' }}</dd>
 
                             @if ($review->legalCase)
-                                <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
+                                <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-folder me-1"></i>Caso</dt>
                                 <dd class="col-7">
                                     <a href="{{ route('cases.show', $review->legalCase) }}" wire:navigate class="small text-decoration-none">{{ Str::limit($review->legalCase->title, 30) }}</a>
                                 </dd>

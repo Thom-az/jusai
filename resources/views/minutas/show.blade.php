@@ -45,19 +45,6 @@
             <span class="badge {{ $statusClass }} fs-6 px-3 py-2">{{ ucfirst(str_replace('_', ' ', $draft->status)) }}</span>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-        @if (session('info'))
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                {{ session('info') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         @if ($isGenerating)
             <div class="surface-card p-4 mb-4" id="processingCard" data-status-url="{{ route('drafts.status', $draft) }}">
                 <div class="d-flex align-items-center gap-3 mb-4">
@@ -130,28 +117,28 @@
                     <div class="surface-card p-4">
                         <h5 class="fw-semibold mb-3">Detalhes</h5>
                         <dl class="row mb-0">
-                            <dt class="col-5 text-secondary small text-uppercase">Tipo</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-file-text me-1"></i>Tipo</dt>
                             <dd class="col-7 small">{{ $typeLabel }}</dd>
 
-                            <dt class="col-5 text-secondary small text-uppercase">Status</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-circle-half me-1"></i>Status</dt>
                             <dd class="col-7"><span class="badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $draft->status)) }}</span></dd>
 
-                            <dt class="col-5 text-secondary small text-uppercase">Versão</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-tags me-1"></i>Versão</dt>
                             <dd class="col-7 small">v{{ $draft->version }}</dd>
 
                             @if ($draft->ai_model_used)
-                                <dt class="col-5 text-secondary small text-uppercase">Modelo</dt>
+                                <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-cpu me-1"></i>Modelo</dt>
                                 <dd class="col-7 small">{{ $draft->ai_model_used }}</dd>
                             @endif
 
-                            <dt class="col-5 text-secondary small text-uppercase">Criado</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-calendar3 me-1"></i>Criado</dt>
                             <dd class="col-7 small">{{ $draft->created_at->format('d/m/Y H:i') }}</dd>
 
-                            <dt class="col-5 text-secondary small text-uppercase">Por</dt>
+                            <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-person-circle me-1"></i>Por</dt>
                             <dd class="col-7 small">{{ $draft->creator?->name ?? 'Sistema' }}</dd>
 
                             @if ($draft->legalCase)
-                                <dt class="col-5 text-secondary small text-uppercase">Caso</dt>
+                                <dt class="col-5 text-secondary small text-uppercase"><i class="bi bi-folder me-1"></i>Caso</dt>
                                 <dd class="col-7">
                                     <a href="{{ route('cases.show', $draft->legalCase) }}" wire:navigate class="small text-decoration-none">
                                         {{ Str::limit($draft->legalCase->title, 30) }}
@@ -160,7 +147,7 @@
                             @endif
 
                             @if ($draft->instructions)
-                                <dt class="col-12 text-secondary small text-uppercase mt-2">Instruções originais</dt>
+                                <dt class="col-12 text-secondary small text-uppercase mt-2"><i class="bi bi-chat-left-text me-1"></i>Instruções originais</dt>
                                 <dd class="col-12 small text-secondary mt-1" style="font-style:italic;">
                                     {{ Str::limit($draft->instructions, 200) }}
                                 </dd>

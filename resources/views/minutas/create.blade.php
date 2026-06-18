@@ -26,7 +26,7 @@
                         <h5 class="fw-semibold mb-4">Informações do documento</h5>
 
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-medium">Título <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label fw-medium"><i class="bi bi-type me-1 text-secondary"></i>Título <span class="text-danger">*</span></label>
                             <input type="text"
                                    id="title"
                                    name="title"
@@ -41,7 +41,7 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label for="type" class="form-label fw-medium">Tipo de documento <span class="text-danger">*</span></label>
+                                <label for="type" class="form-label fw-medium"><i class="bi bi-file-text me-1 text-secondary"></i>Tipo de documento <span class="text-danger">*</span></label>
                                 <select id="type" name="type" class="form-select @error('type') is-invalid @enderror" required>
                                     <option value="">Selecione o tipo…</option>
                                     <option value="peticao_inicial"           {{ old('type') === 'peticao_inicial' ? 'selected' : '' }}>Petição Inicial</option>
@@ -57,7 +57,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="legal_case_id" class="form-label fw-medium">Caso vinculado</label>
+                                <label for="legal_case_id" class="form-label fw-medium"><i class="bi bi-folder me-1 text-secondary"></i>Caso vinculado</label>
                                 <select id="legal_case_id" name="legal_case_id" class="form-select @error('legal_case_id') is-invalid @enderror">
                                     <option value="">Nenhum caso específico</option>
                                     @foreach ($cases as $case)
@@ -74,7 +74,7 @@
 
                         <div class="mb-3">
                             <label for="instructions" class="form-label fw-medium">
-                                Instruções para a IA <span class="text-danger">*</span>
+                                <i class="bi bi-chat-left-text me-1 text-secondary"></i>Instruções para a IA <span class="text-danger">*</span>
                             </label>
                             <textarea id="instructions"
                                       name="instructions"

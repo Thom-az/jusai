@@ -26,14 +26,14 @@
                         <h5 class="fw-semibold mb-4">Dados do caso</h5>
 
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-semibold">Título do caso <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label fw-semibold"><i class="bi bi-briefcase me-1 text-secondary"></i>Título do caso <span class="text-danger">*</span></label>
                             <input type="text" id="title" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" placeholder="Ex: Ação de cobrança - Empresa XYZ">
                             @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <label for="area" class="form-label fw-semibold">Área jurídica <span class="text-danger">*</span></label>
+                                <label for="area" class="form-label fw-semibold"><i class="bi bi-book me-1 text-secondary"></i>Área jurídica <span class="text-danger">*</span></label>
                                 <select id="area" name="area" class="form-select @error('area') is-invalid @enderror">
                                     <option value="">Selecionar...</option>
                                     @foreach (['civil' => 'Civil', 'criminal' => 'Criminal', 'trabalhista' => 'Trabalhista', 'tributario' => 'Tributário', 'empresarial' => 'Empresarial', 'familia' => 'Família', 'imobiliario' => 'Imobiliário', 'previdenciario' => 'Previdenciário', 'administrativo' => 'Administrativo', 'outro' => 'Outro'] as $val => $label)
@@ -43,7 +43,7 @@
                                 @error('area')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-sm-6">
-                                <label for="status" class="form-label fw-semibold">Status</label>
+                                <label for="status" class="form-label fw-semibold"><i class="bi bi-circle-half me-1 text-secondary"></i>Status</label>
                                 <select id="status" name="status" class="form-select @error('status') is-invalid @enderror">
                                     @foreach (['triagem' => 'Triagem', 'em_andamento' => 'Em andamento', 'aguardando_cliente' => 'Aguardando cliente', 'aguardando_prazo' => 'Aguardando prazo'] as $val => $label)
                                         <option value="{{ $val }}" @selected(old('status', 'triagem') === $val)>{{ $label }}</option>
@@ -55,7 +55,7 @@
 
                         <div class="row g-3 mt-0">
                             <div class="col-sm-6">
-                                <label for="risk_level" class="form-label fw-semibold">Nível de risco</label>
+                                <label for="risk_level" class="form-label fw-semibold"><i class="bi bi-exclamation-triangle me-1 text-secondary"></i>Nível de risco</label>
                                 <select id="risk_level" name="risk_level" class="form-select @error('risk_level') is-invalid @enderror">
                                     <option value="">Não definido</option>
                                     @foreach (['baixo' => 'Baixo', 'medio' => 'Médio', 'alto' => 'Alto', 'critico' => 'Crítico'] as $val => $label)
@@ -65,14 +65,14 @@
                                 @error('risk_level')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-sm-6">
-                                <label for="opened_at" class="form-label fw-semibold">Data de abertura <span class="text-danger">*</span></label>
+                                <label for="opened_at" class="form-label fw-semibold"><i class="bi bi-calendar3 me-1 text-secondary"></i>Data de abertura <span class="text-danger">*</span></label>
                                 <input type="date" id="opened_at" name="opened_at" class="form-control @error('opened_at') is-invalid @enderror" value="{{ old('opened_at', now()->format('Y-m-d')) }}">
                                 @error('opened_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                         </div>
 
                         <div class="mt-3">
-                            <label for="assigned_to" class="form-label fw-semibold">Responsável</label>
+                            <label for="assigned_to" class="form-label fw-semibold"><i class="bi bi-person-badge me-1 text-secondary"></i>Responsável</label>
                             <select id="assigned_to" name="assigned_to" class="form-select @error('assigned_to') is-invalid @enderror">
                                 <option value="">Não atribuído</option>
                                 @foreach ($lawyers as $lawyer)
@@ -83,7 +83,7 @@
                         </div>
 
                         <div class="mt-3">
-                            <label for="description" class="form-label fw-semibold">Descrição</label>
+                            <label for="description" class="form-label fw-semibold"><i class="bi bi-text-paragraph me-1 text-secondary"></i>Descrição</label>
                             <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="4" placeholder="Contexto e histórico do caso...">{{ old('description') }}</textarea>
                             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -92,7 +92,7 @@
                     <div class="surface-card p-4">
                         <h5 class="fw-semibold mb-4">Notas internas</h5>
                         <div>
-                            <label for="internal_notes" class="form-label fw-semibold">Notas (visíveis apenas para a equipe)</label>
+                            <label for="internal_notes" class="form-label fw-semibold"><i class="bi bi-lock me-1 text-secondary"></i>Notas (visíveis apenas para a equipe)</label>
                             <textarea id="internal_notes" name="internal_notes" class="form-control @error('internal_notes') is-invalid @enderror" rows="3" placeholder="Estratégia, observações confidenciais...">{{ old('internal_notes') }}</textarea>
                             @error('internal_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
@@ -104,19 +104,19 @@
                         <h5 class="fw-semibold mb-4">Dados do cliente</h5>
 
                         <div class="mb-3">
-                            <label for="client_name" class="form-label fw-semibold">Nome <span class="text-danger">*</span></label>
+                            <label for="client_name" class="form-label fw-semibold"><i class="bi bi-person me-1 text-secondary"></i>Nome <span class="text-danger">*</span></label>
                             <input type="text" id="client_name" name="client_name" class="form-control @error('client_name') is-invalid @enderror" value="{{ old('client_name') }}" placeholder="Nome completo ou razão social">
                             @error('client_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="client_email" class="form-label fw-semibold">E-mail</label>
+                            <label for="client_email" class="form-label fw-semibold"><i class="bi bi-envelope me-1 text-secondary"></i>E-mail</label>
                             <input type="email" id="client_email" name="client_email" class="form-control @error('client_email') is-invalid @enderror" value="{{ old('client_email') }}">
                             @error('client_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
-                            <label for="client_phone" class="form-label fw-semibold">Telefone</label>
+                            <label for="client_phone" class="form-label fw-semibold"><i class="bi bi-telephone me-1 text-secondary"></i>Telefone</label>
                             <input type="text" id="client_phone" name="client_phone" class="form-control @error('client_phone') is-invalid @enderror" value="{{ old('client_phone') }}" placeholder="(11) 90000-0000">
                             @error('client_phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
