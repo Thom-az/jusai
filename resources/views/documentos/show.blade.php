@@ -66,7 +66,7 @@
                             @endif
                         </div>
                         <div class="ai-summary-body">
-                            {!! \League\CommonMark\CommonMarkConverter::create()->convert($document->ai_summary) !!}
+                            {!! (new \League\CommonMark\CommonMarkConverter())->convert($document->ai_summary) !!}
                         </div>
                         <div class="mt-3 p-2 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
                             <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.review_notice') }}
