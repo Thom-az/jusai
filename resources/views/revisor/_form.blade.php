@@ -4,7 +4,7 @@
 
     {{-- Cards de tipo de análise --}}
     <div class="mb-4">
-        <label class="form-label fw-semibold">Tipo de análise <span class="text-danger">*</span></label>
+        <label class="form-label fw-semibold"><i class="bi bi-cpu me-1 text-secondary"></i>Tipo de análise <span class="text-danger">*</span></label>
         @error('type')
             <div class="text-danger small mb-2">{{ $message }}</div>
         @enderror
@@ -32,7 +32,7 @@
     </div>
 
     <div class="mb-3">
-        <label for="legal_case_id" class="form-label fw-semibold">Caso <span class="text-danger">*</span></label>
+        <label for="legal_case_id" class="form-label fw-semibold"><i class="bi bi-folder me-1 text-secondary"></i>Caso <span class="text-danger">*</span></label>
         <select id="legal_case_id" name="legal_case_id"
                 class="form-select @error('legal_case_id') is-invalid @enderror">
             <option value="">Selecionar caso...</option>
@@ -46,7 +46,7 @@
     </div>
 
     <div class="mb-3" x-show="type === 'analise_documento' || type === 'resumo_caso'" x-cloak>
-        <label for="document_id" class="form-label fw-semibold">Documento</label>
+        <label for="document_id" class="form-label fw-semibold"><i class="bi bi-file-earmark-text me-1 text-secondary"></i>Documento</label>
         <select id="document_id" name="document_id"
                 class="form-select @error('document_id') is-invalid @enderror">
             <option value="">Selecionar documento...</option>
@@ -58,7 +58,7 @@
     </div>
 
     <div class="mb-3" x-show="type === 'revisao_minuta'" x-cloak>
-        <label for="draft_id" class="form-label fw-semibold">Minuta</label>
+        <label for="draft_id" class="form-label fw-semibold"><i class="bi bi-journal-text me-1 text-secondary"></i>Minuta</label>
         <select id="draft_id" name="draft_id"
                 class="form-select @error('draft_id') is-invalid @enderror">
             <option value="">Selecionar minuta...</option>
@@ -70,7 +70,7 @@
     </div>
 
     <div class="mb-3" x-show="type === 'pesquisa_juridica'" x-cloak>
-        <label for="question" class="form-label fw-semibold">Pergunta jurídica <span class="text-danger">*</span></label>
+        <label for="question" class="form-label fw-semibold"><i class="bi bi-question-circle me-1 text-secondary"></i>Pergunta jurídica <span class="text-danger">*</span></label>
         <textarea id="question" name="question" rows="3"
                   class="form-control @error('question') is-invalid @enderror"
                   placeholder="Ex: Quais os riscos de rescisão sem justa causa neste contrato?">{{ old('question') }}</textarea>

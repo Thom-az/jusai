@@ -91,7 +91,7 @@
     <div class="row g-3">
         <div class="col-md-6">
             <label class="form-label fw-medium" for="orgNome">
-                Nome fantasia <span class="text-danger">*</span>
+                <i class="bi bi-building me-1 text-secondary"></i>Nome fantasia <span class="text-danger">*</span>
             </label>
             <input type="text" id="orgNome" wire:model="name"
                    class="form-control rounded-3 @error('name') is-invalid @enderror"
@@ -100,7 +100,7 @@
             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
         <div class="col-md-6">
-            <label class="form-label fw-medium" for="orgRazao">Razão social</label>
+            <label class="form-label fw-medium" for="orgRazao"><i class="bi bi-building me-1 text-secondary"></i>Razão social</label>
             <input type="text" id="orgRazao" wire:model="legalName"
                    class="form-control rounded-3 @error('legalName') is-invalid @enderror"
                    placeholder="Denominação formal"
@@ -122,7 +122,7 @@
         {{-- CNPJ --}}
         <div class="col-md-4">
             <label class="form-label fw-medium" for="orgCnpj">
-                CNPJ <span class="text-danger">*</span>
+                <i class="bi bi-receipt me-1 text-secondary"></i>CNPJ <span class="text-danger">*</span>
             </label>
             <input
                 type="text"
@@ -139,7 +139,7 @@
 
         {{-- Telefone --}}
         <div class="col-md-4">
-            <label class="form-label fw-medium" for="orgTelefone">Telefone comercial</label>
+            <label class="form-label fw-medium" for="orgTelefone"><i class="bi bi-telephone me-1 text-secondary"></i>Telefone comercial</label>
             <input
                 type="tel"
                 id="orgTelefone"
@@ -155,7 +155,7 @@
 
         {{-- Email --}}
         <div class="col-md-4">
-            <label class="form-label fw-medium" for="orgEmail">Email comercial</label>
+            <label class="form-label fw-medium" for="orgEmail"><i class="bi bi-envelope me-1 text-secondary"></i>Email comercial</label>
             <input
                 type="email"
                 id="orgEmail"
@@ -180,7 +180,7 @@
     <div class="row g-3">
         {{-- CEP --}}
         <div class="col-md-3">
-            <label class="form-label fw-medium" for="orgCep">CEP</label>
+            <label class="form-label fw-medium" for="orgCep"><i class="bi bi-geo-alt me-1 text-secondary"></i>CEP</label>
             <div class="input-group">
                 <input
                     type="text"
@@ -205,7 +205,7 @@
 
         {{-- Logradouro --}}
         <div class="col-md-6">
-            <label class="form-label fw-medium" for="orgRua">Logradouro</label>
+            <label class="form-label fw-medium" for="orgRua"><i class="bi bi-signpost me-1 text-secondary"></i>Logradouro</label>
             <input type="text" id="orgRua" wire:model="street"
                    class="form-control rounded-3 @error('street') is-invalid @enderror"
                    placeholder="Rua, Avenida, Alameda..."
@@ -215,7 +215,7 @@
 
         {{-- Número --}}
         <div class="col-md-3">
-            <label class="form-label fw-medium" for="orgNumero">Número</label>
+            <label class="form-label fw-medium" for="orgNumero"><i class="bi bi-123 me-1 text-secondary"></i>Número</label>
             <input type="text" id="orgNumero" wire:model="streetNumber"
                    x-ref="streetNumber"
                    class="form-control rounded-3 @error('streetNumber') is-invalid @enderror"
@@ -227,7 +227,7 @@
         {{-- Complemento --}}
         <div class="col-md-4">
             <label class="form-label fw-medium" for="orgComplemento">
-                Complemento <span class="text-secondary fw-normal small">(opcional)</span>
+                <i class="bi bi-building-add me-1 text-secondary"></i>Complemento <span class="text-secondary fw-normal small">(opcional)</span>
             </label>
             <input type="text" id="orgComplemento" wire:model="complement"
                    class="form-control rounded-3"
@@ -237,7 +237,7 @@
 
         {{-- Bairro --}}
         <div class="col-md-4">
-            <label class="form-label fw-medium" for="orgBairro">Bairro</label>
+            <label class="form-label fw-medium" for="orgBairro"><i class="bi bi-map me-1 text-secondary"></i>Bairro</label>
             <input type="text" id="orgBairro" wire:model="neighborhood"
                    class="form-control rounded-3 @error('neighborhood') is-invalid @enderror"
                    placeholder="Preenchido pelo CEP"
@@ -247,7 +247,7 @@
 
         {{-- Cidade + UF --}}
         <div class="col-md-3">
-            <label class="form-label fw-medium" for="orgCidade">Cidade</label>
+            <label class="form-label fw-medium" for="orgCidade"><i class="bi bi-geo me-1 text-secondary"></i>Cidade</label>
             <input type="text" id="orgCidade" wire:model="city"
                    class="form-control rounded-3 @error('city') is-invalid @enderror"
                    placeholder="Cidade"
@@ -255,7 +255,7 @@
             @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
         <div class="col-md-1">
-            <label class="form-label fw-medium" for="orgEstado">UF</label>
+            <label class="form-label fw-medium" for="orgEstado"><i class="bi bi-map-fill me-1 text-secondary"></i>UF</label>
             <select id="orgEstado" wire:model="state"
                     class="form-select rounded-3 @error('state') is-invalid @enderror"
                     @disabled(!$canEdit)>

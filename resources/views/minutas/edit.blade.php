@@ -26,7 +26,7 @@
                 <div class="col-lg-8">
                     <div class="surface-card p-4 mb-4">
                         <div class="mb-3">
-                            <label for="title" class="form-label fw-medium">Título <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label fw-medium"><i class="bi bi-type me-1 text-secondary"></i>Título <span class="text-danger">*</span></label>
                             <input type="text"
                                    id="title"
                                    name="title"
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="content" class="form-label fw-medium">Conteúdo <span class="text-danger">*</span></label>
+                            <label for="content" class="form-label fw-medium"><i class="bi bi-file-text me-1 text-secondary"></i>Conteúdo <span class="text-danger">*</span></label>
                             <textarea id="content"
                                       name="content"
                                       class="form-control font-monospace @error('content') is-invalid @enderror"
@@ -58,7 +58,7 @@
                         <h6 class="fw-semibold mb-3">Configurações</h6>
 
                         <div class="mb-3">
-                            <label for="status" class="form-label fw-medium">Status</label>
+                            <label for="status" class="form-label fw-medium"><i class="bi bi-circle-half me-1 text-secondary"></i>Status</label>
                             <select id="status" name="status" class="form-select @error('status') is-invalid @enderror">
                                 <option value="rascunho"   {{ old('status', $draft->status) === 'rascunho' ? 'selected' : '' }}>Rascunho</option>
                                 <option value="em_revisao" {{ old('status', $draft->status) === 'em_revisao' ? 'selected' : '' }}>Em revisão</option>
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="legal_case_id" class="form-label fw-medium">Caso vinculado</label>
+                            <label for="legal_case_id" class="form-label fw-medium"><i class="bi bi-folder me-1 text-secondary"></i>Caso vinculado</label>
                             <select id="legal_case_id" name="legal_case_id" class="form-select @error('legal_case_id') is-invalid @enderror">
                                 <option value="">Nenhum</option>
                                 @foreach ($cases as $case)

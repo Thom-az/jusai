@@ -235,7 +235,7 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">
-                                Nome completo <span class="text-danger">*</span>
+                                <i class="bi bi-person me-1 text-secondary"></i>Nome completo <span class="text-danger">*</span>
                             </label>
                             <input
                                 wire:model="inviteName"
@@ -251,7 +251,7 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">
-                                E-mail profissional <span class="text-danger">*</span>
+                                <i class="bi bi-envelope me-1 text-secondary"></i>E-mail profissional <span class="text-danger">*</span>
                             </label>
                             <input
                                 wire:model="inviteEmail"
@@ -268,7 +268,7 @@
                         <div class="row g-3 mb-3">
                             <div class="col-7">
                                 <label class="form-label small fw-semibold">
-                                    Perfil de acesso <span class="text-danger">*</span>
+                                    <i class="bi bi-shield-check me-1 text-secondary"></i>Perfil de acesso <span class="text-danger">*</span>
                                 </label>
                                 <select
                                     wire:model.live="inviteRole"
@@ -284,7 +284,7 @@
                             </div>
                             <div class="col-5">
                                 <label class="form-label small fw-semibold">
-                                    Cargo <span class="text-secondary fw-normal">(opcional)</span>
+                                    <i class="bi bi-briefcase me-1 text-secondary"></i>Cargo <span class="text-secondary fw-normal">(opcional)</span>
                                 </label>
                                 <input
                                     wire:model="inviteJobTitle"

@@ -69,7 +69,7 @@
     {{-- Nome --}}
     <div class="mb-3">
         <label class="form-label fw-medium" for="perfilNome">
-            Nome completo <span class="text-danger">*</span>
+            <i class="bi bi-person me-1 text-secondary"></i>Nome completo <span class="text-danger">*</span>
         </label>
         <input
             type="text"
@@ -88,7 +88,7 @@
     {{-- Email --}}
     <div class="mb-3">
         <label class="form-label fw-medium" for="perfilEmail">
-            Email <span class="text-danger">*</span>
+            <i class="bi bi-envelope me-1 text-secondary"></i>Email <span class="text-danger">*</span>
         </label>
         <input
             type="email"
@@ -111,7 +111,7 @@
     {{-- Telefone + Cargo --}}
     <div class="row g-3 mb-3">
         <div class="col-md-6">
-            <label class="form-label fw-medium" for="perfilTelefone">Telefone</label>
+            <label class="form-label fw-medium" for="perfilTelefone"><i class="bi bi-telephone me-1 text-secondary"></i>Telefone</label>
             <input
                 type="tel"
                 id="perfilTelefone"
@@ -128,7 +128,7 @@
         </div>
 
         <div class="col-md-6">
-            <label class="form-label fw-medium" for="perfilCargo">Cargo no escritório</label>
+            <label class="form-label fw-medium" for="perfilCargo"><i class="bi bi-briefcase me-1 text-secondary"></i>Cargo no escritório</label>
             <select
                 id="perfilCargo"
                 wire:model="jobTitle"
@@ -149,7 +149,7 @@
     <div class="row g-3 mb-4">
         <div class="col-md-5">
             <label class="form-label fw-medium" for="perfilOab">
-                Nº da OAB
+                <i class="bi bi-card-text me-1 text-secondary"></i>Nº da OAB
                 <span class="text-secondary fw-normal small">(opcional)</span>
             </label>
             <div class="input-group">
@@ -227,7 +227,7 @@
     <form @submit.prevent>
     {{-- Senha atual --}}
     <div class="mb-3" style="max-width: 400px;">
-        <label class="form-label fw-medium" for="senhaAtual">Senha atual</label>
+        <label class="form-label fw-medium" for="senhaAtual"><i class="bi bi-lock me-1 text-secondary"></i>Senha atual</label>
         <div class="input-group">
             <input
                 :type="showCurrent ? 'text' : 'password'"
@@ -252,7 +252,7 @@
 
     {{-- Nova senha --}}
     <div class="mb-2" style="max-width: 400px;">
-        <label class="form-label fw-medium" for="novaSenha">Nova senha</label>
+        <label class="form-label fw-medium" for="novaSenha"><i class="bi bi-key me-1 text-secondary"></i>Nova senha</label>
         <div class="input-group">
             <input
                 :type="showNew ? 'text' : 'password'"
@@ -297,7 +297,7 @@
 
     {{-- Confirmar senha --}}
     <div class="mb-4" style="max-width: 400px;">
-        <label class="form-label fw-medium" for="confirmarSenha">Confirmar nova senha</label>
+        <label class="form-label fw-medium" for="confirmarSenha"><i class="bi bi-key-fill me-1 text-secondary"></i>Confirmar nova senha</label>
         <div class="input-group">
             <input
                 :type="showConfirm ? 'text' : 'password'"

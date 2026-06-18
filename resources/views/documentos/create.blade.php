@@ -32,20 +32,20 @@
                         <h5 class="fw-semibold mb-4">Arquivo</h5>
 
                         <div class="mb-4">
-                            <label for="file" class="form-label fw-semibold">Selecionar arquivo <span class="text-danger">*</span></label>
+                            <label for="file" class="form-label fw-semibold"><i class="bi bi-cloud-arrow-up me-1 text-secondary"></i>Selecionar arquivo <span class="text-danger">*</span></label>
                             <input type="file" id="file" name="file" class="form-control @error('file') is-invalid @enderror" accept=".pdf,.docx,.doc,.txt">
                             <div class="form-text">Formatos aceitos: PDF, DOCX, DOC, TXT. Tamanho maximo: 20 MB.</div>
                             @error('file')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="title" class="form-label fw-semibold">Titulo <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label fw-semibold"><i class="bi bi-type me-1 text-secondary"></i>Titulo <span class="text-danger">*</span></label>
                             <input type="text" id="title" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}" placeholder="Nome descritivo do documento">
                             @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
-                            <label for="legal_case_id" class="form-label fw-semibold">Vincular a um caso</label>
+                            <label for="legal_case_id" class="form-label fw-semibold"><i class="bi bi-folder me-1 text-secondary"></i>Vincular a um caso</label>
                             <select id="legal_case_id" name="legal_case_id" class="form-select @error('legal_case_id') is-invalid @enderror">
                                 <option value="">Nenhum caso (standalone)</option>
                                 @foreach ($cases as $case)
