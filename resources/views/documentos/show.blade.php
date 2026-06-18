@@ -65,8 +65,8 @@
                                 <span class="badge text-bg-success ms-auto">Processado</span>
                             @endif
                         </div>
-                        <div class="ai-summary-body">
-                            {!! (new \League\CommonMark\CommonMarkConverter())->convert($document->ai_summary) !!}
+                        <div class="ai-body">
+                            {!! (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($document->ai_summary) !!}
                         </div>
                         <div class="mt-3 p-2 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
                             <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.review_notice') }}

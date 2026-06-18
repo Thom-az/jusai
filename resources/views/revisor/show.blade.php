@@ -74,7 +74,9 @@
                                 <span class="badge text-bg-secondary ms-auto">{{ $review->ai_model_used }}</span>
                             @endif
                         </div>
-                        <div class="result-content" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.7;">{{ $review->result }}</div>
+                        <div class="ai-body">
+                            {!! (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($review->result) !!}
+                        </div>
                         <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
                             <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.review_notice') }}
                         </div>

@@ -88,7 +88,9 @@
                                 <span class="badge text-bg-secondary ms-auto">{{ $draft->ai_model_used }}</span>
                             @endif
                         </div>
-                        <div class="result-content" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.7;">{{ $draft->content }}</div>
+                        <div class="ai-body">
+                            {!! (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($draft->content) !!}
+                        </div>
                         @if ($draft->generated_by_ai)
                             <div class="mt-4 p-3 bg-warning bg-opacity-10 rounded small text-warning-emphasis">
                                 <i class="bi bi-exclamation-triangle me-1"></i>{{ config('jusai.ai.draft_notice') }}
