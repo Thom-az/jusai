@@ -21,6 +21,13 @@ class AnthropicService
     private const TOKENS_REVISAO  = 2048;
     private const TOKENS_PESQUISA = 2048;
     private const TOKENS_RASCUNHO = 4096;
+    private const TOKENS_OCR      = 8192;
+
+    // OCR via Vision — só ativado quando pdftotext retorna texto muito esparso
+    private const OCR_MIN_CHARS_PER_PAGE  = 100;  // abaixo disso = PDF de imagem
+    private const NATIVE_PDF_SIZE_LIMIT   = 32 * 1024 * 1024; // 32MB
+    private const NATIVE_PDF_PAGE_LIMIT   = 100;
+    private const OCR_BATCH_PAGES         = 20;   // páginas por chamada Vision
 
     public function __construct(
         private readonly string $apiKey,
@@ -113,8 +120,7 @@ class AnthropicService
 
     public function extractPdfText(string $binary): string
     {
-        $text = $this->extractWithPoppler($binary, allPages: false) ?? $this->extractWithSmalot($binary);
-
+        $text = $this->extractWithOcrFallback($binary, allPages: false);
         return mb_substr($text, 0, self::PDF_TEXT_LIMIT);
     }
 
@@ -124,7 +130,31 @@ class AnthropicService
      */
     public function extractFullPdfText(string $binary): string
     {
-        return $this->extractWithPoppler($binary, allPages: true) ?? $this->extractWithSmalot($binary);
+        return $this->extractWithOcrFallback($binary, allPages: true);
+    }
+
+    /**
+     * Hybrid extraction: pdftotext first (free). Falls back to Claude Vision
+     * only when text density is below threshold (image-based PDF detected).
+     */
+    private function extractWithOcrFallback(string $binary, bool $allPages): string
+    {
+        $popplerText = $this->extractWithPoppler($binary, $allPages);
+        $baseText    = $popplerText ?? $this->extractWithSmalot($binary);
+
+        if ($this->isMock()) {
+            return $baseText;
+        }
+
+        $pageCount = $this->getPdfPageCount($binary);
+        if ($pageCount > 0 && mb_strlen(trim($baseText)) / $pageCount < self::OCR_MIN_CHARS_PER_PAGE) {
+            $ocrText = $this->ocrWithVision($binary, $pageCount, $allPages);
+            if (mb_strlen(trim($ocrText)) > mb_strlen(trim($baseText))) {
+                return $ocrText;
+            }
+        }
+
+        return $baseText;
     }
 
     // Streams through PDF page by page — handles 1000+ page documents without OOM.
@@ -147,6 +177,158 @@ class AnthropicService
         } finally {
             @unlink($tmp);
         }
+    }
+
+    private function getPdfPageCount(string $binary): int
+    {
+        $bin = trim((string) shell_exec('which pdfinfo 2>/dev/null || where pdfinfo 2>nul'));
+        if (empty($bin)) {
+            return 0;
+        }
+
+        $tmp = tempnam(sys_get_temp_dir(), 'pdf_');
+        file_put_contents($tmp, $binary);
+
+        try {
+            $output = shell_exec(escapeshellarg($bin) . ' ' . escapeshellarg($tmp) . ' 2>/dev/null');
+            if ($output && preg_match('/Pages:\s*(\d+)/i', $output, $m)) {
+                return (int) $m[1];
+            }
+            return 0;
+        } finally {
+            @unlink($tmp);
+        }
+    }
+
+    private function ocrWithVision(string $binary, int $pageCount, bool $allPages): string
+    {
+        $size     = strlen($binary);
+        $maxPages = $allPages ? PHP_INT_MAX : self::NATIVE_PDF_PAGE_LIMIT;
+
+        if ($size <= self::NATIVE_PDF_SIZE_LIMIT && $pageCount <= self::NATIVE_PDF_PAGE_LIMIT) {
+            return $this->ocrNativePdf($binary);
+        }
+
+        return $this->ocrViaImages($binary, $pageCount, $maxPages);
+    }
+
+    // PDFs ≤32MB e ≤100 páginas: envia o PDF diretamente para a API Claude Vision.
+    private function ocrNativePdf(string $binary): string
+    {
+        $response = Http::timeout(180)->withHeaders([
+            'x-api-key'         => $this->apiKey,
+            'anthropic-version' => self::API_VERSION,
+            'anthropic-beta'    => 'pdfs-2024-09-25',
+            'content-type'      => 'application/json',
+        ])->post(self::API_URL, [
+            'model'      => $this->modelFast,
+            'max_tokens' => self::TOKENS_OCR,
+            'messages'   => [[
+                'role'    => 'user',
+                'content' => [
+                    [
+                        'type'   => 'document',
+                        'source' => [
+                            'type'       => 'base64',
+                            'media_type' => 'application/pdf',
+                            'data'       => base64_encode($binary),
+                        ],
+                    ],
+                    [
+                        'type' => 'text',
+                        'text' => 'Extraia TODO o texto deste documento. Retorne apenas o texto extraído, preservando parágrafos e estrutura. Não adicione comentários ou formatação extra.',
+                    ],
+                ],
+            ]],
+        ]);
+
+        if ($response->failed()) {
+            return '';
+        }
+
+        return $response->json('content.0.text', '');
+    }
+
+    // PDFs grandes: renderiza páginas com pdftoppm e processa em batches de 20 páginas.
+    private function ocrViaImages(string $binary, int $totalPages, int $maxPages): string
+    {
+        $bin = trim((string) shell_exec('which pdftoppm 2>/dev/null || where pdftoppm 2>nul'));
+        if (empty($bin)) {
+            return '';
+        }
+
+        $tmp    = tempnam(sys_get_temp_dir(), 'pdf_');
+        $outDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'pdf_ocr_' . uniqid();
+        @mkdir($outDir);
+        file_put_contents($tmp, $binary);
+
+        $allText = '';
+        $pages   = min($totalPages, $maxPages);
+
+        try {
+            for ($start = 1; $start <= $pages; $start += self::OCR_BATCH_PAGES) {
+                $end = min($start + self::OCR_BATCH_PAGES - 1, $pages);
+
+                shell_exec(
+                    escapeshellarg($bin) .
+                    " -jpeg -r 150 -f {$start} -l {$end} " .
+                    escapeshellarg($tmp) . ' ' .
+                    escapeshellarg($outDir . DIRECTORY_SEPARATOR . 'page')
+                );
+
+                $images = glob($outDir . DIRECTORY_SEPARATOR . 'page*.jpg') ?: [];
+                sort($images);
+
+                if (!empty($images)) {
+                    $allText .= $this->ocrImages($images) . "\n";
+                    foreach ($images as $img) {
+                        @unlink($img);
+                    }
+                }
+            }
+        } finally {
+            @unlink($tmp);
+            @rmdir($outDir);
+        }
+
+        return $allText;
+    }
+
+    private function ocrImages(array $imagePaths): string
+    {
+        $content = [];
+
+        foreach ($imagePaths as $path) {
+            $content[] = [
+                'type'   => 'image',
+                'source' => [
+                    'type'       => 'base64',
+                    'media_type' => 'image/jpeg',
+                    'data'       => base64_encode((string) file_get_contents($path)),
+                ],
+            ];
+        }
+
+        $content[] = [
+            'type' => 'text',
+            'text' => 'Extraia TODO o texto dessas páginas de documento jurídico. Retorne apenas o texto, preservando parágrafos e estrutura. Não adicione comentários.',
+        ];
+
+        $response = Http::timeout(120)->withHeaders([
+            'x-api-key'         => $this->apiKey,
+            'anthropic-version' => self::API_VERSION,
+            'content-type'      => 'application/json',
+        ])->post(self::API_URL, [
+            'model'      => $this->modelFast,
+            'max_tokens' => self::TOKENS_OCR,
+            'messages'   => [['role' => 'user', 'content' => $content]],
+        ]);
+
+        if ($response->failed()) {
+            return '';
+        }
+
+        return $response->json('content.0.text', '');
     }
 
     private function extractWithSmalot(string $binary): string
