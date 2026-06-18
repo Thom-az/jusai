@@ -4,9 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class NotificationController extends Controller
 {
+    public function index(Request $request): View
+    {
+        $notifications = $request->user()
+            ->notifications()
+            ->latest()
+            ->paginate(30);
+
+        return view('notificacoes.index', compact('notifications'));
+    }
+
     public function unread(Request $request): JsonResponse
     {
         $notifications = $request->user()
@@ -29,7 +40,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function markRead(Request $request, string $id): JsonResponse
+    public function markRead(Request $request, string $id): JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $request->user()
             ->unreadNotifications()
@@ -37,13 +48,21 @@ class NotificationController extends Controller
             ->first()
             ?->markAsRead();
 
-        return response()->json(['ok' => true]);
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return back();
     }
 
-    public function markAllRead(Request $request): JsonResponse
+    public function markAllRead(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $request->user()->unreadNotifications()->update(['read_at' => now()]);
 
-        return response()->json(['ok' => true]);
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
+
+        return back();
     }
 }

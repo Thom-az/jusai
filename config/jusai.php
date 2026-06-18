@@ -44,6 +44,7 @@ return [
                 'label' => 'Escritório',
                 'items' => [
                     ['label' => 'Chamados', 'icon' => 'bi-headset', 'route' => 'tickets.index', 'pattern' => 'chamados*'],
+                    ['label' => 'Notificações', 'icon' => 'bi-bell', 'route' => 'notifications.index', 'pattern' => 'notificacoes*'],
                     ['label' => 'Configurações', 'icon' => 'bi-sliders', 'route' => 'settings.index', 'pattern' => 'configuracoes*'],
                 ],
             ],

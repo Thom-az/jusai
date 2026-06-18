@@ -90,6 +90,7 @@ Route::middleware(['auth', 'org.access'])->group(function () {
             ->name('plano');
     });
 
+    Route::get('/notificacoes', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notificacoes/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
     Route::post('/notificacoes/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notificacoes/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');

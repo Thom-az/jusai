@@ -6,6 +6,8 @@ import * as bootstrap from 'bootstrap';
         success: { bg: 'bg-success-subtle', text: 'text-success-emphasis', icon: 'bi-check-circle-fill' },
         warning: { bg: 'bg-warning-subtle', text: 'text-warning-emphasis', icon: 'bi-exclamation-triangle-fill' },
         danger:  { bg: 'bg-danger-subtle',  text: 'text-danger-emphasis',  icon: 'bi-x-circle-fill' },
+        deleted: { bg: 'bg-danger-subtle',  text: 'text-danger-emphasis',  icon: 'bi-trash-fill' },
+        info:    { bg: 'bg-primary-subtle', text: 'text-primary-emphasis', icon: 'bi-info-circle-fill' },
     };
 
     window.addEventListener('app:toast', (e) => {
@@ -19,7 +21,7 @@ import * as bootstrap from 'bootstrap';
         document.getElementById('globalToastInner').className =
             `d-flex align-items-center gap-2 p-3 rounded ${c.bg} ${c.text}`;
 
-        Toast.getOrCreateInstance(toastEl, { delay: 4500 }).show();
+        bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 4500 }).show();
     });
 }());
 
@@ -285,6 +287,20 @@ function getSkeletonForUrl(href) {
             </div>
             <div class="surface-card p-3 mb-3">${sk.block('2.5rem', '100%', '.5rem')}</div>
             <div class="surface-card p-4">${listRows()}</div>`);
+    }
+
+    // /notificacoes (list)
+    if (p === '/notificacoes') {
+        return wrap(`
+            ${pageHeader('12rem')}
+            <div class="surface-card p-0">
+                ${[0,1,2,3,4,5].map(() => `
+                    <div class="d-flex align-items-start gap-3 px-4 py-3 border-bottom">
+                        ${sk.circle('1.25rem')}
+                        <div class="flex-grow-1">${sk.text('45%',1)}${sk.text('70%',1)}${sk.text('20%',0)}</div>
+                        ${sk.btn('4rem')}
+                    </div>`).join('')}
+            </div>`);
     }
 
     // /configuracoes or /profile
@@ -632,6 +648,17 @@ const clearPendingNavigation = () => {
         clearPendingNavigation();
     });
 
+    // Dropdowns inside .table-responsive need strategy:'fixed' so they escape overflow:hidden.
+    // data-bs-strategy works for tooltips/popovers only — dropdowns require JS init.
+    function initTableDropdowns() {
+        document.querySelectorAll('.table-responsive [data-bs-toggle="dropdown"]').forEach(el => {
+            if (!bootstrap.Dropdown.getInstance(el)) {
+                new bootstrap.Dropdown(el, { popperConfig: { strategy: 'fixed' } });
+            }
+        });
+    }
+    initTableDropdowns();
+
     // Integração com navegação SPA do Livewire (wire:navigate / wire:navigate.hover).
     // O skeleton já foi injetado pelo capture listener no click — aqui só garante o loader.
     document.addEventListener('livewire:navigating', () => {
@@ -645,6 +672,7 @@ const clearPendingNavigation = () => {
         if (document.getElementById('notifToggle')) {
             initNotifications();
         }
+        initTableDropdowns();
 
         // Fade suave para o conteúdo real após o Livewire trocar o DOM.
         const contentMain = document.querySelector('.content-main');
