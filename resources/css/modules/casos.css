@@ -114,3 +114,94 @@
 [data-theme="dark"] .tab-content {
     background: transparent;
 }
+
+/* =========================================
+   Chat de caso — estilo WhatsApp
+   ========================================= */
+
+.caso-chat__messages {
+    scroll-behavior: smooth;
+}
+
+.caso-chat__avatar {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.caso-chat__bubble {
+    max-width: 80%;
+    padding: 0.55rem 0.9rem;
+    border-radius: 1.1rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+.caso-chat__bubble--user {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #fff;
+    border-bottom-right-radius: 0.3rem;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.caso-chat__bubble--ai {
+    background: rgba(248, 247, 242, 1);
+    color: var(--jusai-graphite);
+    border: 1px solid rgba(215, 220, 229, 0.8);
+    border-bottom-left-radius: 0.3rem;
+}
+
+/* Override ai-body inside chat bubble */
+.caso-chat__bubble--ai.ai-body,
+.caso-chat__bubble--ai .ai-body {
+    font-size: 0.875rem;
+}
+.caso-chat__bubble--ai.ai-body > *:last-child { margin-bottom: 0; }
+
+/* Typing indicator — três pontos animados */
+.caso-chat__typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.65rem 0.9rem;
+    min-width: 3.5rem;
+}
+
+.caso-chat__typing span {
+    display: block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--jusai-muted);
+    animation: typingBounce 1.2s ease-in-out infinite;
+}
+
+.caso-chat__typing span:nth-child(2) { animation-delay: 0.2s; }
+.caso-chat__typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30%            { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Dark mode */
+[data-theme="dark"] .caso-chat__bubble--ai {
+    background: #0d1a2e;
+    border-color: #1c2f47;
+    color: #eef2f7;
+}
+
+[data-theme="dark"] .caso-chat__typing span {
+    background: #3d5a78;
+}
+
+[data-theme="dark"] .caso-chat__avatar {
+    background: linear-gradient(135deg, #3767d4 0%, #2c5bb8 100%);
+}

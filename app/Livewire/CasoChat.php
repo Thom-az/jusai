@@ -9,6 +9,7 @@ use App\Services\AnthropicService;
 use App\Services\EmbeddingService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class CasoChat extends Component
@@ -17,17 +18,13 @@ class CasoChat extends Component
     public LegalCase $caso;
 
     public string $input = '';
-
-    /** @var \Illuminate\Database\Eloquent\Collection */
-    public $messages;
+    public bool $thinking = false;
 
     private ?AiConversation $conversation = null;
 
     public function mount(LegalCase $caso): void
     {
         $this->caso = $caso;
-        $this->loadOrCreateConversation();
-        $this->messages = $this->conversation->messages;
     }
 
     public function sendMessage(): void
@@ -45,15 +42,27 @@ class CasoChat extends Component
             'content'         => $userText,
         ]);
 
-        $this->messages = $this->conversation->messages()->get();
+        $this->thinking = true;
 
-        $messagesForApi = $this->messages->map(fn ($m) => [
-            'role'    => $m->role,
-            'content' => $m->content,
-        ])->toArray();
+        $this->dispatch('triggerAiResponse');
+    }
+
+    #[On('triggerAiResponse')]
+    public function fetchAiResponse(): void
+    {
+        $this->loadOrCreateConversation();
+
+        $messagesForApi = $this->conversation->messages()
+            ->get()
+            ->map(fn ($m) => ['role' => $m->role, 'content' => $m->content])
+            ->toArray();
+
+        $lastUserContent = collect($messagesForApi)
+            ->where('role', 'user')
+            ->last()['content'] ?? '';
 
         try {
-            $caseContext = $this->buildCaseContext($userText);
+            $caseContext = $this->buildCaseContext($lastUserContent);
             $result = app(AnthropicService::class)->chat($messagesForApi, $caseContext);
 
             AiMessage::create([
@@ -62,7 +71,7 @@ class CasoChat extends Component
                 'content'         => $result['content'],
                 'tokens_used'     => $result['total_tokens'],
             ]);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             AiMessage::create([
                 'conversation_id' => $this->conversation->id,
                 'role'            => 'assistant',
@@ -70,19 +79,25 @@ class CasoChat extends Component
             ]);
         }
 
-        $this->messages = $this->conversation->messages()->get();
+        $this->thinking = false;
     }
 
     public function clearConversation(): void
     {
         $this->loadOrCreateConversation();
         $this->conversation->messages()->delete();
-        $this->messages = collect();
+        $this->thinking = false;
     }
 
     public function render()
     {
-        return view('livewire.caso-chat');
+        $this->loadOrCreateConversation();
+
+        $messages = $this->conversation
+            ? $this->conversation->messages()->get()
+            : collect();
+
+        return view('livewire.caso-chat', ['messages' => $messages]);
     }
 
     private function loadOrCreateConversation(): void
