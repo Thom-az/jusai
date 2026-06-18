@@ -157,11 +157,27 @@ class AnthropicService
         return $baseText;
     }
 
+    private function findBinary(string $name): string
+    {
+        if (PHP_OS_FAMILY === 'Windows') {
+            $out = trim((string) shell_exec("where {$name} 2>nul"));
+        } else {
+            $out = trim((string) shell_exec("which {$name} 2>/dev/null"));
+        }
+
+        if (empty($out)) {
+            return '';
+        }
+
+        $path = strtok($out, "\r\n");
+        return (is_string($path) && file_exists($path)) ? $path : '';
+    }
+
     // Streams through PDF page by page — handles 1000+ page documents without OOM.
     // allPages=false limits to first 100 pages for AI summary prompts.
     private function extractWithPoppler(string $binary, bool $allPages = false): ?string
     {
-        $bin = trim((string) shell_exec('which pdftotext 2>/dev/null || where pdftotext 2>nul'));
+        $bin = $this->findBinary('pdftotext');
         if (empty($bin)) {
             return null;
         }
@@ -181,16 +197,17 @@ class AnthropicService
 
     private function getPdfPageCount(string $binary): int
     {
-        $bin = trim((string) shell_exec('which pdfinfo 2>/dev/null || where pdfinfo 2>nul'));
+        $bin = $this->findBinary('pdfinfo');
         if (empty($bin)) {
             return 0;
         }
 
-        $tmp = tempnam(sys_get_temp_dir(), 'pdf_');
+        $tmp    = tempnam(sys_get_temp_dir(), 'pdf_');
+        $devnull = PHP_OS_FAMILY === 'Windows' ? '2>nul' : '2>/dev/null';
         file_put_contents($tmp, $binary);
 
         try {
-            $output = shell_exec(escapeshellarg($bin) . ' ' . escapeshellarg($tmp) . ' 2>/dev/null');
+            $output = shell_exec(escapeshellarg($bin) . ' ' . escapeshellarg($tmp) . ' ' . $devnull);
             if ($output && preg_match('/Pages:\s*(\d+)/i', $output, $m)) {
                 return (int) $m[1];
             }
@@ -252,7 +269,7 @@ class AnthropicService
     // PDFs grandes: renderiza páginas com pdftoppm e processa em batches de 20 páginas.
     private function ocrViaImages(string $binary, int $totalPages, int $maxPages): string
     {
-        $bin = trim((string) shell_exec('which pdftoppm 2>/dev/null || where pdftoppm 2>nul'));
+        $bin = $this->findBinary('pdftoppm');
         if (empty($bin)) {
             return '';
         }
