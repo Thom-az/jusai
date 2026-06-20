@@ -119,6 +119,36 @@
    Chat de caso — estilo WhatsApp
    ========================================= */
 
+/* Chat page wrapper — ocupa a altura disponível abaixo da topbar.
+   Cálculo: 100vh - (2 × shell-gap) - topbar (88px) - padding de conteúdo - header do chat */
+.chat-page-wrap {
+    height: calc(100vh - var(--jusai-shell-gap, 1.25rem) * 2 - 88px - 1.25rem - 4.5rem);
+    min-height: 480px;
+}
+
+@media (max-width: 767.98px) {
+    .chat-page-wrap {
+        height: calc(100vh - 12rem);
+        min-height: 420px;
+    }
+}
+
+.caso-chat {
+    height: 100%;
+    min-height: 400px;
+}
+
+/* Painel de seleção de documentos */
+.caso-chat__doc-panel {
+    max-height: 6.5rem;
+    overflow-y: auto;
+    background: transparent;
+}
+
+[data-theme="dark"] .caso-chat__doc-panel {
+    background: transparent;
+}
+
 .caso-chat__messages {
     scroll-behavior: smooth;
 }
@@ -149,6 +179,11 @@
     color: #fff;
     border-bottom-right-radius: 0.3rem;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+/* Mensagem otimista — levemente transparente enquanto aguarda confirmação do servidor */
+.caso-chat__bubble--pending {
+    opacity: 0.7;
 }
 
 .caso-chat__bubble--ai {
@@ -193,13 +228,13 @@
 
 /* Dark mode */
 [data-theme="dark"] .caso-chat__bubble--ai {
-    background: #0d1a2e;
-    border-color: #1c2f47;
-    color: #eef2f7;
+    background: var(--dk-2);
+    border-color: var(--dk-bd-n);
+    color: var(--dk-t-a);
 }
 
 [data-theme="dark"] .caso-chat__typing span {
-    background: #3d5a78;
+    background: var(--dk-t-c);
 }
 
 [data-theme="dark"] .caso-chat__avatar {
