@@ -1,4 +1,5 @@
 import * as bootstrap from 'bootstrap';
+const { Tooltip } = bootstrap;
 
 // ─── Global toast — escuta app:toast de qualquer página ──────────────────────
 ;(function () {
@@ -885,7 +886,12 @@ function renderNotifications(data) {
     });
 }
 
+function _onVisibility() {
+    if (document.visibilityState === 'visible') fetchNotifications();
+}
+
 function fetchNotifications() {
+    if (document.visibilityState === 'hidden') return;
     fetch(NOTIF_UNREAD_URL)
         .then(r => r.ok ? r.json() : null)
         .then(data => { if (data) renderNotifications(data); })
@@ -894,6 +900,9 @@ function fetchNotifications() {
 
 function initNotifications() {
     if (_notifTimer) clearInterval(_notifTimer);
+
+    document.removeEventListener('visibilitychange', _onVisibility);
+    document.addEventListener('visibilitychange', _onVisibility);
 
     const markAll = document.getElementById('notifMarkAll');
     if (markAll && !markAll._notifBound) {
