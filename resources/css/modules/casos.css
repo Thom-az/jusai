@@ -119,34 +119,37 @@
    Chat de caso — estilo WhatsApp
    ========================================= */
 
-/* Chat page wrapper — ocupa a altura disponível abaixo da topbar.
-   Cálculo: 100vh - (2 × shell-gap) - topbar (88px) - padding de conteúdo - header do chat */
-.chat-page-wrap {
-    height: calc(100vh - var(--jusai-shell-gap, 1.25rem) * 2 - 88px - 1.25rem - 4.5rem);
-    min-height: 480px;
+/* Altura do chat = viewport menos topbar (88px), shell-gaps e cabeçalho da página */
+.caso-chat {
+    height: calc(100vh - var(--jusai-shell-gap, 1.25rem) * 2 - 88px - 7rem);
+    min-height: 500px;
 }
 
-@media (max-width: 767.98px) {
-    .chat-page-wrap {
-        height: calc(100vh - 12rem);
+@media (max-width: 991.98px) {
+    .caso-chat {
+        height: 72vh;
         min-height: 420px;
     }
 }
 
-.caso-chat {
-    height: 100%;
-    min-height: 400px;
+/* Itens clicáveis de sugestão de perguntas */
+.chat-suggestion {
+    cursor: pointer;
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.75rem;
+    font-size: 0.8rem;
+    transition: background 0.12s, color 0.12s;
+    color: var(--jusai-muted);
 }
 
-/* Painel de seleção de documentos */
-.caso-chat__doc-panel {
-    max-height: 6.5rem;
-    overflow-y: auto;
-    background: transparent;
+.chat-suggestion:hover {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--jusai-action);
 }
 
-[data-theme="dark"] .caso-chat__doc-panel {
-    background: transparent;
+[data-theme="dark"] .chat-suggestion:hover {
+    background: rgba(96, 165, 250, 0.08);
+    color: #60a5fa;
 }
 
 .caso-chat__messages {

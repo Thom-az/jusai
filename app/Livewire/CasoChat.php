@@ -20,30 +20,14 @@ class CasoChat extends Component
     public string $input = '';
     public bool $thinking = false;
     public array $selectedDocumentIds = [];
-    public array $caseDocuments = [];
 
     private ?AiConversation $conversation = null;
 
     public function mount(LegalCase $caso): void
     {
         $this->caso = $caso;
-        $this->loadDocuments();
-    }
 
-    private function loadDocuments(): void
-    {
-        $docs = $this->caso->documents()
-            ->whereIn('status', ['ready', 'pending', 'processing'])
-            ->orderByDesc('created_at')
-            ->get(['id', 'title', 'original_filename', 'status']);
-
-        $this->caseDocuments = $docs->map(fn ($d) => [
-            'id'     => $d->id,
-            'title'  => $d->title ?: $d->original_filename,
-            'status' => $d->status,
-        ])->toArray();
-
-        $this->selectedDocumentIds = $docs
+        $this->selectedDocumentIds = $caso->documents()
             ->where('status', 'ready')
             ->pluck('id')
             ->toArray();
@@ -58,6 +42,12 @@ class CasoChat extends Component
         } else {
             $this->selectedDocumentIds[] = $id;
         }
+    }
+
+    #[On('toggleChatDocument')]
+    public function toggleFromSidebar(string $id): void
+    {
+        $this->toggleDocument($id);
     }
 
     public function sendMessage(string $message = ''): void
@@ -175,7 +165,7 @@ class CasoChat extends Component
             return $context;
         }
 
-        // Fallback: use ai_summary for selected ready documents
+        // Fallback: include ai_summary for selected ready documents
         $selectedIds = $this->selectedDocumentIds;
 
         $readyDocs = $caso->documents()
@@ -201,8 +191,8 @@ class CasoChat extends Component
                     ->where('legal_case_id', $caso->id)
                     ->exists();
                 $context .= $hasChunks
-                    ? "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s) e indexado(s)"
-                    : "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s) (indexação semântica pendente)";
+                    ? "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s)"
+                    : "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s) — resumos disponíveis para consulta";
             }
         }
 
