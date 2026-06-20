@@ -19,16 +19,53 @@ class CasoChat extends Component
 
     public string $input = '';
     public bool $thinking = false;
+    public array $selectedDocumentIds = [];
+    public array $caseDocuments = [];
 
     private ?AiConversation $conversation = null;
 
     public function mount(LegalCase $caso): void
     {
         $this->caso = $caso;
+        $this->loadDocuments();
     }
 
-    public function sendMessage(): void
+    private function loadDocuments(): void
     {
+        $docs = $this->caso->documents()
+            ->whereIn('status', ['ready', 'pending', 'processing'])
+            ->orderByDesc('created_at')
+            ->get(['id', 'title', 'original_filename', 'status']);
+
+        $this->caseDocuments = $docs->map(fn ($d) => [
+            'id'     => $d->id,
+            'title'  => $d->title ?: $d->original_filename,
+            'status' => $d->status,
+        ])->toArray();
+
+        $this->selectedDocumentIds = $docs
+            ->where('status', 'ready')
+            ->pluck('id')
+            ->toArray();
+    }
+
+    public function toggleDocument(string $id): void
+    {
+        if (in_array($id, $this->selectedDocumentIds)) {
+            $this->selectedDocumentIds = array_values(
+                array_filter($this->selectedDocumentIds, fn ($v) => $v !== $id)
+            );
+        } else {
+            $this->selectedDocumentIds[] = $id;
+        }
+    }
+
+    public function sendMessage(string $message = ''): void
+    {
+        if ($message !== '') {
+            $this->input = $message;
+        }
+
         $this->validate(['input' => ['required', 'string', 'min:2', 'max:2000']]);
 
         $userText = trim($this->input);
@@ -131,14 +168,49 @@ class CasoChat extends Component
             $context .= "\nDescrição: " . mb_substr($caso->description, 0, 500);
         }
 
+        // Try semantic search first
         $docChunks = $this->retrieveRelevantChunks($query);
         if ($docChunks !== '') {
             $context .= "\n\nTrechos relevantes dos documentos do caso:\n" . $docChunks;
-        } else {
-            $docCount = $caso->documents()->where('status', 'ready')->count();
-            if ($docCount > 0) {
-                $context .= "\nDocumentos no caso: {$docCount} arquivo(s) (vetorização pendente)";
+            return $context;
+        }
+
+        // Fallback: use ai_summary for selected ready documents
+        $selectedIds = $this->selectedDocumentIds;
+
+        $readyDocs = $caso->documents()
+            ->where('status', 'ready')
+            ->when(! empty($selectedIds), fn ($q) => $q->whereIn('id', $selectedIds))
+            ->whereNotNull('ai_summary')
+            ->get(['id', 'title', 'original_filename', 'ai_summary']);
+
+        if ($readyDocs->isNotEmpty()) {
+            $context .= "\n\nResumos dos documentos do caso:";
+            foreach ($readyDocs as $doc) {
+                $name = $doc->title ?: $doc->original_filename;
+                $context .= "\n\n**{$name}**\n" . mb_substr($doc->ai_summary, 0, 2000);
             }
+        } else {
+            $readyCount = $caso->documents()
+                ->where('status', 'ready')
+                ->when(! empty($selectedIds), fn ($q) => $q->whereIn('id', $selectedIds))
+                ->count();
+
+            if ($readyCount > 0) {
+                $hasChunks = DB::table('document_chunks')
+                    ->where('legal_case_id', $caso->id)
+                    ->exists();
+                $context .= $hasChunks
+                    ? "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s) e indexado(s)"
+                    : "\nDocumentos no caso: {$readyCount} arquivo(s) processado(s) (indexação semântica pendente)";
+            }
+        }
+
+        $pendingCount = $caso->documents()
+            ->whereIn('status', ['pending', 'processing'])
+            ->count();
+        if ($pendingCount > 0) {
+            $context .= "\nDocumentos em processamento: {$pendingCount} arquivo(s)";
         }
 
         return $context;
