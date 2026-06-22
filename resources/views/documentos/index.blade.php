@@ -84,13 +84,6 @@
         </button>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     {{-- Filtros --}}
     <div class="surface-card p-4 mb-4">
         <form method="GET" action="{{ route('documents.index') }}" class="row g-2 align-items-center">
@@ -137,7 +130,7 @@
                         <th style="width:3.5rem"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="stagger-list">
                     @forelse ($documents as $doc)
                         @php
                             $docData = htmlspecialchars(json_encode([
@@ -173,17 +166,17 @@
                                     <span class="text-muted">Sem caso</span>
                                 @endif
                             </td>
-                            <td><span class="badge text-bg-secondary">{{ $doc->mime_type }}</span></td>
+                            <td><span class="status-badge status-badge--secondary">{{ $doc->mime_type }}</span></td>
                             <td>
                                 @php
                                     $statusClass = match($doc->status) {
-                                        'ready'      => 'text-bg-success',
-                                        'processing' => 'text-bg-warning text-dark',
-                                        'error'      => 'text-bg-danger',
-                                        default      => 'text-bg-secondary',
+                                        'ready'      => 'status-badge--success',
+                                        'processing' => 'status-badge--warning',
+                                        'error'      => 'status-badge--danger',
+                                        default      => 'status-badge--secondary',
                                     };
                                 @endphp
-                                <span class="badge {{ $statusClass }}">{{ ucfirst($doc->status) }}</span>
+                                <span class="status-badge {{ $statusClass }}">{{ ucfirst($doc->status) }}</span>
                             </td>
                             <td class="text-secondary small">{{ $doc->created_at->diffForHumans() }}</td>
                             <td @click.stop class="text-end pe-3">
@@ -294,190 +287,6 @@
 </div>
 
 {{-- Modal de envio de documento --}}
-<x-modal id="modalEnviarDoc" title="Enviar documento" size="md">
-    <div x-data="{
-        file: null,
-        dragging: false,
-        uploading: false,
-        progress: 0,
-        processing: false,
-        title: '{{ addslashes(old('title', '')) }}',
-        error: null,
-        init() {
-            window.addEventListener('doc-page-drop', (e) => { this.setFile(e.detail.file); });
-        },
-        handleDrop(e) {
-            this.dragging = false;
-            const f = e.dataTransfer.files[0];
-            if (f) this.setFile(f);
-        },
-        setFile(f) {
-            this.file = f;
-            const dt = new DataTransfer();
-            dt.items.add(f);
-            this.$refs.fileInput.files = dt.files;
-            if (!this.title.trim()) {
-                this.title = f.name.replace(/\.[^/.]+$/, '').replace(/[-_.]+/g, ' ').trim();
-            }
-        },
-        formatSize(bytes) {
-            if (!bytes) return '';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-        },
-        submit() {
-            if (!this.file || !this.title.trim()) return;
-            const formEl = this.$refs.form;
-            const fd = new FormData(formEl);
-            fd.set('title', this.title);
-            this.uploading = true;
-            this.processing = false;
-            this.progress = 0;
-            this.error = null;
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', formEl.action);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.setRequestHeader('Accept', 'application/json');
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    // Cap at 85% — remaining 15% accounts for server-side Supabase upload
-                    this.progress = Math.min(85, Math.round(e.loaded / e.total * 85));
-                }
-            });
-            xhr.upload.addEventListener('load', () => {
-                // Bytes delivered to server; now waiting for Supabase + DB
-                this.processing = true;
-                this.progress = 85;
-            });
-            xhr.addEventListener('load', () => {
-                try {
-                    const data = JSON.parse(xhr.responseText);
-                    if (xhr.status >= 200 && xhr.status < 300 && data.redirect) {
-                        this.progress = 100;
-                        setTimeout(() => { window.location.href = data.redirect; }, 300);
-                        return;
-                    }
-                    if (xhr.status === 422 && data.errors) {
-                        this.error = Object.values(data.errors).flat()[0] || 'Erro de validação.';
-                    } else {
-                        this.error = data.message || 'Erro ao enviar. Tente novamente.';
-                    }
-                } catch (e) {
-                    this.error = 'Erro inesperado. Tente novamente.';
-                }
-                this.uploading = false;
-                this.processing = false;
-            });
-            xhr.addEventListener('error', () => {
-                this.uploading = false;
-                this.processing = false;
-                this.error = 'Erro de conexão. Tente novamente.';
-            });
-            xhr.send(fd);
-        }
-    }">
-        <form method="POST"
-              action="{{ route('documents.store') }}"
-              enctype="multipart/form-data"
-              x-ref="form">
-            @csrf
-            <input type="file" x-ref="fileInput" name="file"
-                   accept=".pdf,.docx,.doc,.txt"
-                   class="d-none"
-                   @change="if ($event.target.files[0]) setFile($event.target.files[0])">
-
-            {{-- Dropzone --}}
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
-                <div class="doc-dropzone"
-                     :class="{ 'doc-dropzone--dragging': dragging, 'doc-dropzone--has-file': file }"
-                     @dragover.prevent="dragging = true"
-                     @dragleave.prevent="dragging = false"
-                     @drop.prevent="handleDrop($event)"
-                     @click="$refs.fileInput.click()"
-                     style="cursor:pointer">
-                    <template x-if="!file">
-                        <div class="text-center py-1">
-                            <i class="bi bi-cloud-arrow-up" style="font-size:2rem;opacity:.45"></i>
-                            <div class="fw-semibold mt-2 small">Solte aqui ou <span class="text-primary">clique para escolher</span></div>
-                            <div class="text-secondary" style="font-size:.78rem;margin-top:.3rem">PDF, DOCX, DOC, TXT — máx. 100 MB</div>
-                        </div>
-                    </template>
-                    <template x-if="file">
-                        <div class="text-center py-1">
-                            <i class="bi bi-file-earmark-check text-success" style="font-size:2rem"></i>
-                            <div class="fw-semibold mt-2 small" x-text="file.name" style="word-break:break-all"></div>
-                            <div class="text-secondary" style="font-size:.78rem;margin-top:.3rem" x-text="formatSize(file.size)"></div>
-                            <button type="button"
-                                    class="btn btn-sm btn-link text-danger p-0 mt-1"
-                                    style="font-size:.78rem"
-                                    @click.stop="file = null; $refs.fileInput.value = ''">Remover</button>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            {{-- Título --}}
-            <div class="mb-3">
-                <label for="md_title" class="form-label fw-semibold">Título <span class="text-danger">*</span></label>
-                <input type="text" id="md_title" name="title"
-                       class="form-control"
-                       placeholder="Nome descritivo do documento"
-                       x-model="title">
-            </div>
-
-            @if(isset($cases) && $cases->isNotEmpty())
-                <div class="mb-3">
-                    <label for="md_case" class="form-label fw-semibold">Vincular ao caso</label>
-                    <select id="md_case" name="legal_case_id" class="form-select">
-                        <option value="">Nenhum caso (autônomo)</option>
-                        @foreach ($cases as $case)
-                            <option value="{{ $case->id }}" @selected(old('legal_case_id') == $case->id)>{{ $case->title }}</option>
-                        @endforeach
-                    </select>
-                    <div class="form-text">PDFs vinculados a casos recebem análise automática de IA.</div>
-                </div>
-            @endif
-
-            {{-- Progresso de upload --}}
-            <div x-show="uploading" x-cloak class="mb-3">
-                <div class="d-flex justify-content-between small mb-1">
-                    <span class="text-secondary" x-text="processing ? 'Salvando no servidor...' : 'Enviando arquivo...'"></span>
-                    <span class="fw-semibold" x-text="progress + '%'"></span>
-                </div>
-                <div class="progress" style="height:6px;border-radius:99px">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                         role="progressbar"
-                         :style="'width:' + progress + '%'"></div>
-                </div>
-            </div>
-
-            <div x-show="error" x-cloak class="alert alert-danger py-2 small mb-3" x-text="error"></div>
-
-            <x-ai-disclaimer class="mb-3" />
-        </form>
-
-        <div class="d-flex justify-content-end gap-2 mt-1">
-            <button type="button"
-                    class="btn btn-outline-secondary rounded-pill px-4"
-                    data-bs-dismiss="modal"
-                    :disabled="uploading">Cancelar</button>
-            <button type="button"
-                    class="btn btn-primary rounded-pill px-4"
-                    @click="submit()"
-                    :disabled="uploading || !file || !title.trim()">
-                <template x-if="!uploading">
-                    <span><i class="bi bi-cloud-arrow-up me-2"></i>Enviar</span>
-                </template>
-                <template x-if="uploading && !processing">
-                    <span><span class="spinner-border spinner-border-sm me-2"></span>Enviando <span x-text="progress + '%'"></span></span>
-                </template>
-                <template x-if="processing">
-                    <span><span class="spinner-border spinner-border-sm me-2"></span>Salvando...</span>
-                </template>
-            </button>
-        </div>
-    </div>
-</x-modal>
+<x-upload-doc-modal :cases="$cases" />
 
 @endsection
