@@ -120,10 +120,13 @@
         @livewireScripts
 
         {{-- Toast automático para mensagens flash de sessão --}}
-        @if (session('success') || session('error') || session('warning'))
+        @if (session('success') || session('error') || session('warning') || session('info') || session('deleted'))
         <script>
             (function () {
-                @if (session('success'))
+                @if (session('deleted'))
+                    const _msg = @json(session('deleted'));
+                    const _type = 'deleted';
+                @elseif (session('success'))
                     const _msg = @json(session('success'));
                     const _type = 'success';
                 @elseif (session('error'))
@@ -132,6 +135,9 @@
                 @elseif (session('warning'))
                     const _msg = @json(session('warning'));
                     const _type = 'warning';
+                @elseif (session('info'))
+                    const _msg = @json(session('info'));
+                    const _type = 'info';
                 @endif
 
                 function fireToast() {

@@ -206,9 +206,9 @@ class DocumentController extends Controller
         $this->logActivity('documento_excluido', "Documento \"{$title}\" excluído.", Document::class, $id);
 
         if ($caseId) {
-            return redirect()->route('cases.show', $caseId)->with('success', 'Documento excluído.');
+            return redirect()->route('cases.show', $caseId)->with('deleted', 'Documento excluído.');
         }
 
-        return redirect()->route('documents.index')->with('success', 'Documento excluído.');
+        return redirect()->route('documents.index')->with('deleted', 'Documento excluído.');
     }
 }

@@ -128,6 +128,6 @@ class LegalCaseController extends Controller
 
         $this->logActivity('caso_excluido', "Caso \"{$title}\" excluído.", LegalCase::class, $id);
 
-        return redirect()->route('cases.index')->with('success', 'Caso excluído.');
+        return redirect()->route('cases.index')->with('deleted', 'Caso excluído.');
     }
 }

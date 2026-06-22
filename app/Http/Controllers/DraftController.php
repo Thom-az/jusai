@@ -126,7 +126,7 @@ class DraftController extends Controller
 
         $this->logActivity('minuta_excluida', "Minuta \"{$title}\" excluída.", Draft::class, $id);
 
-        return redirect()->route('drafts.index')->with('success', 'Minuta excluída.');
+        return redirect()->route('drafts.index')->with('deleted', 'Minuta excluída.');
     }
 
     public function status(string $id): JsonResponse
