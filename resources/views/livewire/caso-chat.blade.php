@@ -1,4 +1,4 @@
-<div class="caso-chat d-flex flex-column"
+<div class="caso-chat"
      x-data="{
          pending: '',
          isThinking: $wire.entangle('thinking'),
@@ -7,133 +7,183 @@
                  if (val === true) this.pending = '';
              });
              window.addEventListener('fill-chat', e => {
-                 const inp = this.$refs.chatInput;
-                 if (inp) { inp.value = e.detail.text; inp.focus(); }
+                 const el = this.$refs.chatInput;
+                 if (!el) return;
+                 el.value = e.detail.text;
+                 el.style.height = 'auto';
+                 el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+                 el.focus();
              });
          },
          sendMsg() {
-             const inp = this.$refs.chatInput;
-             const val = inp ? inp.value.trim() : '';
+             const el = this.$refs.chatInput;
+             const val = el ? el.value.trim() : '';
              if (!val || this.isThinking) return;
              this.pending = val;
-             inp.value = '';
-             inp.focus();
+             el.value = '';
+             el.style.height = 'auto';
+             el.focus();
              this.$nextTick(() => scrollChat());
              $wire.sendMessage(val);
+         },
+         chip(text) {
+             const el = this.$refs.chatInput;
+             if (!el) return;
+             el.value = text;
+             el.style.height = 'auto';
+             el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+             el.focus();
          }
      }">
 
-    {{-- Área de mensagens --}}
-    <div class="caso-chat__messages flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-2"
+    {{-- ── Messages ────────────────────────────────────────── --}}
+    <div class="caso-chat__messages"
          id="chatMessages"
          x-init="$el.scrollTop = $el.scrollHeight">
 
-        {{-- Estado vazio --}}
+        {{-- Empty state --}}
         @if ($messages->isEmpty())
-            <div class="text-center text-secondary py-5 small"
-                 x-show="!pending && !isThinking">
-                <i class="bi bi-chat-dots fs-2 d-block mb-2 opacity-40"></i>
-                Faça uma pergunta sobre este caso.<br>
-                <span class="opacity-75">A IA irá responder com base no contexto disponível.</span>
+            <div class="chat-empty" x-show="!pending && !isThinking">
+                <div class="chat-empty__icon">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <p class="chat-empty__title">Assistente Jurídico IA</p>
+                <p class="chat-empty__sub">
+                    Faça uma pergunta sobre este caso.<br>
+                    Respondo com base nos documentos e no contexto disponíveis.
+                </p>
             </div>
         @endif
 
-        {{-- Mensagens do servidor --}}
-        @foreach ($messages as $message)
-            @if ($message->role === 'user')
-                <div class="d-flex justify-content-end">
-                    <div class="caso-chat__bubble caso-chat__bubble--user">
-                        {{ $message->content }}
+        {{-- Message list --}}
+        <div class="chat-msgs">
+
+            @foreach ($messages as $msg)
+                @if ($msg->role === 'user')
+                    <div class="chat-msg chat-msg--user">
+                        <div class="chat-bubble chat-bubble--user">{{ $msg->content }}</div>
+                        <div class="chat-avatar chat-avatar--user">
+                            {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                        </div>
+                    </div>
+                @else
+                    <div class="chat-msg chat-msg--ai">
+                        <div class="chat-avatar chat-avatar--ai">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <div class="chat-bubble chat-bubble--ai ai-body">
+                            {!! (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($msg->content) !!}
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+
+            {{-- Optimistic --}}
+            <template x-if="pending">
+                <div class="chat-msg chat-msg--user">
+                    <div class="chat-bubble chat-bubble--user chat-bubble--pending" x-text="pending"></div>
+                    <div class="chat-avatar chat-avatar--user">
+                        {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
                     </div>
                 </div>
-            @else
-                <div class="d-flex align-items-end gap-2">
-                    <div class="caso-chat__avatar flex-shrink-0">
-                        <i class="bi bi-cpu text-white" style="font-size:.7rem;"></i>
+            </template>
+
+            {{-- Typing indicator --}}
+            @if ($thinking)
+                <div class="chat-msg chat-msg--ai">
+                    <div class="chat-avatar chat-avatar--ai">
+                        <i class="bi bi-cpu-fill"></i>
                     </div>
-                    <div class="caso-chat__bubble caso-chat__bubble--ai ai-body">
-                        {!! (new \League\CommonMark\GithubFlavoredMarkdownConverter())->convert($message->content) !!}
+                    <div class="chat-bubble chat-bubble--ai chat-typing">
+                        <span></span><span></span><span></span>
                     </div>
                 </div>
             @endif
-        @endforeach
 
-        {{-- Mensagem otimista: aparece imediatamente ao enviar --}}
-        <template x-if="pending">
-            <div class="d-flex justify-content-end">
-                <div class="caso-chat__bubble caso-chat__bubble--user caso-chat__bubble--pending"
-                     x-text="pending"></div>
-            </div>
-        </template>
-
-        {{-- Indicador de digitação --}}
-        @if ($thinking)
-            <div class="d-flex align-items-end gap-2">
-                <div class="caso-chat__avatar flex-shrink-0">
-                    <i class="bi bi-cpu text-white" style="font-size:.7rem;"></i>
-                </div>
-                <div class="caso-chat__bubble caso-chat__bubble--ai caso-chat__typing">
-                    <span></span><span></span><span></span>
-                </div>
-            </div>
-        @endif
+        </div>
     </div>
 
-    {{-- Input --}}
-    <div class="caso-chat__input-wrap border-top pt-3 px-3 pb-2">
-        <div class="d-flex gap-2 align-items-end">
-            <input type="text"
-                   x-ref="chatInput"
-                   class="form-control form-control-sm rounded-pill"
-                   placeholder="Mensagem…"
-                   :disabled="isThinking"
-                   @keydown.enter.prevent="sendMsg()"
-                   autocomplete="off"
-                   style="padding-left:1rem;padding-right:1rem;">
+    {{-- ── Input Area ──────────────────────────────────────── --}}
+    <div class="chat-input-area">
 
-            <button type="button"
-                    @click="sendMsg()"
-                    class="btn btn-primary btn-sm rounded-circle flex-shrink-0 d-flex align-items-center justify-content-center"
-                    style="width:2.15rem;height:2.15rem;padding:0;"
-                    :disabled="isThinking">
-                <template x-if="!isThinking">
-                    <i class="bi bi-send-fill" style="font-size:.8rem;"></i>
-                </template>
-                <template x-if="isThinking">
-                    <span class="spinner-border" style="width:.7rem;height:.7rem;border-width:2px;"></span>
-                </template>
-            </button>
-        </div>
-
-        @error('input')
-            <div class="text-danger small mt-1 ps-1">{{ $message }}</div>
-        @enderror
-
-        <div class="d-flex justify-content-between align-items-center mt-2 px-1">
-            <span class="text-secondary" style="font-size:.68rem;">
-                <i class="bi bi-exclamation-triangle me-1"></i>Revisar com advogado habilitado
-            </span>
-            @if ($messages->isNotEmpty())
-                <button type="button"
-                        wire:click="clearConversation"
-                        wire:confirm="Limpar todo o histórico desta conversa?"
-                        class="btn btn-link btn-sm text-secondary p-0"
-                        style="font-size:.68rem;">
-                    Limpar conversa
+        {{-- Chips — visible when conversation is empty --}}
+        @if ($messages->isEmpty())
+            <div class="chat-chips" x-show="!pending && !isThinking">
+                <button type="button" class="chip" @click="chip('Qual é o prazo processual mais urgente neste caso?')">
+                    <i class="bi bi-calendar-check"></i> Prazo processual
                 </button>
-            @endif
+                <button type="button" class="chip" @click="chip('Quais são os principais riscos jurídicos deste caso?')">
+                    <i class="bi bi-shield-exclamation"></i> Riscos jurídicos
+                </button>
+                <button type="button" class="chip" @click="chip('Qual é a melhor estratégia jurídica para este caso?')">
+                    <i class="bi bi-lightbulb"></i> Estratégia
+                </button>
+                <button type="button" class="chip" @click="chip('Quais documentos ainda precisamos reunir para este caso?')">
+                    <i class="bi bi-file-earmark-plus"></i> Docs pendentes
+                </button>
+                <button type="button" class="chip" @click="chip('Quais são os próximos passos recomendados neste caso?')">
+                    <i class="bi bi-arrow-right-circle"></i> Próximos passos
+                </button>
+            </div>
+        @endif
+
+        {{-- Input box --}}
+        <div class="chat-input-wrap">
+            <div class="chat-input-box" :class="{ 'is-loading': isThinking }">
+                <textarea
+                    x-ref="chatInput"
+                    class="chat-input-field"
+                    placeholder="Mensagem ao Assistente Jurídico…"
+                    :disabled="isThinking"
+                    @keydown.enter.prevent="!$event.shiftKey && sendMsg()"
+                    @input="$el.style.height='auto'; $el.style.height = Math.min($el.scrollHeight,160)+'px'"
+                    rows="1"
+                    autocomplete="off"></textarea>
+
+                <button type="button"
+                        class="chat-send-btn"
+                        @click="sendMsg()"
+                        :disabled="isThinking"
+                        title="Enviar (Enter)">
+                    <template x-if="!isThinking">
+                        <i class="bi bi-arrow-up-circle-fill"></i>
+                    </template>
+                    <template x-if="isThinking">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                    </template>
+                </button>
+            </div>
+
+            @error('input')
+                <div class="text-danger small mt-1 px-1">{{ $message }}</div>
+            @enderror
+
+            <div class="chat-input-meta">
+                <span class="chat-disclaimer">
+                    <i class="bi bi-shield-check"></i>
+                    Revise sempre com um advogado habilitado
+                </span>
+                @if ($messages->isNotEmpty())
+                    <button type="button"
+                            wire:click="clearConversation"
+                            wire:confirm="Limpar todo o histórico desta conversa?"
+                            class="chat-clear-btn">
+                        Limpar conversa
+                    </button>
+                @endif
+            </div>
         </div>
+
     </div>
 </div>
 
 <script>
-    function scrollChat() {
-        const el = document.getElementById('chatMessages');
-        if (el) el.scrollTop = el.scrollHeight;
-    }
-
-    (() => {
-        document.addEventListener('livewire:updated', scrollChat);
-        document.addEventListener('livewire:navigated', scrollChat);
-    })();
+function scrollChat() {
+    const el = document.getElementById('chatMessages');
+    if (el) el.scrollTop = el.scrollHeight;
+}
+(() => {
+    document.addEventListener('livewire:updated', scrollChat);
+    document.addEventListener('livewire:navigated', scrollChat);
+})();
 </script>

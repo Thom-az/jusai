@@ -1,170 +1,175 @@
 @extends('layouts.app')
 
-@section('title', 'Chat — ' . $caso->title)
+@section('title', 'Assistente IA — ' . $caso->title)
+
+@push('styles')
+    @vite(['resources/css/modules/casos.css', 'resources/css/modules/documentos.css'])
+@endpush
 
 @section('content')
-    <div class="container-fluid px-0">
+<div class="chat-page-layout" x-data="{ panelOpen: true }">
 
-        {{-- Cabeçalho da página --}}
-        <div class="d-flex align-items-center gap-3 mb-4">
-            <a href="{{ route('cases.show', $caso) }}" wire:navigate class="btn btn-outline-secondary rounded-pill px-3">
-                <i class="bi bi-arrow-left me-1"></i>Voltar ao caso
-            </a>
-            <div>
-                <h2 class="fw-semibold mb-1">Assistente Jurídico</h2>
-                <p class="text-secondary mb-0 small">
-                    <i class="bi bi-briefcase me-1"></i>{{ $caso->title }}
-                </p>
+    {{-- ── Compact Header ─────────────────────────────────────────── --}}
+    <div class="chat-page-header">
+        <a href="{{ route('cases.show', $caso) }}" wire:navigate class="chat-back-btn" title="Voltar ao caso">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <div class="chat-header-info">
+            <div class="chat-header-title">{{ $caso->title }}</div>
+            <div class="chat-header-meta">
+                <span class="chat-status-dot"></span>
+                <span>Assistente IA</span>
+                @if ($caso->area)
+                    <span class="chat-meta-sep">·</span>
+                    <span>{{ $caso->area }}</span>
+                @endif
+                @if ($caso->risk_level)
+                    <span class="risk-badge risk-{{ $caso->risk_level }}">{{ ucfirst($caso->risk_level) }}</span>
+                @endif
             </div>
-            <span class="badge text-bg-secondary ms-auto">
-                <i class="bi bi-cpu me-1"></i>IA
-            </span>
         </div>
 
-        <div class="row g-4">
+        <div class="chat-header-actions ms-auto">
+            <button type="button"
+                    class="chat-header-btn"
+                    x-on:click="panelOpen = !panelOpen"
+                    :class="{ 'is-active': panelOpen }"
+                    title="Painel de contexto">
+                <i class="bi bi-layout-sidebar-reverse"></i>
+            </button>
+        </div>
+    </div>
 
-            {{-- Chat --}}
-            <div class="col-lg-8">
-                <div class="surface-card p-0 overflow-hidden">
-                    <livewire:caso-chat :caso="$caso" />
+    {{-- ── Body: Chat + Context Panel ─────────────────────────────── --}}
+    <div class="chat-page-body">
+
+        {{-- Chat --}}
+        <div class="chat-page-main">
+            <livewire:caso-chat :caso="$caso" />
+        </div>
+
+        {{-- Context Panel --}}
+        <aside class="chat-context-panel" x-show="panelOpen">
+
+            {{-- Case context --}}
+            <div class="ctx-card">
+                <div class="ctx-card-header">
+                    <i class="bi bi-briefcase-fill"></i>
+                    Contexto do Caso
+                </div>
+                <div class="ctx-card-body">
+                    @if ($caso->client_name)
+                        <div class="ctx-row">
+                            <span class="ctx-label">Cliente</span>
+                            <span class="ctx-value">{{ $caso->client_name }}</span>
+                        </div>
+                    @endif
+                    <div class="ctx-row">
+                        <span class="ctx-label">Área</span>
+                        <span class="ctx-value">{{ $caso->area ?? '—' }}</span>
+                    </div>
+                    <div class="ctx-row">
+                        <span class="ctx-label">Status</span>
+                        <span class="ctx-value">{{ ucfirst(str_replace('_', ' ', $caso->status)) }}</span>
+                    </div>
+                    @if ($caso->risk_level)
+                        <div class="ctx-row">
+                            <span class="ctx-label">Risco</span>
+                            <span class="ctx-value">
+                                <span class="risk-badge risk-{{ $caso->risk_level }}">{{ ucfirst($caso->risk_level) }}</span>
+                            </span>
+                        </div>
+                    @endif
+                    @if ($caso->description)
+                        <p class="ctx-summary">{{ Str::limit($caso->description, 110) }}</p>
+                    @endif
                 </div>
             </div>
 
-            {{-- Sidebar com 3 cards --}}
-            <div class="col-lg-4 d-flex flex-column gap-3">
+            {{-- Document base --}}
+            @php
+                $chatDocs    = $caso->documents()
+                    ->whereIn('status', ['ready', 'pending', 'processing'])
+                    ->orderByDesc('created_at')
+                    ->get(['id', 'title', 'original_filename', 'status']);
+                $readyDocIds = $chatDocs->where('status', 'ready')->pluck('id')->values()->toArray();
+                $readyCnt    = count($readyDocIds);
+                $totalCnt    = $chatDocs->count();
+            @endphp
+            <div class="ctx-card"
+                 x-data="{ selected: {{ json_encode($readyDocIds) }}, search: '' }">
 
-                {{-- Card 1: Detalhes do caso --}}
-                <div class="surface-card p-4">
-                    <h6 class="fw-semibold mb-3">
-                        <i class="bi bi-briefcase me-2 text-primary"></i>Contexto do caso
-                    </h6>
-                    <dl class="row mb-0 small">
-                        <dt class="col-5 text-secondary fw-normal" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Área</dt>
-                        <dd class="col-7 mb-2">{{ $caso->area ?? '—' }}</dd>
-
-                        <dt class="col-5 text-secondary fw-normal" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Status</dt>
-                        <dd class="col-7 mb-2">{{ ucfirst(str_replace('_', ' ', $caso->status)) }}</dd>
-
-                        @if ($caso->client_name)
-                            <dt class="col-5 text-secondary fw-normal" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Cliente</dt>
-                            <dd class="col-7 mb-2">{{ $caso->client_name }}</dd>
-                        @endif
-
-                        @if ($caso->risk_level)
-                            <dt class="col-5 text-secondary fw-normal" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;">Risco</dt>
-                            <dd class="col-7 mb-0">
-                                <span class="risk-badge risk-{{ $caso->risk_level }}">{{ ucfirst($caso->risk_level) }}</span>
-                            </dd>
-                        @endif
-                    </dl>
+                <div class="ctx-card-header">
+                    <i class="bi bi-files"></i>
+                    Base Documental
+                    <span class="ctx-badge ms-auto">{{ $readyCnt }}/{{ $totalCnt }}</span>
                 </div>
 
-                {{-- Card 2: Base documental --}}
-                @php
-                    $chatDocs = $caso->documents()
-                        ->whereIn('status', ['ready', 'pending', 'processing'])
-                        ->orderByDesc('created_at')
-                        ->get(['id', 'title', 'original_filename', 'status']);
-                    $readyDocIds = $chatDocs->where('status', 'ready')->pluck('id')->values()->toArray();
-                @endphp
-                <div class="surface-card p-4"
-                     x-data="{ selected: {{ json_encode($readyDocIds) }} }">
-                    <h6 class="fw-semibold mb-1">
-                        <i class="bi bi-files me-2 text-primary"></i>Base documental
-                    </h6>
-                    <p class="text-secondary mb-3" style="font-size:.75rem;">
-                        Ative os documentos que a IA deve consultar.
-                    </p>
-
-                    @if ($chatDocs->isEmpty())
-                        <p class="text-secondary small mb-0">
-                            <i class="bi bi-info-circle me-1"></i>Nenhum documento neste caso.
-                        </p>
-                    @else
-                        <div class="d-flex flex-column gap-2">
-                            @foreach ($chatDocs as $doc)
-                                @php $docName = $doc->title ?: $doc->original_filename; @endphp
-                                <div class="d-flex align-items-center gap-2">
-                                    {{-- Toggle switch --}}
-                                    <div class="form-check form-switch mb-0 flex-shrink-0">
-                                        @if ($doc->status === 'ready')
-                                            <input class="form-check-input"
-                                                   type="checkbox"
-                                                   role="switch"
-                                                   :checked="selected.includes('{{ $doc->id }}')"
-                                                   style="cursor:pointer;"
-                                                   @change="
-                                                       const idx = selected.indexOf('{{ $doc->id }}');
-                                                       idx >= 0 ? selected.splice(idx, 1) : selected.push('{{ $doc->id }}');
-                                                       Livewire.dispatchTo('caso-chat', 'toggleChatDocument', { id: '{{ $doc->id }}' });
-                                                   ">
-                                        @else
-                                            <input class="form-check-input" type="checkbox" role="switch" disabled>
-                                        @endif
-                                    </div>
-
-                                    {{-- Info do documento --}}
-                                    <div class="flex-grow-1 min-width-0">
-                                        <div class="fw-medium text-truncate" style="font-size:.8rem;" title="{{ $docName }}">
-                                            {{ $docName }}
-                                        </div>
-                                        <div class="text-secondary" style="font-size:.68rem;">
-                                            @if ($doc->status === 'ready')
-                                                <i class="bi bi-check-circle-fill text-success me-1"></i>Pronto para consulta
-                                            @elseif ($doc->status === 'processing')
-                                                <i class="bi bi-hourglass-split text-warning me-1"></i>Processando…
-                                            @else
-                                                <i class="bi bi-clock text-secondary me-1"></i>Na fila
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+                @if ($chatDocs->isNotEmpty())
+                    <div class="ctx-search-wrap">
+                        <div class="ctx-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text"
+                                   x-model="search"
+                                   placeholder="Buscar…"
+                                   class="ctx-search-input">
                         </div>
-                    @endif
-
-                    <div class="mt-3 pt-3 border-top">
-                        <a href="{{ route('cases.show', $caso) }}"
-                           wire:navigate
-                           class="btn btn-outline-secondary btn-sm rounded-pill w-100"
-                           style="font-size:.75rem;">
-                            <i class="bi bi-cloud-upload me-1"></i>Adicionar documento
-                        </a>
                     </div>
+                @endif
+
+                <div class="ctx-docs-list">
+                    @forelse ($chatDocs as $doc)
+                        @php $name = $doc->title ?: $doc->original_filename; @endphp
+                        <label class="ctx-doc-item"
+                               x-show="!search || '{{ addslashes(strtolower($name)) }}'.includes(search.toLowerCase())">
+                            @if ($doc->status === 'ready')
+                                <input type="checkbox"
+                                       class="ctx-doc-check"
+                                       :checked="selected.includes('{{ $doc->id }}')"
+                                       @change="
+                                           const i = selected.indexOf('{{ $doc->id }}');
+                                           i >= 0 ? selected.splice(i,1) : selected.push('{{ $doc->id }}');
+                                           Livewire.dispatchTo('caso-chat','toggleChatDocument',{id:'{{ $doc->id }}'});
+                                       ">
+                            @else
+                                <input type="checkbox" class="ctx-doc-check" disabled>
+                            @endif
+                            <div class="ctx-doc-info">
+                                <span class="ctx-doc-name" title="{{ $name }}">{{ $name }}</span>
+                                @if ($doc->status === 'ready')
+                                    <span class="ctx-doc-badge ctx-doc-badge--ready"><i class="bi bi-check-circle-fill"></i> Indexado</span>
+                                @elseif ($doc->status === 'processing')
+                                    <span class="ctx-doc-badge ctx-doc-badge--processing"><i class="bi bi-hourglass-split"></i> Processando</span>
+                                @else
+                                    <span class="ctx-doc-badge ctx-doc-badge--pending"><i class="bi bi-clock"></i> Na fila</span>
+                                @endif
+                            </div>
+                        </label>
+                    @empty
+                        <div class="ctx-empty">
+                            <i class="bi bi-file-earmark-x"></i>
+                            Nenhum documento neste caso.
+                        </div>
+                    @endforelse
                 </div>
 
-                {{-- Card 3: Sugestões de perguntas --}}
-                <div class="surface-card p-4">
-                    <h6 class="fw-semibold mb-3">
-                        <i class="bi bi-lightbulb me-2 text-warning"></i>Sugestões de perguntas
-                    </h6>
-                    <ul class="list-unstyled mb-0 d-flex flex-column gap-1">
-                        <li class="chat-suggestion"
-                            onclick="fillChat('Qual é o prazo processual mais urgente neste caso?')">
-                            <i class="bi bi-calendar-check me-2 text-primary"></i>Qual é o prazo processual mais urgente?
-                        </li>
-                        <li class="chat-suggestion"
-                            onclick="fillChat('Quais são os principais riscos jurídicos deste caso?')">
-                            <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Quais são os principais riscos jurídicos?
-                        </li>
-                        <li class="chat-suggestion"
-                            onclick="fillChat('Quais documentos ainda precisamos reunir para este caso?')">
-                            <i class="bi bi-file-earmark-plus me-2 text-info"></i>Quais documentos ainda precisamos reunir?
-                        </li>
-                        <li class="chat-suggestion"
-                            onclick="fillChat('Qual é a tese jurídica mais sólida para este caso?')">
-                            <i class="bi bi-search me-2 text-success"></i>Qual é a tese jurídica mais sólida?
-                        </li>
-                        <li class="chat-suggestion"
-                            onclick="fillChat('Que estratégia você recomendaria para este caso?')">
-                            <i class="bi bi-lightbulb me-2 text-warning"></i>Que estratégia você recomendaria?
-                        </li>
-                    </ul>
+                <div class="ctx-card-footer">
+                    <button type="button"
+                            class="ctx-add-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalUploadChat">
+                        <i class="bi bi-plus-lg"></i>
+                        Adicionar Documento
+                    </button>
                 </div>
+            </div>
 
-            </div>{{-- /col-lg-4 --}}
-        </div>{{-- /row --}}
+        </aside>
     </div>
+</div>
+
+<x-upload-doc-modal :caso="$caso" modal-id="modalUploadChat" />
 @endsection
 
 @push('scripts')
