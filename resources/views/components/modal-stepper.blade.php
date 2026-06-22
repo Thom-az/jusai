@@ -124,13 +124,15 @@
                         x-on:click="reset()"></button>
             </div>
 
-            {{-- Body — painéis de cada passo --}}
-            <div class="modal-body pt-3">
-                @for ($n = 1; $n <= $stepCount; $n++)
-                    <div x-show="current === {{ $n }}" x-cloak>
-                        {{ ${'step_' . $n} ?? '' }}
-                    </div>
-                @endfor
+            {{-- Body — painéis de cada passo em track deslizante --}}
+            <div class="modal-body pt-3 stepper-body">
+                <div class="stepper-track" :style="`transform: translateX(${-(current - 1) * 100}%)`">
+                    @for ($n = 1; $n <= $stepCount; $n++)
+                        <div class="stepper-panel">
+                            {{ ${'step_' . $n} ?? '' }}
+                        </div>
+                    @endfor
+                </div>
             </div>
 
             {{-- Footer --}}
@@ -165,6 +167,25 @@
         border-radius: 1.5rem;
         border: 1px solid rgba(215, 220, 229, 0.7);
         box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+    }
+
+    .stepper-body {
+        overflow: hidden;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .stepper-track {
+        display: flex;
+        transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+
+    .stepper-panel {
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 0;
+        padding: 0 1rem;
     }
 
     .modal-stepper-bar {

@@ -223,6 +223,26 @@
     overflow: hidden;
 }
 
+@media (max-width: 991.98px) {
+    .cham-list-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+    .cham-list { min-width: 640px; }
+
+    /* On mobile, hide less critical columns */
+    .cham-list-head th:last-child,
+    .cham-row td:last-child { display: none; }
+}
+
+@media (max-width: 575.98px) {
+    .cham-list { min-width: 500px; }
+    /* Hide "Atualizado" column on xs too */
+    .cham-list th:nth-child(5),
+    .cham-row td:nth-child(5) { display: none; }
+}
+
 .cham-list {
     width: 100%;
     border-collapse: collapse;
