@@ -93,13 +93,6 @@
         </button>
     </div>
 
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     {{-- Filtros --}}
     <div class="surface-card p-4 mb-4">
         <form method="GET" action="{{ route('cases.index') }}" class="row g-2 align-items-center">
@@ -171,7 +164,7 @@
                         <th style="width:3.5rem"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="stagger-list">
                     @forelse ($cases as $case)
                         @php
                             $casoData = htmlspecialchars(json_encode([
@@ -199,22 +192,33 @@
                                 <div class="fw-semibold">{{ $case->title }}</div>
                                 <div class="text-secondary small">{{ $case->client_name }}</div>
                             </td>
-                            <td><span class="badge text-bg-secondary">{{ ucfirst($case->area) }}</span></td>
+                            <td><span class="status-badge status-badge--secondary">{{ ucfirst($case->area) }}</span></td>
                             <td>
-                                <span class="badge text-bg-primary">{{ ucfirst(str_replace('_', ' ', $case->status)) }}</span>
+                                @php
+                                    $caseStatusClass = match($case->status) {
+                                        'em_andamento'      => 'status-badge--info',
+                                        'aguardando_cliente',
+                                        'aguardando_prazo'  => 'status-badge--warning',
+                                        'em_recurso'        => 'status-badge--purple',
+                                        'encerrado'         => 'status-badge--success',
+                                        'arquivado'         => 'status-badge--dark',
+                                        default             => 'status-badge--secondary',
+                                    };
+                                @endphp
+                                <span class="status-badge {{ $caseStatusClass }}">{{ ucfirst(str_replace('_', ' ', $case->status)) }}</span>
                             </td>
                             <td>
                                 @if ($case->risk_level)
                                     @php
                                         $riskClass = match($case->risk_level) {
-                                            'baixo'   => 'text-bg-success',
-                                            'medio'   => 'text-bg-warning text-dark',
-                                            'alto'    => 'text-bg-danger',
-                                            'critico' => 'text-bg-dark',
-                                            default   => 'text-bg-secondary',
+                                            'baixo'   => 'status-badge--success',
+                                            'medio'   => 'status-badge--warning',
+                                            'alto'    => 'status-badge--danger',
+                                            'critico' => 'status-badge--danger',
+                                            default   => 'status-badge--secondary',
                                         };
                                     @endphp
-                                    <span class="badge {{ $riskClass }}">{{ ucfirst($case->risk_level) }}</span>
+                                    <span class="status-badge {{ $riskClass }}">{{ ucfirst($case->risk_level) }}</span>
                                 @else
                                     <span class="text-secondary small">—</span>
                                 @endif

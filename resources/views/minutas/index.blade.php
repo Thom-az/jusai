@@ -21,13 +21,6 @@
             </button>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         @if ($drafts->isEmpty())
             <div class="surface-card p-5">
                 <x-empty-state
@@ -60,16 +53,16 @@
                                 <th style="width:3.5rem"></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="stagger-list">
                             @foreach ($drafts as $draft)
                                 @php
                                     $isGenerating = $draft->generated_by_ai && $draft->content === '';
                                     $statusClass = match($draft->status) {
-                                        'aprovado'   => 'text-bg-success',
-                                        'publicado'  => 'text-bg-primary',
-                                        'em_revisao' => 'text-bg-warning text-dark',
-                                        'rejeitado'  => 'text-bg-danger',
-                                        default      => 'text-bg-secondary',
+                                        'aprovado'   => 'status-badge--success',
+                                        'publicado'  => 'status-badge--info',
+                                        'em_revisao' => 'status-badge--warning',
+                                        'rejeitado'  => 'status-badge--danger',
+                                        default      => 'status-badge--secondary',
                                     };
                                     $typeLabel = match($draft->type) {
                                         'peticao_inicial'           => 'Petição Inicial',
@@ -105,7 +98,7 @@
                                             —
                                         @endif
                                     </td>
-                                    <td><span class="badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $draft->status)) }}</span></td>
+                                    <td><span class="status-badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $draft->status)) }}</span></td>
                                     <td class="small text-secondary">{{ $draft->creator?->name ?? '—' }}</td>
                                     <td class="small text-secondary">{{ $draft->updated_at->format('d/m/Y') }}</td>
                                     <td class="pe-3 text-end">
